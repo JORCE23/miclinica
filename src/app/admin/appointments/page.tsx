@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { AppointmentList } from "@/components/admin/appointments/AppointmentList"
+import { AppointmentCalendar } from "@/components/admin/appointments/AppointmentCalendar"
 import { Button } from "@/components/ui/button"
 import { Plus, Calendar as CalendarIcon, List as ListIcon } from "lucide-react"
 import Link from "next/link"
@@ -35,8 +36,7 @@ export default function AppointmentsPage() {
               size="sm" 
               onClick={() => setView("calendar")}
               className="h-8 px-2"
-              disabled
-              title="Vista de calendario en desarrollo"
+              title="Vista de calendario"
             >
               <CalendarIcon className="h-4 w-4" />
             </Button>
@@ -54,9 +54,7 @@ export default function AppointmentsPage() {
       {view === "list" ? (
         <AppointmentList />
       ) : (
-        <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          Vista de calendario próximamente
-        </div>
+        <AppointmentCalendar />
       )}
     </div>
   )

@@ -1,4 +1,4 @@
-﻿// types/index.ts
+// types/index.ts
 
 export type UserRole = "clinic_admin" | "client";
 
@@ -68,6 +68,8 @@ export interface AestheticProcedureHistory {
   performed_at: string;
   performed_by?: string;
   notes?: string;
+  before_image_url?: string;
+  after_image_url?: string;
   created_at: string;
 }
 
