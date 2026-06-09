@@ -1,0 +1,121 @@
+﻿// types/index.ts
+
+export type UserRole = "clinic_admin" | "client";
+
+export type AppointmentStatus =
+  | "pendiente" | "confirmada" | "completada"
+  | "cancelada" | "no_asistio";
+
+export type AllergySeverity = "leve" | "moderada" | "severa";
+
+export type LoyaltyTransactionType = "ganados" | "canjeados" | "ajuste" | "expirados";
+
+export interface Clinic {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Profile {
+  id: string;
+  clinic_id: string;
+  role: UserRole;
+  full_name: string;
+  rut?: string;
+  birth_date?: string;
+  phone?: string;
+  email?: string;
+  avatar_url?: string;
+  notes?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  // calculado
+  age?: number;
+}
+
+export interface MedicalHistory {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  condition: string;
+  diagnosed_at?: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface Allergy {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  allergen: string;
+  severity: AllergySeverity;
+  reaction?: string;
+  created_at: string;
+}
+
+export interface AestheticProcedureHistory {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  procedure_name: string;
+  performed_at: string;
+  performed_by?: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface Service {
+  id: string;
+  clinic_id: string;
+  name: string;
+  description?: string;
+  duration_minutes: number;
+  price?: number;
+  loyalty_points_earned: number;
+  is_active: boolean;
+}
+
+export interface Appointment {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  service_id?: string;
+  scheduled_at: string;
+  duration_minutes: number;
+  status: AppointmentStatus;
+  notes?: string;
+  price?: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+  // joins
+  patient?: Profile;
+  service?: Service;
+}
+
+export interface LoyaltyAccount {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  total_points: number;
+  lifetime_points: number;
+}
+
+export interface LoyaltyTransaction {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  appointment_id?: string;
+  type: LoyaltyTransactionType;
+  points: number;
+  description?: string;
+  created_at: string;
+}
+
