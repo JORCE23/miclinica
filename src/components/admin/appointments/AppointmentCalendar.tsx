@@ -66,8 +66,15 @@ export function AppointmentCalendar() {
     }
   }
 
+  // Restrict calendar times between 08:00 and 20:00
+  const minTime = new Date()
+  minTime.setHours(8, 0, 0)
+  
+  const maxTime = new Date()
+  maxTime.setHours(20, 0, 0)
+
   return (
-    <div className="h-[600px] w-full bg-card border rounded-md p-4">
+    <div className="h-[650px] w-full bg-card border rounded-md p-4">
       <Calendar
         localizer={localizer}
         events={events}
@@ -75,6 +82,9 @@ export function AppointmentCalendar() {
         endAccessor="end"
         style={{ height: "100%" }}
         culture="es"
+        defaultView="week"
+        min={minTime}
+        max={maxTime}
         messages={{
           next: "Sig",
           previous: "Ant",
