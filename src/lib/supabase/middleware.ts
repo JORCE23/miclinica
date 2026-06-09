@@ -33,12 +33,17 @@ export async function updateSession(request: NextRequest) {
 
   let redirectUrl = null
 
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api')
+
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
     request.nextUrl.pathname !== '/'
   ) {
+    if (isApiRoute) {
+      return NextResponse.json({ error: 'No autorizado o sesión expirada' }, { status: 401 })
+    }
     redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/login'
   } else if (
