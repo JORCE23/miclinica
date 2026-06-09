@@ -31,7 +31,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     if (!profile) return NextResponse.json({ error: "Perfil no encontrado" }, { status: 403 })
 
     const body = await request.json()
-    const { procedure_name, performed_at, performed_by, notes, before_image_url, after_image_url } = body
+    const { procedure_name, performed_at, performed_by, notes, before_image_url, after_image_url, facial_diagram_data } = body
 
     if (!procedure_name || !performed_at) {
       return NextResponse.json({ error: "El nombre y fecha son requeridos" }, { status: 400 })
@@ -48,6 +48,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         notes: notes || null,
         before_image_url: before_image_url || null,
         after_image_url: after_image_url || null,
+        facial_diagram_data: facial_diagram_data || null,
       })
       .select()
       .single()

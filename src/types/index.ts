@@ -70,6 +70,7 @@ export interface AestheticProcedureHistory {
   notes?: string;
   before_image_url?: string;
   after_image_url?: string;
+  facial_diagram_data?: any;
   created_at: string;
 }
 

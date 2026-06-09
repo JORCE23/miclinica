@@ -13,10 +13,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { format } from "date-fns"
 import { toast } from "sonner"
-import { Plus, Image as ImageIcon, Loader2 } from "lucide-react"
+import { Plus, Image as ImageIcon, Loader2, Activity } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { FacialDiagram, type DiagramPoint } from "./FacialDiagram"
 
 export function ProceduresTab({ patientId }: { patientId: string }) {
   const queryClient = useQueryClient()
@@ -30,6 +38,8 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
   const [notes, setNotes] = useState("")
   const [beforeFile, setBeforeFile] = useState<File | null>(null)
   const [afterFile, setAfterFile] = useState<File | null>(null)
+  const [diagramPoints, setDiagramPoints] = useState<DiagramPoint[]>([])
+  const [showDiagram, setShowDiagram] = useState(false)
 
   const { data: procedures, isLoading } = useQuery({
     queryKey: ["procedures", patientId],
@@ -59,6 +69,8 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
       setNotes("")
       setBeforeFile(null)
       setAfterFile(null)
+      setDiagramPoints([])
+      setShowDiagram(false)
       toast.success("Procedimiento agregado al historial")
     }
   })
@@ -102,7 +114,8 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
         performed_by: performedBy, 
         notes,
         before_image_url: beforeUrl,
-        after_image_url: afterUrl
+        after_image_url: afterUrl,
+        facial_diagram_data: diagramPoints.length > 0 ? diagramPoints : null
       })
     } catch (error: any) {
       toast.error("Error al subir las imágenes: " + error.message)
@@ -123,7 +136,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-4 border rounded-md space-y-4 bg-muted/50">
+        <form onSubmit={handleSubmit} className="p-4 border rounded-xl space-y-6 bg-muted/20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Procedimiento *</label>
@@ -151,13 +164,26 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
           </div>
 
           <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Esquema Facial Interactivo</label>
+              <Button type="button" variant="outline" size="sm" onClick={() => setShowDiagram(!showDiagram)}>
+                {showDiagram ? "Ocultar Esquema" : "Mostrar Esquema"}
+              </Button>
+            </div>
+            {showDiagram && (
+              <FacialDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />
+            )}
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium">Notas / Resultados</label>
             <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Marca utilizada, dosis, reacción..." disabled={isUploading} />
           </div>
-          <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => setIsAdding(false)} disabled={isUploading}>Cancelar</Button>
-            <Button type="submit" disabled={addMutation.isPending || isUploading}>
-              {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Subiendo...</> : "Guardar"}
+          
+          <div className="flex justify-end space-x-2 pt-4 border-t">
+            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)} disabled={isUploading}>Cancelar</Button>
+            <Button type="submit" disabled={addMutation.isPending || isUploading} className="bg-blue-600 hover:bg-blue-700">
+              {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Guardando...</> : "Guardar Procedimiento"}
             </Button>
           </div>
         </form>
@@ -200,6 +226,23 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                         <a href={proc.after_image_url} target="_blank" rel="noreferrer" className="text-xs flex items-center text-blue-600 hover:underline">
                           <ImageIcon className="h-3 w-3 mr-1" /> Después
                         </a>
+                      )}
+                      {proc.facial_diagram_data && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="link" className="h-auto p-0 text-xs text-indigo-600 h-4">
+                              <Activity className="h-3 w-3 mr-1" /> Mapa Facial
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Esquema Facial del Tratamiento</DialogTitle>
+                            </DialogHeader>
+                            <div className="mt-4">
+                              <FacialDiagram points={proc.facial_diagram_data} onChange={() => {}} disabled />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       )}
                     </div>
                   </TableCell>
