@@ -55,8 +55,8 @@ export function LoyaltyList() {
         </div>
       </div>
 
-      <div className="rounded-md border bg-card">
-        <Table>
+      <div className="relative w-full overflow-x-auto rounded-md border bg-card">
+        <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow>
               <TableHead>Paciente</TableHead>

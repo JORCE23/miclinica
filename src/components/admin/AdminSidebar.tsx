@@ -7,6 +7,11 @@ import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut } fr
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
+import { Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+
 const routes = [
   {
     label: "Dashboard",
@@ -49,17 +54,18 @@ export function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const [open, setOpen] = useState(false)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.refresh()
   }
 
-  return (
-    <div className="flex h-screen w-72 flex-col space-y-4 bg-slate-900 py-4 text-white">
+  const SidebarContent = ({ isMobile = false }) => (
+    <div className="flex h-full flex-col">
       <div className="px-3 py-2">
         <div className="mb-14">
-          <Link href="/admin/dashboard" className="flex items-center pl-3">
+          <Link href="/admin/dashboard" onClick={() => setOpen(false)} className="flex items-center pl-3">
             <h1 className="text-2xl font-bold">Mi Clínica</h1>
           </Link>
           <div className="pl-3 mt-1">
@@ -73,6 +79,7 @@ export function AdminSidebar() {
             <Link
               key={route.href}
               href={route.href}
+              onClick={() => isMobile && setOpen(false)}
               className={cn(
                 "group flex w-full cursor-pointer justify-start rounded-lg p-3 text-sm font-medium transition hover:bg-white/10 hover:text-white",
                 pathname === route.href ? "bg-white/10 text-white" : "text-zinc-400"
@@ -86,7 +93,7 @@ export function AdminSidebar() {
           ))}
         </div>
       </div>
-      <div className="mt-auto px-3">
+      <div className="mt-auto px-3 pb-4 md:pb-0">
         <button
           onClick={handleLogout}
           className="group flex w-full cursor-pointer justify-start rounded-lg p-3 text-sm font-medium text-zinc-400 transition hover:bg-white/10 hover:text-white"
@@ -98,5 +105,32 @@ export function AdminSidebar() {
         </button>
       </div>
     </div>
+  )
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex h-screen w-72 flex-col space-y-4 bg-slate-900 py-4 text-white">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-slate-900 text-white shadow-sm w-full sticky top-0 z-50">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold">Mi Clínica</h1>
+        </div>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger render={<Button variant="ghost" size="icon" className="text-white hover:bg-white/10" />}>
+            <Menu className="h-6 w-6" />
+          </SheetTrigger>
+          <SheetContent side="left" className="bg-slate-900 text-white border-r-slate-800 p-0 pt-6">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Menú</SheetTitle>
+            </SheetHeader>
+            <SidebarContent isMobile />
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   )
 }

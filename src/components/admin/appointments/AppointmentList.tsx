@@ -33,8 +33,8 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
   }
 
   return (
-    <div className="rounded-md border bg-card">
-      <Table>
+    <div className="relative w-full overflow-x-auto rounded-md border bg-card">
+      <Table className="min-w-[1000px]">
         <TableHeader>
           <TableRow>
             <TableHead>Fecha y Hora</TableHead>

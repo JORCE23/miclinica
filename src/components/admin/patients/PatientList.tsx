@@ -53,8 +53,8 @@ export function PatientList() {
             <Skeleton className="h-10 w-full" />
           </div>
         ) : filteredPatients && filteredPatients.length > 0 ? (
-          <div className="relative w-full overflow-auto">
-            <table className="w-full caption-bottom text-sm">
+          <div className="relative w-full overflow-x-auto">
+            <table className="w-full caption-bottom text-sm min-w-[800px]">
               <thead className="[&_tr]:border-b">
                 <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Nombre</th>
