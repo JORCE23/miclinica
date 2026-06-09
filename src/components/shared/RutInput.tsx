@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
@@ -33,8 +33,8 @@ export function RutInput({ value, onChange, onBlur, error }: RutInputProps) {
         maxLength={12}
         className={isInvalid ? "border-red-500 pr-10" : isValid ? "border-green-500 pr-10" : "pr-10"}
       />
-      {isValid   && <CheckCircle2 className="absolute right-3 top-2.5 h-4 w-4 text-green-500" />}
-      {isInvalid && <XCircle      className="absolute right-3 top-2.5 h-4 w-4 text-red-500" />}
+      {isValid   && <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />}
+      {isInvalid && <XCircle      className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />}
       {error     && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
   )
