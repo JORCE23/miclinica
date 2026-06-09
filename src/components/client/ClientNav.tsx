@@ -101,11 +101,11 @@ export function ClientNav({ userName }: { userName?: string }) {
         {/* Mobile Nav */}
         <div className="flex md:hidden items-center gap-4">
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
+            <SheetTrigger
+              render={<Button variant="ghost" size="icon" className="md:hidden" />}
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle menu</span>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <SheetHeader>

@@ -40,12 +40,13 @@ export default function ServicesPage() {
         </div>
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-rose-600 hover:bg-rose-700">
-              <Plus className="mr-2 h-4 w-4" />
-              Nuevo Servicio
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="bg-rose-600 hover:bg-rose-700">
+                <Plus className="mr-2 h-4 w-4" /> Nuevo Servicio
+              </Button>
+            }
+          />
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Crear Nuevo Servicio</DialogTitle>
