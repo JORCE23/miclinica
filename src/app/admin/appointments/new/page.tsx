@@ -2,15 +2,19 @@
 
 import { AppointmentForm } from "@/components/admin/appointments/AppointmentForm"
 import { useCreateAppointment } from "@/hooks/useAppointments"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft } from "lucide-react"
+import { Suspense } from "react"
 
-export default function NewAppointmentPage() {
+function NewAppointmentForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const createAppointment = useCreateAppointment()
+  
+  const defaultPatientId = searchParams.get("patientId") || undefined
 
   const handleSubmit = async (data: any) => {
     try {
@@ -47,9 +51,18 @@ export default function NewAppointmentPage() {
           <AppointmentForm 
             onSubmit={handleSubmit}
             isSubmitting={createAppointment.isPending}
+            defaultPatientId={defaultPatientId}
           />
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function NewAppointmentPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Cargando...</div>}>
+      <NewAppointmentForm />
+    </Suspense>
   )
 }
