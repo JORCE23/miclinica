@@ -26,6 +26,8 @@ interface AppointmentFormProps {
   defaultPatientId?: string
 }
 
+import { format } from "date-fns"
+
 export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId }: AppointmentFormProps) {
   const { data: patients } = usePatients()
   const { data: services } = useServices(true) // Solo servicios activos
@@ -35,7 +37,7 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
     defaultValues: {
       patient_id: initialData?.patient_id || defaultPatientId || "",
       service_id: initialData?.service_id || "",
-      scheduled_at: initialData?.scheduled_at ? new Date(initialData.scheduled_at).toISOString().slice(0, 16) : "",
+      scheduled_at: initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : "",
       duration_minutes: initialData?.duration_minutes || 60,
       price: initialData?.price || 0,
       notes: initialData?.notes || "",
@@ -58,8 +60,17 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
     }
   }, [selectedServiceId, services, setValue, initialData])
 
+  const handleFormSubmit = (data: AppointmentFormValues) => {
+    // Parse local datetime string and convert to UTC ISO string before submitting
+    const localDate = new Date(data.scheduled_at)
+    onSubmit({
+      ...data,
+      scheduled_at: localDate.toISOString(),
+    })
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="patient_id">Paciente *</Label>
         <Controller
