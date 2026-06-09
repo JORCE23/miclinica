@@ -79,7 +79,13 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
           render={({ field }) => (
             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultPatientId}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar paciente" />
+                <SelectValue placeholder="Seleccionar paciente">
+                  {(value: string) => {
+                    if (!value) return "Seleccionar paciente"
+                    const patient = patients?.find((p) => p.id === value)
+                    return patient ? `${patient.full_name} (${patient.rut || patient.email})` : "Seleccionar paciente"
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {patients?.map((patient) => (
@@ -102,7 +108,13 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
           render={({ field }) => (
             <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar servicio" />
+                <SelectValue placeholder="Seleccionar servicio">
+                  {(value: string) => {
+                    if (!value) return "Seleccionar servicio"
+                    const service = services?.find((s) => s.id === value)
+                    return service ? `${service.name} (${service.duration_minutes} min)` : "Seleccionar servicio"
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {services?.map((service) => (
