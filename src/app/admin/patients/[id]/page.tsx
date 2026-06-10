@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -11,9 +12,11 @@ import { AllergiesTab } from "@/components/admin/patients/tabs/AllergiesTab"
 import { ProceduresTab } from "@/components/admin/patients/tabs/ProceduresTab"
 import { PatientAppointmentsTab } from "@/components/admin/patients/tabs/PatientAppointmentsTab"
 import { LoyaltyTab } from "@/components/admin/patients/tabs/LoyaltyTab"
+import { PatientSidebar } from "@/components/admin/patients/PatientSidebar"
 
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState("clinical")
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ["patient", params.id],
@@ -24,69 +27,112 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     }
   })
 
-  if (isLoading) return <div className="p-8 text-center">Cargando...</div>
-  if (!patient) return <div className="p-8 text-center text-red-500">Paciente no encontrado</div>
+  if (isLoading) return <div className="p-8 text-center text-slate-500">Cargando expediente clínico...</div>
+  if (!patient) return <div className="p-8 text-center text-red-500 font-bold">Paciente no encontrado</div>
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-4 bg-white dark:bg-slate-900 p-6 rounded-xl border shadow-sm">
-        <Button variant="outline" size="icon" onClick={() => router.back()} className="mr-2 rounded-full">
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-        <div className="h-16 w-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-2xl font-bold text-rose-600 dark:text-rose-400">
-          {patient.full_name.charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {patient.full_name}
-          </h1>
-          <div className="flex items-center mt-1 space-x-3 text-sm text-muted-foreground">
-            <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-medium">
-              RUT: {patient.rut || "N/A"}
-            </span>
-            <span className="flex items-center">
-              <span className={`h-2 w-2 rounded-full mr-2 ${patient.is_active ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
-              {patient.is_active ? 'Activo' : 'Inactivo'}
-            </span>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-10">
+      {/* 1. TOP HEADER (Primary Color Banner Style) */}
+      <div className="bg-primary text-white shadow-md relative z-10">
+        <div className="max-w-[1600px] mx-auto px-6 pt-6 pb-0">
+          <div className="flex items-center gap-6 mb-6">
+            <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/20 rounded-full h-10 w-10 shrink-0">
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+            
+            <div className="h-20 w-20 rounded-full bg-white text-primary flex items-center justify-center text-3xl font-bold shadow-md shrink-0 border-4 border-primary outline outline-4 outline-white/20">
+              {patient.full_name.charAt(0).toUpperCase()}
+            </div>
+            
+            <div className="flex-1 pb-2">
+              <h1 className="text-3xl font-bold tracking-tight mb-1">{patient.full_name}</h1>
+              <div className="flex items-center gap-3 text-white/90 text-sm">
+                <span className="font-medium bg-black/10 px-2 py-0.5 rounded">RUT: {patient.rut || "N/A"}</span>
+                <span className="opacity-80">|</span>
+                <span>{patient.email || "Sin email"}</span>
+              </div>
+            </div>
           </div>
+          
+          {/* HORIZONTAL NAV (Controlled Tabs) */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="bg-transparent h-auto p-0 gap-6 flex justify-start border-none">
+              <TabsTrigger 
+                value="administrative" 
+                className="text-white/70 hover:text-white data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-white rounded-none pb-3 px-1 font-semibold text-sm uppercase tracking-wider transition-all"
+              >
+                Datos administrativos
+              </TabsTrigger>
+              <TabsTrigger 
+                value="medical" 
+                className="text-white/70 hover:text-white data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-white rounded-none pb-3 px-1 font-semibold text-sm uppercase tracking-wider transition-all"
+              >
+                Antecedentes médicos
+              </TabsTrigger>
+              <TabsTrigger 
+                value="clinical" 
+                className="text-white/70 hover:text-white data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-white rounded-none pb-3 px-1 font-semibold text-sm uppercase tracking-wider transition-all"
+              >
+                Ficha Clínica
+              </TabsTrigger>
+              <TabsTrigger 
+                value="appointments" 
+                className="text-white/70 hover:text-white data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-white rounded-none pb-3 px-1 font-semibold text-sm uppercase tracking-wider transition-all"
+              >
+                Atenciones
+              </TabsTrigger>
+              <TabsTrigger 
+                value="loyalty" 
+                className="text-white/70 hover:text-white data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-white rounded-none pb-3 px-1 font-semibold text-sm uppercase tracking-wider transition-all"
+              >
+                Fidelidad
+              </TabsTrigger>
+            </TabsList>
+
+            {/* 2. MAIN LAYOUT */}
+            <div className="absolute left-0 w-full top-full pt-6">
+              <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-[300px_1fr] gap-6 items-start">
+                
+                {/* LEFT SIDEBAR */}
+                <div className="sticky top-6">
+                  <PatientSidebar patient={patient} setActiveTab={setActiveTab} />
+                </div>
+
+                {/* MAIN TABS CONTENT */}
+                <div className="border bg-card rounded-lg p-6 min-w-0 w-full shadow-sm text-slate-800 dark:text-slate-200">
+                  <TabsContent value="administrative" className="mt-0 outline-none">
+                    <PersonalTab patient={patient} />
+                  </TabsContent>
+                  
+                  <TabsContent value="medical" className="mt-0 outline-none space-y-8">
+                    <div>
+                      <h2 className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-200 border-b pb-2">Antecedentes Mórbidos</h2>
+                      <MedicalHistoryTab patientId={patient.id} />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold mb-4 text-slate-800 dark:text-slate-200 border-b pb-2">Alergias Conocidas</h2>
+                      <AllergiesTab patientId={patient.id} />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="clinical" className="mt-0 outline-none">
+                    <ProceduresTab patientId={patient.id} />
+                  </TabsContent>
+
+                  <TabsContent value="appointments" className="mt-0 outline-none">
+                    <PatientAppointmentsTab patientId={patient.id} />
+                  </TabsContent>
+
+                  <TabsContent value="loyalty" className="mt-0 outline-none">
+                    <LoyaltyTab patientId={patient.id} />
+                  </TabsContent>
+                </div>
+
+              </div>
+            </div>
+          </Tabs>
         </div>
       </div>
-
-      <Tabs defaultValue="personal" className="w-full flex-col">
-        <div className="overflow-x-auto pb-2 no-scrollbar">
-          <TabsList className="inline-flex w-max min-w-full h-12 p-1 gap-1 justify-start bg-muted/50 rounded-xl">
-            <TabsTrigger value="personal" className="py-2 px-6 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm transition-all font-medium">Datos Personales</TabsTrigger>
-            <TabsTrigger value="medical" className="py-2 px-6 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm transition-all font-medium">Ant. Mórbidos</TabsTrigger>
-            <TabsTrigger value="allergies" className="py-2 px-6 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm transition-all font-medium">Alergias</TabsTrigger>
-            <TabsTrigger value="procedures" className="py-2 px-6 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm transition-all font-medium">Proc. Previos</TabsTrigger>
-            <TabsTrigger value="appointments" className="py-2 px-6 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm transition-all font-medium">Citas</TabsTrigger>
-            <TabsTrigger value="loyalty" className="py-2 px-6 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm transition-all font-medium flex items-center gap-2">
-              <span className="text-amber-500 font-bold">★</span> Fidelidad
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        <div className="mt-6 border bg-card rounded-lg p-6">
-          <TabsContent value="personal">
-            <PersonalTab patient={patient} />
-          </TabsContent>
-          <TabsContent value="medical">
-            <MedicalHistoryTab patientId={patient.id} />
-          </TabsContent>
-          <TabsContent value="allergies">
-            <AllergiesTab patientId={patient.id} />
-          </TabsContent>
-          <TabsContent value="procedures">
-            <ProceduresTab patientId={patient.id} />
-          </TabsContent>
-          <TabsContent value="appointments">
-            <PatientAppointmentsTab patientId={patient.id} />
-          </TabsContent>
-          <TabsContent value="loyalty">
-            <LoyaltyTab patientId={patient.id} />
-          </TabsContent>
-        </div>
-      </Tabs>
     </div>
   )
 }

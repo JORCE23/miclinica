@@ -139,33 +139,33 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
         <form onSubmit={handleSubmit} className="p-4 border rounded-xl space-y-6 bg-muted/20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Procedimiento *</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Procedimiento *</label>
               <Input value={procedureName} onChange={e => setProcedureName(e.target.value)} placeholder="Ej. Ácido Hialurónico Labios" disabled={isUploading} />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Fecha Realizado *</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Fecha Realizado *</label>
               <Input type="date" value={performedAt} onChange={e => setPerformedAt(e.target.value)} disabled={isUploading} />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium">Profesional / Clínica</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Profesional / Clínica</label>
               <Input value={performedBy} onChange={e => setPerformedBy(e.target.value)} placeholder="Dr. Juan, o Clínica Externa" disabled={isUploading} />
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Foto "Antes" (Opcional)</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Foto "Antes" (Opcional)</label>
               <Input type="file" accept="image/*" onChange={e => setBeforeFile(e.target.files?.[0] || null)} disabled={isUploading} />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Foto "Después" (Opcional)</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Foto "Después" (Opcional)</label>
               <Input type="file" accept="image/*" onChange={e => setAfterFile(e.target.files?.[0] || null)} disabled={isUploading} />
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Esquema Facial Interactivo</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Esquema Facial Interactivo</label>
               <Button type="button" variant="outline" size="sm" onClick={() => setShowDiagram(!showDiagram)}>
                 {showDiagram ? "Ocultar Esquema" : "Mostrar Esquema"}
               </Button>
@@ -176,7 +176,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Notas / Resultados</label>
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Notas / Resultados</label>
             <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Marca utilizada, dosis, reacción..." disabled={isUploading} />
           </div>
           

@@ -85,9 +85,16 @@ export function ServiceList() {
             {services.map((service) => (
               <TableRow key={service.id}>
                 <TableCell>
-                  <div className="font-medium">{service.name}</div>
+                  <div className="font-medium flex items-center gap-2">
+                    {service.name}
+                    {service.category && (
+                      <Badge variant="outline" className="text-[10px] h-5 px-1.5 font-normal">
+                        {service.category}
+                      </Badge>
+                    )}
+                  </div>
                   {service.description && (
-                    <div className="text-xs text-muted-foreground truncate max-w-[250px]">
+                    <div className="text-xs text-muted-foreground truncate max-w-[250px] mt-1">
                       {service.description}
                     </div>
                   )}

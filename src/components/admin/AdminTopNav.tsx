@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, Calendar, Sparkles, Gift, LogOut, Menu, Search, Bell, Settings } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Sparkles, Gift, LogOut, Menu, Search, Bell, Settings, Activity } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
@@ -114,8 +114,10 @@ export function AdminTopNav({ profile }: { profile?: any }) {
 
           {/* Logo */}
           <Link href="/admin/dashboard" className="flex items-center gap-2 font-bold text-lg tracking-tight">
-            <Sparkles className="h-5 w-5" />
-            <span>scalia</span>
+            <div className="bg-white/20 p-1.5 rounded-lg">
+              <Activity className="h-5 w-5 text-white" />
+            </div>
+            <span>Myclinic</span>
           </Link>
         </div>
 

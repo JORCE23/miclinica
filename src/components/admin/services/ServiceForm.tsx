@@ -22,6 +22,7 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceForm
     defaultValues: {
       name: initialData?.name || "",
       description: initialData?.description || "",
+      category: initialData?.category || "",
       duration_minutes: initialData?.duration_minutes || 60,
       price: initialData?.price || 0,
       loyalty_points_earned: initialData?.loyalty_points_earned || 0,
@@ -33,10 +34,18 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceForm
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name">Nombre del Servicio *</Label>
-        <Input id="name" placeholder="Ej. Bótox Facial" {...register("name")} />
-        {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2 col-span-2 sm:col-span-1">
+          <Label htmlFor="name">Nombre del Servicio *</Label>
+          <Input id="name" placeholder="Ej. Bótox Facial" {...register("name")} />
+          {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+        </div>
+        
+        <div className="space-y-2 col-span-2 sm:col-span-1">
+          <Label htmlFor="category">Categoría</Label>
+          <Input id="category" placeholder="Ej. Toxina Botulínica" {...register("category")} />
+          {errors.category && <p className="text-sm text-red-500">{errors.category.message}</p>}
+        </div>
       </div>
 
       <div className="space-y-2">

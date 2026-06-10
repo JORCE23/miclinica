@@ -1,38 +1,41 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { requireAuth } from "@/lib/security/auth-guard"
+import { checkRateLimit, getIp } from "@/lib/security/rate-limit"
+import { sanitizeInput } from "@/lib/security/sanitize"
 
 export async function POST(request: Request) {
   try {
-    const supabase = createClient()
-    const adminAuthClient = createAdminClient()
-
-    // 1. Verificar sesión del admin
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    // 1. Rate Limiting
+    const ip = getIp(request)
+    const { success, limit, remaining } = checkRateLimit(ip)
+    
+    if (!success) {
+      return NextResponse.json({ error: "Demasiadas peticiones" }, { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+        }
+      })
     }
 
-    // 2. Obtener el perfil del admin para obtener el clinic_id
-    const { data: adminProfile } = await supabase
-      .from("profiles")
-      .select("clinic_id, role")
-      .eq("id", user.id)
-      .single()
+    // 2. Auth Guard y variables
+    const { context, errorResponse } = await requireAuth("clinic_admin")
+    if (errorResponse) return errorResponse
 
-    if (!adminProfile || adminProfile.role !== "clinic_admin") {
-      return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
-    }
-
-    // 3. Obtener los datos del nuevo paciente
-    const body = await request.json()
+    // 3. Sanitización y obtención de datos
+    const rawBody = await request.json()
+    const body = sanitizeInput(rawBody) // Sanitizar TODOS los inputs del body
+    
     const { email, password, full_name, rut, birth_date, phone, notes } = body
 
     if (!email || !password || !full_name) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
-    // 4. Crear el usuario en Auth usando la API de Admin (para no desloguear al admin actual)
+    // 4. Crear el usuario en Auth usando la API de Admin
+    const adminAuthClient = createAdminClient()
     const { data: authData, error: authError } = await adminAuthClient.auth.admin.createUser({
       email,
       password,
@@ -53,7 +56,7 @@ export async function POST(request: Request) {
       .from("profiles")
       .insert({
         id: newUserId,
-        clinic_id: adminProfile.clinic_id,
+        clinic_id: context!.clinicId,
         role: "client",
         full_name,
         rut: rut || null,
@@ -64,7 +67,6 @@ export async function POST(request: Request) {
       })
 
     if (profileError) {
-      // Si falla el perfil, podríamos borrar el usuario de auth como rollback, pero lo dejamos simple por ahora
       return NextResponse.json({ error: profileError.message }, { status: 400 })
     }
 

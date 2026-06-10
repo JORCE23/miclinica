@@ -83,6 +83,27 @@ export interface Service {
   price?: number;
   loyalty_points_earned: number;
   is_active: boolean;
+  
+  // Nuevos campos del Libro Maestro de Procedimientos
+  category?: string;
+  service_code?: string;
+  zones?: string[];
+  reference_products?: string[];
+  dose_units?: string;
+  application_route?: string;
+  clinical_duration_min?: number;
+  effect_onset?: string;
+  effect_duration?: string;
+  recommended_sessions?: string;
+  sessions_interval?: string;
+  recovery_time?: string;
+  indications?: string[];
+  use_general_contraindications?: boolean;
+  use_toxin_contraindications?: boolean;
+  post_care_type?: string;
+  requires_consent?: boolean;
+  requires_clinical_photo?: boolean;
+  custom_field?: string;
 }
 
 export interface Appointment {

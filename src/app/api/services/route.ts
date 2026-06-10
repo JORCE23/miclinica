@@ -1,22 +1,30 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/security/auth-guard"
+import { checkRateLimit, getIp } from "@/lib/security/rate-limit"
+import { sanitizeInput } from "@/lib/security/sanitize"
 
 export async function GET(request: Request) {
   try {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    // 1. Rate Limiting
+    const ip = getIp(request)
+    const { success, limit, remaining } = checkRateLimit(ip)
+    if (!success) {
+      return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429, headers: { 'X-RateLimit-Limit': limit.toString(), 'X-RateLimit-Remaining': remaining.toString() } })
     }
 
-    // El RLS se encarga de filtrar por clinic_id automáticamente (policy "client_view_services" o "admin_manage_services")
+    // 2. Auth Guard
+    const { context, errorResponse } = await requireAuth()
+    if (errorResponse) return errorResponse
+
+    const supabase = createClient()
     const { searchParams } = new URL(request.url)
     const activeOnly = searchParams.get('activeOnly') === 'true'
 
     let query = supabase
       .from("services")
       .select("*")
+      .eq('clinic_id', context!.clinicId) // Explicitly filter by clinic_id as a defense in depth
       .order("name", { ascending: true })
 
     if (activeOnly) {
@@ -37,40 +45,33 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const supabase = createClient()
-    
-    // 1. Verificar sesión
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    // 1. Rate Limiting
+    const ip = getIp(request)
+    const { success, limit, remaining } = checkRateLimit(ip)
+    if (!success) {
+      return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429, headers: { 'X-RateLimit-Limit': limit.toString(), 'X-RateLimit-Remaining': remaining.toString() } })
     }
 
-    // 2. Obtener clinic_id del admin
-    const { data: adminProfile, error: profileError } = await supabase
-      .from("profiles")
-      .select("clinic_id, role")
-      .eq("id", user.id)
-      .single()
+    // 2. Auth Guard y variables
+    const { context, errorResponse } = await requireAuth("clinic_admin")
+    if (errorResponse) return errorResponse
 
-    console.log("Debug POST service:", { user: user.id, adminProfile, profileError })
+    // 3. Obtener y Sanitizar datos
+    const rawBody = await request.json()
+    const body = sanitizeInput(rawBody)
 
-    if (!adminProfile || adminProfile.role !== "clinic_admin") {
-      return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
-    }
-
-    // 3. Obtener datos
-    const body = await request.json()
     const { name, description, duration_minutes, price, loyalty_points_earned, is_active } = body
 
     if (!name || !duration_minutes) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
-    // 4. Insertar
+    // 4. Insertar usando el clinicId extraído del perfil seguro
+    const supabase = createClient()
     const { data, error } = await supabase
       .from("services")
       .insert({
-        clinic_id: adminProfile.clinic_id,
+        clinic_id: context!.clinicId,
         name,
         description: description || null,
         duration_minutes: Number(duration_minutes),
