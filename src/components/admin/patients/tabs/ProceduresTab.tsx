@@ -229,10 +229,8 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                       )}
                       {proc.facial_diagram_data && (
                         <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="link" className="h-auto p-0 text-xs text-indigo-600 h-4">
+                          <DialogTrigger render={<Button variant="link" className="h-auto p-0 text-xs text-indigo-600 h-4" />}>
                               <Activity className="h-3 w-3 mr-1" /> Mapa Facial
-                            </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>

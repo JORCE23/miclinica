@@ -72,10 +72,8 @@ export function PatientList() {
                     <td className="p-4 align-middle">{patient.phone || "-"}</td>
                     <td className="p-4 align-middle">{patient.email}</td>
                     <td className="p-4 align-middle text-right">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/admin/patients/${patient.id}`}>
+                      <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
                           Ver Ficha <ExternalLink className="ml-2 h-4 w-4" />
-                        </Link>
                       </Button>
                     </td>
                   </tr>

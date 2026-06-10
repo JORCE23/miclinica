@@ -4,17 +4,17 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 10% 3.9%;
 
-    /* Primary: Rose 600 */
-    --primary: 347 77% 50%;
+    /* Teal / Medical Blue */
+    --primary: 175 84% 32%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -23,20 +23,21 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 175 84% 95%;
+    --accent-foreground: 175 84% 32%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 347 77% 50%;
+    --ring: 175 84% 32%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
+    /* Obsidian / Deep Slate */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -46,8 +47,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary: Rose 500 */
-    --primary: 350 89% 60%;
+    /* Teal */
+    --primary: 175 84% 45%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -56,15 +57,15 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 175 84% 15%;
+    --accent-foreground: 175 84% 85%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 350 89% 60%;
+    --ring: 175 84% 45%;
   }
 }
 
@@ -73,6 +74,77 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20;
   }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/60 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)];
+  }
+
+  .premium-gradient {
+    @apply bg-gradient-to-br from-primary/10 via-background to-accent/20;
+  }
+}
+
+/* React Big Calendar Modern Overrides */
+.calendar-container .rbc-calendar {
+  @apply font-sans;
+}
+.calendar-container .rbc-toolbar {
+  @apply hidden; /* We use a custom toolbar instead */
+}
+.calendar-container .rbc-header {
+  @apply py-3 font-semibold text-slate-700 text-sm border-b-2 border-slate-100 bg-slate-50/50 capitalize;
+}
+.calendar-container .rbc-header + .rbc-header {
+  @apply border-l border-slate-100;
+}
+.calendar-container .rbc-time-view {
+  @apply border-none shadow-none bg-white rounded-lg overflow-hidden ring-1 ring-slate-200;
+}
+.calendar-container .rbc-time-header {
+  @apply border-b-0;
+}
+.calendar-container .rbc-time-header.rbc-overflowing {
+  @apply border-r-0;
+}
+.calendar-container .rbc-day-bg {
+  @apply border-slate-100;
+}
+.calendar-container .rbc-day-bg + .rbc-day-bg {
+  @apply border-l border-slate-100;
+}
+.calendar-container .rbc-time-content {
+  @apply border-t border-slate-200;
+}
+.calendar-container .rbc-time-content > * + * > * {
+  @apply border-l border-slate-100;
+}
+.calendar-container .rbc-timeslot-group {
+  @apply border-b border-slate-100 min-h-[60px];
+}
+.calendar-container .rbc-time-gutter .rbc-timeslot-group {
+  @apply border-r border-slate-100 bg-slate-50/30 text-xs font-medium text-slate-500 flex justify-center;
+}
+.calendar-container .rbc-event {
+  @apply p-0 transition-transform hover:scale-[1.02] hover:z-50;
+}
+.calendar-container .rbc-event.rbc-selected {
+  @apply outline outline-2 outline-primary/50 shadow-md;
+}
+.calendar-container .rbc-current-time-indicator {
+  @apply bg-red-500 h-[2px];
+}
+.calendar-container .rbc-current-time-indicator::before {
+  content: '';
+  @apply absolute -left-1 -top-1 w-2.5 h-2.5 bg-red-500 rounded-full;
+}
+.calendar-container .rbc-today {
+  @apply bg-primary/[0.03];
 }

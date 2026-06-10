@@ -15,11 +15,9 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
             Todas las citas agendadas para este paciente.
           </p>
         </div>
-        <Button asChild className="bg-rose-600 hover:bg-rose-700">
-          <Link href={`/admin/appointments/new?patientId=${patientId}`}>
+        <Button render={<Link href={`/admin/appointments/new?patientId=${patientId}`} />} className="bg-rose-600 hover:bg-rose-700">
             <Plus className="mr-2 h-4 w-4" />
             Nueva Cita
-          </Link>
         </Button>
       </div>
       

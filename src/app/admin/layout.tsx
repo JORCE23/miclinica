@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/components/admin/AdminSidebar"
+import { AdminTopNav } from "@/components/admin/AdminTopNav"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
@@ -16,7 +16,7 @@ export default async function AdminLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, full_name, avatar_url")
     .eq("id", user.id)
     .single()
 
@@ -25,8 +25,8 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-slate-50 dark:bg-slate-950">
-      <AdminSidebar />
+    <div className="flex flex-col min-h-screen bg-slate-100 dark:bg-background">
+      <AdminTopNav profile={profile} />
       <main className="flex-1 p-4 md:p-8 w-full max-w-[100vw] overflow-x-hidden">
         {children}
       </main>

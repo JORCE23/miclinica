@@ -35,11 +35,9 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Abrir menú</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+        <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" />}>
+          <span className="sr-only">Abrir menú</span>
+          <MoreHorizontal className="h-4 w-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {currentStatus !== "confirmada" && (

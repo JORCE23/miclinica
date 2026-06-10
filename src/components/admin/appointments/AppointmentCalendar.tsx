@@ -1,12 +1,13 @@
 "use client"
 
-import { Calendar, dateFnsLocalizer } from "react-big-calendar"
+import { Calendar, dateFnsLocalizer, ToolbarProps, View, Views } from "react-big-calendar"
 import { format, parse, startOfWeek, getDay } from "date-fns"
 import es from "date-fns/locale/es"
 import "react-big-calendar/lib/css/react-big-calendar.css"
-import { Appointment } from "@/types"
 import { useRouter } from "next/navigation"
 import { useAppointments } from "@/hooks/useAppointments"
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock } from "lucide-react"
+import { useState } from "react"
 
 const locales = {
   es: es,
@@ -20,61 +21,151 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
+// Custom Event Component for a professional look
+const CustomEvent = ({ event }: any) => {
+  return (
+    <div className="flex flex-col h-full overflow-hidden p-1">
+      <div className="font-bold text-[11px] leading-tight truncate">
+        {event.patientName}
+      </div>
+      <div className="text-[10px] opacity-80 leading-tight truncate flex items-center gap-1 mt-0.5">
+        <Clock className="w-2.5 h-2.5 inline-block shrink-0" />
+        {format(event.start, "HH:mm")} - {event.serviceName}
+      </div>
+    </div>
+  )
+}
+
+// Custom Toolbar Component
+const CustomToolbar = (toolbar: ToolbarProps) => {
+  const goToBack = () => toolbar.onNavigate('PREV')
+  const goToNext = () => toolbar.onNavigate('NEXT')
+  const goToCurrent = () => toolbar.onNavigate('TODAY')
+  
+  const label = () => {
+    const date = format(toolbar.date, 'MMMM yyyy', { locale: es })
+    return date.charAt(0).toUpperCase() + date.slice(1)
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={goToCurrent}
+          className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-medium text-sm rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+        >
+          Hoy
+        </button>
+        <div className="flex items-center bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+          <button onClick={goToBack} className="p-2 text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors border-r border-slate-200">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button onClick={goToNext} className="p-2 text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors">
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      <h2 className="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+        <CalendarIcon className="w-5 h-5 text-primary" />
+        {label()}
+      </h2>
+
+      <div className="flex items-center bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden text-sm font-medium">
+        {['month', 'week', 'day', 'agenda'].map((view) => (
+          <button
+            key={view}
+            onClick={() => toolbar.onView(view as any)}
+            className={`px-4 py-2 transition-colors capitalize ${
+              toolbar.view === view 
+                ? "bg-primary/10 text-primary font-bold" 
+                : "text-slate-600 hover:bg-slate-50"
+            } ${view !== 'agenda' ? 'border-r border-slate-200' : ''}`}
+          >
+            {view === 'month' ? 'Mes' : view === 'week' ? 'Semana' : view === 'day' ? 'Día' : 'Agenda'}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function AppointmentCalendar() {
   const router = useRouter()
   const { data: appointments, isLoading } = useAppointments()
+  
+  const [view, setView] = useState<View>(Views.WEEK)
+  const [date, setDate] = useState(new Date())
 
   if (isLoading) {
-    return <div className="p-8 text-center text-muted-foreground">Cargando calendario...</div>
+    return <div className="p-12 text-center text-muted-foreground animate-pulse">Cargando calendario interactivo...</div>
   }
 
   const events = (appointments || []).map((apt) => ({
     id: apt.id,
-    title: `${apt.patient?.full_name || 'Paciente'} - ${apt.service?.name || 'Servicio'}`,
+    patientName: apt.patient?.full_name || 'Paciente sin nombre',
+    serviceName: apt.service?.name || 'Servicio general',
     start: new Date(apt.scheduled_at),
     end: new Date(new Date(apt.scheduled_at).getTime() + apt.duration_minutes * 60000),
     status: apt.status,
   }))
 
   const eventStyleGetter = (event: any) => {
-    let backgroundColor = "#64748b" // slate-500 (pendiente)
+    // Pastel colors for a clean, pro look
+    let backgroundColor = "#f1f5f9" // slate-100 (pendiente)
+    let borderColor = "#64748b" // slate-500
+    let color = "#334155" // slate-700
     
     switch (event.status) {
       case "confirmada":
-        backgroundColor = "#3b82f6" // blue-500
+        backgroundColor = "#e0f2fe" // sky-100
+        borderColor = "#0ea5e9" // sky-500
+        color = "#0369a1" // sky-700
         break
       case "completada":
-        backgroundColor = "#22c55e" // green-500
+        backgroundColor = "#dcfce7" // green-100
+        borderColor = "#22c55e" // green-500
+        color = "#15803d" // green-700
         break
       case "cancelada":
-        backgroundColor = "#ef4444" // red-500
+        backgroundColor = "#fee2e2" // red-100
+        borderColor = "#ef4444" // red-500
+        color = "#b91c1c" // red-700
         break
       case "no_asistio":
-        backgroundColor = "#f97316" // orange-500
+        backgroundColor = "#ffedd5" // orange-100
+        borderColor = "#f97316" // orange-500
+        color = "#c2410c" // orange-700
         break
     }
 
     return {
       style: {
         backgroundColor,
-        borderRadius: "4px",
-        opacity: 0.9,
-        color: "white",
+        color,
         border: "none",
-        display: "block",
+        borderLeft: `4px solid ${borderColor}`,
+        borderRadius: "6px",
+        opacity: 1,
+        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
       },
     }
   }
 
-  // Restrict calendar times between 08:00 and 20:00
+  // Dynamically calculate minTime to prevent squishing early events
+  const earliestHour = events.reduce((min, event) => {
+    const hours = event.start.getHours()
+    return hours < min ? hours : min
+  }, 8) // default minimum is 08:00
+
   const minTime = new Date()
-  minTime.setHours(8, 0, 0)
+  minTime.setHours(earliestHour, 0, 0)
   
   const maxTime = new Date()
-  maxTime.setHours(20, 0, 0)
+  maxTime.setHours(21, 0, 0)
 
   return (
-    <div className="h-[650px] w-full bg-card border rounded-md p-4">
+    <div className="h-[600px] w-full bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 calendar-container">
       <Calendar
         localizer={localizer}
         events={events}
@@ -82,21 +173,19 @@ export function AppointmentCalendar() {
         endAccessor="end"
         style={{ height: "100%" }}
         culture="es"
-        defaultView="week"
+        view={view}
+        onView={setView}
+        date={date}
+        onNavigate={setDate}
         min={minTime}
         max={maxTime}
+        components={{
+          event: CustomEvent,
+          toolbar: CustomToolbar,
+        }}
         messages={{
-          next: "Sig",
-          previous: "Ant",
-          today: "Hoy",
-          month: "Mes",
-          week: "Semana",
-          day: "Día",
-          agenda: "Agenda",
-          date: "Fecha",
-          time: "Hora",
-          event: "Cita",
-          noEventsInRange: "No hay citas en este rango.",
+          noEventsInRange: "No hay citas programadas para este periodo.",
+          showMore: (total) => `+${total} más`,
         }}
         eventPropGetter={eventStyleGetter}
         onSelectEvent={(event) => router.push(`/admin/appointments/${event.id}`)}
