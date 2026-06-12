@@ -31,7 +31,7 @@ export default async function ClientLoyaltyPage() {
   const getTxIcon = (type: string) => {
     switch(type) {
       case 'ganados': return <TrendingUp className="h-5 w-5 text-emerald-500" />
-      case 'canjeados': return <TrendingDown className="h-5 w-5 text-rose-500" />
+      case 'canjeados': return <TrendingDown className="h-5 w-5 text-[#7B9AB5]" />
       case 'ajuste': return <Info className="h-5 w-5 text-sky-500" />
       case 'expirados': return <TrendingDown className="h-5 w-5 text-slate-500" />
       default: return <Award className="h-5 w-5 text-amber-500" />
@@ -40,7 +40,7 @@ export default async function ClientLoyaltyPage() {
 
   const getTxColor = (type: string, points: number) => {
     if (points > 0) return "text-emerald-600 dark:text-emerald-400 font-bold"
-    if (points < 0) return "text-rose-600 dark:text-rose-400 font-bold"
+    if (points < 0) return "text-[#162439] dark:text-rose-400 font-bold"
     return "text-slate-600 dark:text-slate-400"
   }
 

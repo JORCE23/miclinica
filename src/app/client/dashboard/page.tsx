@@ -54,7 +54,7 @@ export default async function ClientDashboardPage() {
             <Award className="w-48 h-48" />
           </div>
           <CardHeader>
-            <CardTitle className="text-rose-600 dark:text-rose-400 flex items-center gap-2">
+            <CardTitle className="text-[#162439] dark:text-rose-400 flex items-center gap-2">
               <Award className="h-5 w-5" /> Tus Puntos Disponibles
             </CardTitle>
           </CardHeader>
@@ -67,7 +67,7 @@ export default async function ClientDashboardPage() {
             </div>
             
             <div className="mt-6">
-              <Link href="/client/loyalty" className="text-sm font-medium text-rose-600 hover:text-rose-700 flex items-center gap-1 transition-colors">
+              <Link href="/client/loyalty" className="text-sm font-medium text-[#162439] hover:text-rose-700 flex items-center gap-1 transition-colors">
                 Ver historial de puntos <ChevronRight className="h-4 w-4" />
               </Link>
             </div>

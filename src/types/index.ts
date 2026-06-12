@@ -38,6 +38,9 @@ export interface Profile {
   updated_at: string;
   // calculado
   age?: number;
+  // nuevos
+  source?: 'meta_ads' | 'google' | 'referido' | 'organico' | 'directo' | 'whatsapp' | 'otro';
+  tags?: string[];
 }
 
 export interface MedicalHistory {
@@ -106,11 +109,48 @@ export interface Service {
   custom_field?: string;
 }
 
+export interface Professional {
+  id: string;
+  clinic_id: string;
+  full_name: string;
+  specialty?: string;
+  email?: string;
+  phone?: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Campaign {
+  id: string;
+  clinic_id: string;
+  name: string;
+  channel: 'meta' | 'google' | 'organico' | 'email' | 'whatsapp' | 'otro';
+  status: 'activa' | 'pausada' | 'finalizada';
+  start_date?: string;
+  end_date?: string;
+  budget?: number;
+  spent?: number;
+  leads_generated: number;
+  appointments_gen: number;
+  sales_generated?: number;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  notes?: string;
+  created_at: string;
+  // calculados
+  cpl?: number;
+  cpa?: number;
+  roi?: number;
+}
+
 export interface Appointment {
   id: string;
   clinic_id: string;
   patient_id: string;
   service_id?: string;
+  professional_id?: string;
+  campaign_id?: string;
   scheduled_at: string;
   duration_minutes: number;
   status: AppointmentStatus;
@@ -122,6 +162,7 @@ export interface Appointment {
   // joins
   patient?: Profile;
   service?: Service;
+  professional?: Professional;
 }
 
 export interface LoyaltyAccount {

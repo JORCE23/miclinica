@@ -82,3 +82,23 @@ export function useUpdateAppointmentStatus() {
     },
   })
 }
+
+export function useDeleteAppointment() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/appointments/${id}`, {
+        method: "DELETE",
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Error al eliminar cita")
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] })
+    },
+  })
+}

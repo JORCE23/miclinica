@@ -58,9 +58,9 @@ export function ClientNav({ userName }: { userName?: string }) {
           href={route.href}
           onClick={() => mobile && setOpen(false)}
           className={cn(
-            "flex items-center gap-2 text-sm font-medium transition-colors hover:text-rose-600",
+            "flex items-center gap-2 text-sm font-medium transition-colors hover:text-[#162439]",
             pathname === route.href
-              ? "text-rose-600 dark:text-rose-400"
+              ? "text-[#162439] dark:text-rose-400"
               : "text-slate-600 dark:text-slate-400"
           )}
         >
@@ -82,12 +82,12 @@ export function ClientNav({ userName }: { userName?: string }) {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60 shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-rose-500" />
+          <Sparkles className="h-6 w-6 text-[#7B9AB5]" />
           <div className="flex flex-col">
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-violet-500 leading-none">
               Mi Clínica
             </span>
-            <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider mt-0.5">
+            <span className="text-[10px] font-bold text-[#7B9AB5] uppercase tracking-wider mt-0.5">
               Portal Paciente
             </span>
           </div>
@@ -110,7 +110,7 @@ export function ClientNav({ userName }: { userName?: string }) {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <SheetHeader>
                 <SheetTitle className="text-left flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-rose-500" /> Mi Clínica
+                  <Sparkles className="h-5 w-5 text-[#7B9AB5]" /> Mi Clínica
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6 py-8 h-full">

@@ -7,6 +7,17 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
+
+const mockRevenueData = [
+  { name: 'Lun', ingresos: 400000 },
+  { name: 'Mar', ingresos: 300000 },
+  { name: 'Mié', ingresos: 550000 },
+  { name: 'Jue', ingresos: 450000 },
+  { name: 'Vie', ingresos: 700000 },
+  { name: 'Sáb', ingresos: 850000 },
+  { name: 'Dom', ingresos: 120000 },
+]
 
 export function DashboardStats() {
   const [activeTab, setActiveTab] = useState<"overview" | "appointments" | "notifications">("overview")
@@ -125,6 +136,25 @@ export function DashboardStats() {
                   </div>
                 </div>
               ))}
+            </div>
+            
+            <div className="mt-8 mb-4">
+              <h2 className="text-sm font-semibold text-slate-800 mb-4">Ingresos de la Semana (Estimado)</h2>
+              <div className="h-72 bg-white border rounded-xl p-4 shadow-sm">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={mockRevenueData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dx={-10} tickFormatter={(value) => `$${value/1000}k`} />
+                    <RechartsTooltip 
+                      cursor={{fill: '#f1f5f9'}}
+                      contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                      formatter={(value: number) => [`$${value.toLocaleString()}`, 'Ingresos']}
+                    />
+                    <Bar dataKey="ingresos" fill="#162439" radius={[4, 4, 0, 0]} barSize={32} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 

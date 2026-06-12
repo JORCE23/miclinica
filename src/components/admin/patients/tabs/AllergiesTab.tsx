@@ -65,7 +65,7 @@ export function AllergiesTab({ patientId }: { patientId: string }) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Alergias Conocidas</h3>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-rose-600 hover:bg-rose-700">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-[#162439] hover:bg-[#1E304D] text-white">
             <Plus className="h-4 w-4 mr-2" /> Agregar Alergia
           </Button>
         )}
@@ -130,3 +130,4 @@ export function AllergiesTab({ patientId }: { patientId: string }) {
     </div>
   )
 }
+

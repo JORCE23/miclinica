@@ -1,14 +1,31 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Jost, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { QueryProvider } from "@/components/providers/QueryProvider"
 
-const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const jost = Jost({
+  subsets: ['latin'],
+  variable: '--font-jost',
+  weight: ['400', '500', '600', '700'],
+})
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  weight: ['400', '500', '600', '700'],
+})
 
 export const metadata: Metadata = {
-  title: "Clínica SaaS",
-  description: "Sistema de gestión para clínicas estéticas",
+  title: {
+    template: '%s | MedScale',
+    default: 'MedScale — Software para Clínicas Estéticas',
+  },
+  description: 'Software + Marketing para Clínicas Estéticas. Gestiona pacientes, citas y fidelidad desde un solo lugar.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
@@ -17,8 +34,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={font.className}>
+    <html lang="es" className={`${jost.variable} ${cormorant.variable}`}>
+      <body className="font-sans">
         <QueryProvider>
           {children}
           <Toaster />

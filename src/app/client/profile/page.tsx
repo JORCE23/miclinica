@@ -50,7 +50,7 @@ export default async function ClientProfilePage() {
     <div className="space-y-8 max-w-4xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-          <User className="h-8 w-8 text-rose-500" /> Mi Perfil
+          <User className="h-8 w-8 text-[#7B9AB5]" /> Mi Perfil
         </h1>
         <p className="text-muted-foreground mt-2">
           Revisa tus datos personales y tu historial médico de solo lectura. Si notas un error, comunícate con la clínica.
@@ -59,7 +59,7 @@ export default async function ClientProfilePage() {
 
       {/* Datos Personales */}
       <Card className="border-rose-100 dark:border-rose-900/30">
-        <CardHeader className="bg-rose-50/50 dark:bg-rose-950/20 border-b">
+        <CardHeader className="bg-[#F0F3F7] dark:bg-[#162439]/20 border-b">
           <CardTitle className="text-lg text-rose-800 dark:text-rose-200">Datos Personales</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6 sm:grid-cols-2 p-6">
@@ -83,7 +83,7 @@ export default async function ClientProfilePage() {
               <span className="text-sm text-muted-foreground block">Fecha de Nacimiento</span>
               <span className="font-medium text-base">
                 {profile?.birth_date ? format(new Date(profile.birth_date), "dd/MM/yyyy") : "No registrada"}
-                {profile?.birth_date && <span className="text-rose-600 font-semibold ml-1">({calculateAge(profile.birth_date)} años)</span>}
+                {profile?.birth_date && <span className="text-[#162439] font-semibold ml-1">({calculateAge(profile.birth_date)} años)</span>}
               </span>
             </div>
           </div>

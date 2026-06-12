@@ -23,7 +23,7 @@ export function PersonalTab({ patient }: { patient: any }) {
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
           <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5 text-rose-500" /> Información Básica
+            <User className="h-5 w-5 text-[#7B9AB5]" /> Información Básica
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 pt-6">
@@ -47,7 +47,7 @@ export function PersonalTab({ patient }: { patient: any }) {
               <span className="text-sm text-muted-foreground block">Fecha de Nacimiento</span>
               <span className="font-medium text-base">
                 {patient.birth_date ? format(new Date(patient.birth_date), "dd 'de' MMMM, yyyy", { locale: es }) : "No registrada"} 
-                {patient.birth_date && <span className="text-rose-600 font-semibold ml-1">({calculateAge(patient.birth_date)} años)</span>}
+                {patient.birth_date && <span className="text-[#162439] font-semibold ml-1">({calculateAge(patient.birth_date)} años)</span>}
               </span>
             </div>
           </div>
@@ -57,7 +57,7 @@ export function PersonalTab({ patient }: { patient: any }) {
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
           <CardTitle className="text-lg flex items-center gap-2">
-            <FileText className="h-5 w-5 text-rose-500" /> Contacto y Notas
+            <FileText className="h-5 w-5 text-[#7B9AB5]" /> Contacto y Notas
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 pt-6">
@@ -73,6 +73,13 @@ export function PersonalTab({ patient }: { patient: any }) {
             <div>
               <span className="text-sm text-muted-foreground block">Teléfono</span>
               <span className="font-medium text-base">{patient.phone || "No registrado"}</span>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <div>
+              <span className="text-sm text-muted-foreground block">Canal de origen (Source)</span>
+              <span className="font-medium text-base">{patient.source || "No registrado"}</span>
             </div>
           </div>
           <div className="pt-2">

@@ -28,6 +28,8 @@ export const patientSchema = z.object({
     z.literal(''),
     z.undefined()
   ]).optional(),
+
+  source: z.string().optional(),
   
   notes: z.string().optional(),
 })

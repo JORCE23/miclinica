@@ -19,6 +19,21 @@ const config = {
     },
     extend: {
       colors: {
+        navy: {
+          DEFAULT: '#1B2D45',
+          light: '#243552',
+          muted: '#3A5068',
+        },
+        steel: {
+          DEFAULT: '#7B9AB5',
+          light: '#A8C2D8',
+          muted: '#BDD0E0',
+        },
+        'ms-bg': '#F0F3F7',
+        'ms-surface': '#FFFFFF',
+        'ms-border': '#D8E2ED',
+        'ms-text': '#1B2D45',
+        'ms-muted': '#6B7E94',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -52,6 +67,11 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        serif: ['var(--font-cormorant)', 'Georgia', 'serif'],
+        sans: ['var(--font-jost)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

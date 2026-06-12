@@ -31,6 +31,7 @@ export function PatientForm() {
       phone: "",
       email: "",
       password: "",
+      source: "",
       notes: "",
     },
   })
@@ -108,6 +109,12 @@ export function PatientForm() {
           <Input id="password" type="password" placeholder="Mínimo 6 caracteres" {...register("password")} />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="source">Canal de origen (Source)</Label>
+          <Input id="source" placeholder="Ej. Instagram, Google, Recomendación" {...register("source")} />
+          {errors.source && <p className="text-sm text-red-500">{errors.source.message}</p>}
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -125,7 +132,7 @@ export function PatientForm() {
         >
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="bg-[#162439] hover:bg-[#1E304D] text-white">
           {isLoading ? "Guardando..." : "Guardar Paciente"}
         </Button>
       </div>

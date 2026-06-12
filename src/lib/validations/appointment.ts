@@ -8,6 +8,10 @@ export const appointmentSchema = z.object({
   service_id: z.string({
     required_error: "El servicio es requerido",
   }).uuid("ID de servicio inválido").optional().nullable(),
+
+  professional_id: z.string().uuid().optional().nullable(),
+  
+  campaign_id: z.string().uuid().optional().nullable(),
   
   scheduled_at: z.string({
     required_error: "La fecha y hora son requeridas",

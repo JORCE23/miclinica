@@ -4,69 +4,74 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 240 10% 3.9%;
+    /* Colores MedScale */
+    --ms-navy: #162439;
+    --ms-navy-light: #1E304D;
+    --ms-steel: #7B9AB5;
+    --ms-steel-light: #A8C2D8;
+    --ms-bg: #F0F3F7;
+    --ms-surface: #FFFFFF;
+    --ms-border: #D8E2ED;
+    --ms-text: #162439;
+    --ms-muted: #6B7E94;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    /* Mapeo a variables de shadcn/ui */
+    --background: 214 30% 95%;         /* ms-bg */
+    --foreground: 214 45% 18%;         /* ms-navy */
+    --card: 0 0% 100%;                 /* white */
+    --card-foreground: 214 45% 18%;
+    --primary: 214 45% 18%;            /* navy */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 30% 60%;          /* steel */
+    --secondary-foreground: 214 45% 18%;
+    --muted: 210 20% 90%;
+    --muted-foreground: 210 20% 45%;
+    --border: 210 25% 85%;
+    --input: 210 25% 85%;
+    --ring: 214 45% 18%;
+    --radius: 0.5rem;
+
+    /* Destructive — SOLO para eliminar */
+    --destructive: 0 65% 51%;
+    --destructive-foreground: 0 0% 100%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    /* Teal / Medical Blue */
-    --primary: 175 84% 32%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 175 84% 95%;
-    --accent-foreground: 175 84% 32%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 175 84% 32%;
-
-    --radius: 0.75rem;
+    --popover-foreground: 214 45% 18%;
+    --accent: 214 30% 95%;
+    --accent-foreground: 214 45% 18%;
   }
 
   .dark {
-    /* Obsidian / Deep Slate */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
-    /* Teal */
-    --primary: 175 84% 45%;
+    --primary: 214 45% 30%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 175 84% 15%;
+    --accent: 214 45% 20%;
     --accent-foreground: 175 84% 85%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 175 84% 45%;
+    --ring: 214 45% 45%;
   }
+}
+
+.admin-table thead tr th {
+  @apply bg-[#121A26] text-white font-semibold text-xs uppercase tracking-wide py-3 px-4;
+}
+.admin-table tbody tr:nth-child(even) {
+  @apply bg-[#ECEEF0];
+}
+.admin-table tbody tr:hover {
+  @apply bg-[#6E8CA6]/10;
 }
 
 @layer base {

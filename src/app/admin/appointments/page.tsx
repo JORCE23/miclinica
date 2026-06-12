@@ -43,7 +43,7 @@ export default function AppointmentsPage() {
           </div>
 
           <Link href="/admin/appointments/new">
-            <Button className="bg-rose-600 hover:bg-rose-700">
+            <Button className="bg-[#162439] hover:bg-[#1E304D] text-white">
               <Plus className="mr-2 h-4 w-4" />
               Nueva Cita
             </Button>
@@ -59,3 +59,4 @@ export default function AppointmentsPage() {
     </div>
   )
 }
+

@@ -103,10 +103,11 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceForm
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isSubmitting} className="bg-rose-600 hover:bg-rose-700">
+        <Button type="submit" disabled={isSubmitting} className="bg-[#162439] hover:bg-[#1E304D] text-white">
           {isSubmitting ? "Guardando..." : initialData ? "Actualizar Servicio" : "Crear Servicio"}
         </Button>
       </div>
     </form>
   )
 }
+

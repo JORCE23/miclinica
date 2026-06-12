@@ -1,4 +1,5 @@
-import { AdminTopNav } from "@/components/admin/AdminTopNav"
+import { AdminHeader } from "@/components/admin/AdminHeader"
+import { AdminSidebar } from "@/components/admin/AdminSidebar"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
@@ -25,11 +26,14 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-100 dark:bg-background">
-      <AdminTopNav profile={profile} />
-      <main className="flex-1 p-4 md:p-8 w-full max-w-[100vw] overflow-x-hidden">
-        {children}
-      </main>
+    <div className="flex min-h-screen bg-[#F0F3F7]">
+      <AdminSidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <AdminHeader profile={profile} />
+        <main className="flex-1 p-4 md:p-6 w-full max-w-[100vw] overflow-x-hidden">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

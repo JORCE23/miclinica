@@ -57,7 +57,7 @@ export function MedicalHistoryTab({ patientId }: { patientId: string }) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Antecedentes Mórbidos</h3>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-rose-600 hover:bg-rose-700">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-[#162439] hover:bg-[#1E304D] text-white">
             <Plus className="h-4 w-4 mr-2" /> Agregar Condición
           </Button>
         )}
@@ -96,7 +96,7 @@ export function MedicalHistoryTab({ patientId }: { patientId: string }) {
         <div className="relative border-l border-muted ml-3 space-y-8 py-4">
           {history?.map((item: any) => (
             <div key={item.id} className="relative pl-6">
-              <span className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-rose-500 ring-4 ring-background" />
+              <span className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-[#162439] ring-4 ring-background" />
               <div className="flex flex-col space-y-1">
                 <span className="font-medium text-lg">{item.condition}</span>
                 <span className="text-sm text-muted-foreground">
@@ -111,3 +111,4 @@ export function MedicalHistoryTab({ patientId }: { patientId: string }) {
     </div>
   )
 }
+

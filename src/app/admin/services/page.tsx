@@ -42,7 +42,7 @@ export default function ServicesPage() {
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-rose-600 hover:bg-rose-700">
+              <Button className="bg-[#162439] hover:bg-[#1E304D] text-white">
                 <Plus className="mr-2 h-4 w-4" /> Nuevo Servicio
               </Button>
             }
@@ -63,3 +63,4 @@ export default function ServicesPage() {
     </div>
   )
 }
+
