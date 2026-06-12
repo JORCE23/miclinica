@@ -26,7 +26,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F0F3F7]">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#F0F3F7]">
       <AdminSidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader profile={profile} />

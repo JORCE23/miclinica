@@ -72,17 +72,17 @@ export function AdminSidebar() {
 
       {/* Mobile Header/Trigger (Only visible on small screens) */}
       <div className="md:hidden flex items-center justify-between p-4 bg-[#162439] text-white sticky top-0 z-50">
-        <Link href="/admin/dashboard" className="flex items-center gap-1">
-          <img src="/logo3.png" alt="Medique Logo" className="h-12 w-auto object-contain" />
+        <Link href="/admin/dashboard" className="flex items-center w-[75%] max-w-[200px]">
+          <img src="/logo3.png" alt="Medique Logo" className="h-auto w-full object-contain" />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger render={<Button variant="ghost" size="icon" className="text-white hover:bg-white/10" />}>
             <Menu className="h-6 w-6" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-[320px] bg-[#162439] text-white border-r-white/10 p-0 flex flex-col">
-            <SheetHeader className="p-4 border-b border-white/10 text-center flex justify-center items-center">
+          <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-[#162439] text-white border-r-white/10 p-0 flex flex-col">
+            <SheetHeader className="p-4 border-b border-white/10 flex justify-center items-center">
               <SheetTitle className="text-white flex items-center justify-center w-full">
-                <img src="/logo3.png" alt="Medique Logo" className="w-[260px] h-auto object-contain" />
+                <img src="/logo3.png" alt="Medique Logo" className="w-[80%] max-w-[260px] h-auto object-contain" />
               </SheetTitle>
             </SheetHeader>
             <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
