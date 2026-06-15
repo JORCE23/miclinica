@@ -33,12 +33,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const body = await request.json()
-    const { service_id, scheduled_at, duration_minutes, notes, price } = body
+    const { service_id, professional_id, campaign_id, scheduled_at, duration_minutes, notes, price } = body
 
     const { data, error } = await supabase
       .from("appointments")
       .update({
         service_id: service_id || null,
+        professional_id: professional_id !== undefined ? professional_id : null,
+        campaign_id: campaign_id !== undefined ? campaign_id : null,
         scheduled_at,
         duration_minutes: Number(duration_minutes),
         notes: notes || null,

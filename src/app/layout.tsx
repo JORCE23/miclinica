@@ -13,7 +13,7 @@ const jost = Jost({
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   variable: '--font-cormorant',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600'],
 })
 
 export const metadata: Metadata = {

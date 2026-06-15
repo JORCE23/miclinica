@@ -26,14 +26,7 @@ export default async function AdminLayout({
   }
 
   let permissions = null
-  if (profile?.role === "staff") {
-    const { data: perms } = await supabase
-      .from("staff_permissions")
-      .select("*")
-      .eq("profile_id", user.id)
-      .single()
-    permissions = perms
-  }
+
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#F0F3F7]">

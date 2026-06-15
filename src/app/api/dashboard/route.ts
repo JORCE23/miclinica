@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
     const { data: profile } = await supabase.from("profiles").select("role, clinic_id").eq("id", user.id).single()
-    if (!profile || profile.role !== "clinic_admin") {
+    if (!profile || profile.role === "client") {
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
 

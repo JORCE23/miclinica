@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Users, Calendar, UserPlus, Award, Clock, ArrowUpRight, Play, Settings, Plus, Star, DollarSign } from "lucide-react"
+import { Users, Calendar, UserPlus, Settings, Plus, Star, DollarSign } from "lucide-react"
 import { format, isToday, isTomorrow } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"

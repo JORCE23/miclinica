@@ -1,9 +1,41 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { createClient } from "@/lib/supabase/server"
 import { requireAuth } from "@/lib/security/auth-guard"
 import { checkRateLimit, getIp } from "@/lib/security/rate-limit"
 import { sanitizeInput } from "@/lib/security/sanitize"
 
+export async function GET(request: Request) {
+  try {
+    const ip = getIp(request)
+    const { success, limit, remaining } = checkRateLimit(ip)
+    if (!success) {
+      return NextResponse.json(
+        { error: "Demasiadas peticiones" },
+        { status: 429, headers: { "X-RateLimit-Limit": limit.toString(), "X-RateLimit-Remaining": remaining.toString() } }
+      )
+    }
+
+    const { context, errorResponse } = await requireAuth("clinic_admin")
+    if (errorResponse) return errorResponse
+
+    const supabase = createClient()
+    const { data: patients, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("clinic_id", context!.clinicId)
+      .eq("role", "client")
+      .order("created_at", { ascending: false })
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    return NextResponse.json(patients)
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Error interno del servidor" }, { status: 500 })
+  }
+}
 // Debe coincidir con el CHECK de profiles.source
 const ALLOWED_SOURCES = new Set([
   "meta_ads",

@@ -79,7 +79,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
     const fileExt = file.name.split('.').pop()
     const fileName = `${patientId}/${Date.now()}_${prefix}.${fileExt}`
     
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('clinical_photos')
       .upload(fileName, file)
 
@@ -154,11 +154,11 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Foto "Antes" (Opcional)</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Foto &quot;Antes&quot; (Opcional)</label>
               <Input type="file" accept="image/*" onChange={e => setBeforeFile(e.target.files?.[0] || null)} disabled={isUploading} />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Foto "Después" (Opcional)</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Foto &quot;Después&quot; (Opcional)</label>
               <Input type="file" accept="image/*" onChange={e => setAfterFile(e.target.files?.[0] || null)} disabled={isUploading} />
             </div>
           </div>

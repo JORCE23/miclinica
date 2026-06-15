@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { patient_id, service_id, scheduled_at, duration_minutes, status, notes, price } = body
+    const { patient_id, service_id, professional_id, campaign_id, scheduled_at, duration_minutes, status, notes, price } = body
 
     if (!patient_id || !scheduled_at || !duration_minutes) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
@@ -64,18 +64,32 @@ export async function POST(request: Request) {
     const start = new Date(scheduled_at)
     const end = new Date(start.getTime() + duration_minutes * 60000)
 
-    const { data: overlapping, error: overlapError } = await supabase
+    let overlapQuery = supabase
       .from("appointments")
-      .select("id")
+      .select("id, scheduled_at, duration_minutes, patient_id, professional_id")
       .eq("clinic_id", profile.clinic_id)
-      .eq("patient_id", patient_id)
       .in("status", ["pendiente", "confirmada"])
-      .gte("scheduled_at", new Date(start.getTime() - 1440 * 60000).toISOString()) // Solo revisar último día por performance
-      
-    // En SQL complejo sería mejor, pero acá lo filtramos en memoria por simplicidad y tiempo:
-    if (overlapping && overlapping.length > 0) {
-      // Si hay muchas citas requeriría una query SQL exacta con range overlap
-      // TODO: Implementar validación de solapamiento estricta
+      .gte("scheduled_at", new Date(start.getTime() - 1440 * 60000).toISOString())
+      .lte("scheduled_at", new Date(end.getTime() + 1440 * 60000).toISOString())
+
+    if (professional_id) {
+      overlapQuery = overlapQuery.or(`patient_id.eq.${patient_id},professional_id.eq.${professional_id}`)
+    } else {
+      overlapQuery = overlapQuery.eq("patient_id", patient_id)
+    }
+
+    const { data: potentialOverlaps } = await overlapQuery
+
+    if (potentialOverlaps && potentialOverlaps.length > 0) {
+      const hasOverlap = potentialOverlaps.some((apt: any) => {
+        const aptStart = new Date(apt.scheduled_at).getTime()
+        const aptEnd = aptStart + apt.duration_minutes * 60000
+        return start.getTime() < aptEnd && end.getTime() > aptStart
+      })
+
+      if (hasOverlap) {
+        return NextResponse.json({ error: "El horario se solapa con otra cita del paciente o del profesional" }, { status: 409 })
+      }
     }
 
     const { data, error } = await supabase
@@ -84,6 +98,8 @@ export async function POST(request: Request) {
         clinic_id: profile.clinic_id,
         patient_id,
         service_id: service_id || null,
+        professional_id: professional_id || null,
+        campaign_id: campaign_id || null,
         scheduled_at,
         duration_minutes: Number(duration_minutes),
         status: status || "pendiente",
