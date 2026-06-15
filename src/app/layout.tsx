@@ -18,13 +18,13 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | MedScale',
-    default: 'MedScale — Software para Clínicas Estéticas',
+    template: '%s | Medique',
+    default: 'Medique — Software para Clínicas Estéticas',
   },
   description: 'Software + Marketing para Clínicas Estéticas. Gestiona pacientes, citas y fidelidad desde un solo lugar.',
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: '/logo-medique-simbolo.png',
+    apple: '/logo-medique-simbolo.png',
   },
 };
 

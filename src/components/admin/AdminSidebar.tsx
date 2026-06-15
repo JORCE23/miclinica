@@ -21,13 +21,31 @@ const routes = [
   { label: "Configuración",    icon: Settings,        href: "/admin/settings"      },
 ]
 
-export function AdminSidebar() {
+export function AdminSidebar({ profile, permissions }: { profile?: any, permissions?: any }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
 
+  const filteredRoutes = routes.filter(route => {
+    if (profile?.role === 'clinic_admin') return true
+    
+    // Si es staff, revisamos los permisos
+    if (route.label === "Dashboard" && !permissions?.can_view_dashboard) return false
+    if (route.label === "Pacientes" && !permissions?.can_manage_patients) return false
+    if (route.label === "Reservas" && !permissions?.can_manage_appointments) return false
+    if (route.label === "Servicios" && !permissions?.can_manage_services) return false
+    if (route.label === "Reportes" && !permissions?.can_view_reports) return false
+    
+    // Rutas exclusivas para admin
+    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración"].includes(route.label)) {
+      if (profile?.role !== 'clinic_admin') return false
+    }
+    
+    return true
+  })
+
   const SidebarLinks = ({ isMobile = false }) => (
     <>
-      {routes.map((route) => {
+      {filteredRoutes.map((route) => {
         const isActive = pathname === route.href || pathname.startsWith(route.href + '/')
         return (
           <Link

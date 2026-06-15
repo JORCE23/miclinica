@@ -11,6 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Professional } from "@/types"
+import { useState } from "react"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface ProfessionalFormProps {
   initialData?: Professional
@@ -32,10 +34,23 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
     }
   })
 
+  const [createAccount, setCreateAccount] = useState(false)
+  const [password, setPassword] = useState("")
+  const [permissions, setPermissions] = useState({
+    can_view_dashboard: false,
+    can_manage_patients: true,
+    can_manage_appointments: true,
+    can_manage_services: false,
+    can_view_reports: false
+  })
+
   const mutation = useMutation({
-    mutationFn: async (data: ProfessionalFormValues) => {
-      const url = isEditing ? `/api/professionals/${initialData.id}` : '/api/professionals'
-      const method = isEditing ? 'PUT' : 'POST'
+    mutationFn: async (data: any) => {
+      const url = data.createAccount 
+        ? '/api/professionals/create-account'
+        : (isEditing ? `/api/professionals/${initialData.id}` : '/api/professionals')
+      
+      const method = isEditing && !data.createAccount ? 'PUT' : 'POST'
       
       const res = await fetch(url, {
         method,
@@ -43,7 +58,10 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
         body: JSON.stringify(data)
       })
       
-      if (!res.ok) throw new Error('Error al guardar el profesional')
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'Error al guardar el profesional')
+      }
       return res.json()
     },
     onSuccess: () => {
@@ -57,7 +75,14 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
   })
 
   const onSubmit = (data: ProfessionalFormValues) => {
-    mutation.mutate(data)
+    if (!isEditing && createAccount) {
+      if (!data.email) return toast.error("Se requiere un Email para crear la cuenta")
+      if (!password) return toast.error("Se requiere una Contraseña")
+      
+      mutation.mutate({ ...data, createAccount: true, password, permissions })
+    } else {
+      mutation.mutate(data)
+    }
   }
 
   const isActive = watch("is_active")
@@ -102,6 +127,59 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
             />
             <Label>Profesional Activo</Label>
           </div>
+
+          {!isEditing && (
+            <div className="pt-4 border-t border-[#D8E2ED] space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  checked={createAccount} 
+                  onCheckedChange={setCreateAccount} 
+                />
+                <Label className="font-semibold text-[#162439]">Crear cuenta de acceso al sistema</Label>
+              </div>
+
+              {createAccount && (
+                <div className="bg-slate-50 p-4 rounded-lg space-y-4 border border-slate-200">
+                  <div className="space-y-2">
+                    <Label>Contraseña de Acceso *</Label>
+                    <Input 
+                      type="text" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Asigna una contraseña inicial" 
+                      className="border-[#D8E2ED] bg-white" 
+                    />
+                  </div>
+                  
+                  <div className="space-y-3 pt-2">
+                    <Label>Permisos del Usuario</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="p_dashboard" checked={permissions.can_view_dashboard} onCheckedChange={(c) => setPermissions({...permissions, can_view_dashboard: !!c})} />
+                        <Label htmlFor="p_dashboard" className="font-normal text-sm">Ver Dashboard de Ingresos</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="p_patients" checked={permissions.can_manage_patients} onCheckedChange={(c) => setPermissions({...permissions, can_manage_patients: !!c})} />
+                        <Label htmlFor="p_patients" className="font-normal text-sm">Gestionar Pacientes</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="p_appointments" checked={permissions.can_manage_appointments} onCheckedChange={(c) => setPermissions({...permissions, can_manage_appointments: !!c})} />
+                        <Label htmlFor="p_appointments" className="font-normal text-sm">Gestionar Agenda y Citas</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="p_services" checked={permissions.can_manage_services} onCheckedChange={(c) => setPermissions({...permissions, can_manage_services: !!c})} />
+                        <Label htmlFor="p_services" className="font-normal text-sm">Gestionar Catálogo de Servicios</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="p_reports" checked={permissions.can_view_reports} onCheckedChange={(c) => setPermissions({...permissions, can_view_reports: !!c})} />
+                        <Label htmlFor="p_reports" className="font-normal text-sm">Exportar y Ver Reportes</Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-[#D8E2ED]">
