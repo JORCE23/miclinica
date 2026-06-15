@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { RutInput } from "@/components/shared/RutInput"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export function PatientForm() {
   const router = useRouter()
@@ -106,13 +107,32 @@ export function PatientForm() {
 
         <div className="space-y-2">
           <Label htmlFor="password">Contraseña Provisional</Label>
-          <Input id="password" type="password" placeholder="Mínimo 6 caracteres" {...register("password")} />
+          <Input id="password" type="password" placeholder="Se autogenerará si lo dejas en blanco" {...register("password")} />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="source">Canal de origen (Source)</Label>
-          <Input id="source" placeholder="Ej. Instagram, Google, Recomendación" {...register("source")} />
+          <Controller
+            name="source"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                <SelectTrigger id="source" className={errors.source ? "border-red-500" : "border-[#D8E2ED] focus:ring-[#162439]"}>
+                  <SelectValue placeholder="Selecciona un canal..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="meta_ads">Meta Ads (Instagram/Facebook)</SelectItem>
+                  <SelectItem value="google">Google</SelectItem>
+                  <SelectItem value="referido">Referido</SelectItem>
+                  <SelectItem value="organico">Orgánico</SelectItem>
+                  <SelectItem value="directo">Directo</SelectItem>
+                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  <SelectItem value="otro">Otro</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.source && <p className="text-sm text-red-500">{errors.source.message}</p>}
         </div>
       </div>

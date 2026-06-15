@@ -14,9 +14,15 @@ export const patientSchema = z.object({
     return validateRut(val);
   }, { message: "El RUT no es válido" }),
   
-  birth_date: z.string().optional(),
+  birth_date: z.string().optional().refine((val) => {
+    if (!val) return true;
+    return new Date(val) <= new Date();
+  }, { message: "La fecha de nacimiento no puede ser futura" }),
   
-  phone: z.string().trim().optional(),
+  phone: z.string().trim().optional().refine((val) => {
+    if (!val) return true;
+    return /^(\+?56)?9\d{8}$/.test(val.replace(/[\s-]/g, ''));
+  }, { message: "El teléfono debe ser un celular chileno válido (+569...)" }),
   
   email: z.string({
     required_error: "El correo es requerido",
@@ -29,7 +35,7 @@ export const patientSchema = z.object({
     z.undefined()
   ]).optional(),
 
-  source: z.string().optional(),
+  source: z.enum(['meta_ads', 'google', 'referido', 'organico', 'directo', 'whatsapp', 'otro']).optional(),
   
   notes: z.string().optional(),
 })

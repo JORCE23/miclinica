@@ -39,7 +39,11 @@ export function sanitizeInput(input: any): any {
   if (input !== null && typeof input === 'object') {
     const sanitizedObj: Record<string, any> = {};
     for (const [key, value] of Object.entries(input)) {
-      sanitizedObj[key] = sanitizeInput(value);
+      if (key === 'password' || key === 'email') {
+        sanitizedObj[key] = value;
+      } else {
+        sanitizedObj[key] = sanitizeInput(value);
+      }
     }
     return sanitizedObj;
   }

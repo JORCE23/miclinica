@@ -28,11 +28,14 @@ export async function POST(request: Request) {
     const rawBody = await request.json()
     const body = sanitizeInput(rawBody) // Sanitizar TODOS los inputs del body
     
-    const { email, password, full_name, rut, birth_date, phone, notes } = body
+    const { email, password, full_name, rut, birth_date, phone, notes, source } = body
 
-    if (!email || !password || !full_name) {
-      return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
+    if (!email || !full_name) {
+      return NextResponse.json({ error: "El correo y nombre completo son obligatorios" }, { status: 400 })
     }
+
+    // PASO 2: Sincronización de Contraseña. Si viene vacía, autogeneramos una.
+    const finalPassword = password || (Math.random().toString(36).slice(-10) + 'A1!')
 
     // 3.5. Verificar si el RUT o el correo ya están registrados
     const adminAuthClient = createAdminClient()
@@ -59,7 +62,7 @@ export async function POST(request: Request) {
     // 4. Crear el usuario en Auth usando la API de Admin
     const { data: authData, error: authError } = await adminAuthClient.auth.admin.createUser({
       email,
-      password,
+      password: finalPassword,
       email_confirm: true,
       user_metadata: {
         role: "client",
@@ -84,10 +87,13 @@ export async function POST(request: Request) {
         birth_date: birth_date || null,
         phone: phone || null,
         email,
+        source: source || null,
         notes: notes || null,
       })
 
     if (profileError) {
+      // PASO 3: Riesgo de Integridad (Rollback de Usuario Huérfano)
+      await adminAuthClient.auth.admin.deleteUser(newUserId)
       return NextResponse.json({ error: profileError.message }, { status: 400 })
     }
 

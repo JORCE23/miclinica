@@ -25,9 +25,9 @@ export async function requireAuth(requiredRole?: string): Promise<{ context?: Au
     const supabase = createClient()
     
     // 2. Delegar Autenticación a Supabase Auth
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    if (authError || !session) {
+    if (authError || !user) {
       return { errorResponse: NextResponse.json({ error: "No autorizado. Token inválido o ausente." }, { status: 401 }) }
     }
 
@@ -35,7 +35,7 @@ export async function requireAuth(requiredRole?: string): Promise<{ context?: Au
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("clinic_id, role")
-      .eq("id", session.user.id)
+      .eq("id", user.id)
       .single()
 
     if (profileError || !profile) {
@@ -52,7 +52,7 @@ export async function requireAuth(requiredRole?: string): Promise<{ context?: Au
 
     return {
       context: {
-        userId: session.user.id,
+        userId: user.id,
         clinicId: profile.clinic_id,
         role: profile.role
       }
