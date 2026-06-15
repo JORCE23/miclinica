@@ -77,17 +77,20 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
 
-    // Soft delete / Desactivar
+    // Hard delete
     const { error } = await supabase
       .from("services")
-      .update({ is_active: false })
+      .delete()
       .eq("id", params.id)
 
     if (error) {
+      if (error.code === '23503') { // Foreign key violation
+        return NextResponse.json({ error: "No se puede eliminar porque tiene reservas o registros asociados. Desactívalo en su lugar." }, { status: 400 })
+      }
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    return NextResponse.json({ message: "Servicio desactivado" })
+    return NextResponse.json({ message: "Servicio eliminado" })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

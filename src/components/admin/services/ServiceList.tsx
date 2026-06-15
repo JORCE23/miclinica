@@ -60,10 +60,10 @@ export function ServiceList() {
     if (!deletingService) return
     try {
       await deleteService.mutateAsync(deletingService.id)
-      toast.success("Servicio desactivado exitosamente")
+      toast.success("Servicio eliminado exitosamente")
       setDeletingService(null)
     } catch (error: any) {
-      toast.error(error.message || "Error al desactivar")
+      toast.error(error.message || "Error al eliminar")
     }
   }
 
@@ -138,7 +138,6 @@ export function ServiceList() {
                       variant="ghost" 
                       size="icon"
                       onClick={() => setDeletingService(service)}
-                      disabled={!service.is_active}
                     >
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
@@ -168,9 +167,9 @@ export function ServiceList() {
       <ConfirmDialog
         open={!!deletingService}
         onOpenChange={(open) => !open && setDeletingService(null)}
-        title="Desactivar Servicio"
-        description={`¿Estás seguro de que deseas desactivar "${deletingService?.name}"? Ya no estará disponible para nuevas reservas.`}
-        confirmText="Desactivar"
+        title="Eliminar Servicio"
+        description={`¿Estás seguro de que deseas eliminar permanentemente "${deletingService?.name}"? Si el servicio tiene reservas asociadas, no podrá ser eliminado por seguridad.`}
+        confirmText="Eliminar"
         cancelText="Cancelar"
         onConfirm={handleDeleteConfirm}
         isDanger={true}
