@@ -131,7 +131,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
             <Eye className="mr-2 h-4 w-4" /> Extendida
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger render={
               <Button 
                 variant={statusFilter !== "todos" ? "default" : "outline"} 
                 className={statusFilter !== "todos" ? "bg-slate-800 text-white" : "bg-white text-slate-600"}
@@ -139,7 +139,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
                 <Filter className="mr-2 h-4 w-4" /> 
                 {statusFilter !== "todos" ? statusFilter.replace('_', ' ') : "Filtrar"}
               </Button>
-            </DropdownMenuTrigger>
+            } />
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Filtrar por estado</DropdownMenuLabel>

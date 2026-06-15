@@ -219,11 +219,11 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                     <div className="flex gap-2">
                       {proc.before_image_url ? (
                         <Dialog>
-                          <DialogTrigger asChild>
+                          <DialogTrigger render={
                             <button className="text-xs flex items-center text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
                               <ImageIcon className="h-3 w-3 mr-1" /> Antes
                             </button>
-                          </DialogTrigger>
+                          } />
                           <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl border-none bg-transparent shadow-none p-0">
                             <div className="relative flex justify-center items-center w-full h-full max-h-[90vh]">
                               <img src={proc.before_image_url} alt="Antes" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" />
@@ -233,11 +233,11 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                       ) : <span className="text-xs text-muted-foreground">-</span>}
                       {proc.after_image_url && (
                         <Dialog>
-                          <DialogTrigger asChild>
+                          <DialogTrigger render={
                             <button className="text-xs flex items-center text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
                               <ImageIcon className="h-3 w-3 mr-1" /> Después
                             </button>
-                          </DialogTrigger>
+                          } />
                           <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl border-none bg-transparent shadow-none p-0">
                             <div className="relative flex justify-center items-center w-full h-full max-h-[90vh]">
                               <img src={proc.after_image_url} alt="Después" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" />

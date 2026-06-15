@@ -102,10 +102,8 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
           <img src="/logo3.png" alt="Medique Logo" className="h-auto w-full object-contain" />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <Menu className="h-6 w-6" />
-            </Button>
+          <SheetTrigger render={<Button variant="ghost" size="icon" className="text-white hover:bg-white/10" />}>
+            <Menu className="h-6 w-6" />
           </SheetTrigger>
           <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-[#162439] text-white border-r-white/10 p-0 flex flex-col">
             <SheetHeader className="p-4 border-b border-white/10 flex justify-center items-center">
