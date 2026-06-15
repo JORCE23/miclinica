@@ -28,7 +28,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
   }
 
   return (
-    <header className="h-16 bg-white border-b border-[#D8E2ED] flex items-center justify-between px-6 gap-4 sticky top-0 z-30">
+    <header className="hidden md:flex h-16 bg-white border-b border-[#D8E2ED] items-center justify-between px-6 gap-4 sticky top-0 z-30">
       <form onSubmit={handleSearch} className="flex-1 max-w-xl relative hidden md:block">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7E94]" />
         <Input 

@@ -60,21 +60,27 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   const AppointmentCard = ({ appointment }: { appointment: any }) => {
     const dateObj = parseISO(appointment.scheduled_at)
     return (
-      <div className="flex items-center gap-4 p-4 border rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow mb-3 relative overflow-hidden group">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow mb-3 relative overflow-hidden group">
         {/* Date Box */}
-        <div className="bg-slate-100/80 dark:bg-slate-800 rounded-lg p-3 text-center min-w-[120px] flex flex-col justify-center items-center h-full border border-slate-200 dark:border-slate-700 shrink-0">
+        <div className="bg-slate-100/80 dark:bg-slate-800 rounded-lg p-3 text-center w-full sm:w-auto sm:min-w-[120px] flex flex-row sm:flex-col justify-between sm:justify-center items-center sm:h-full border border-slate-200 dark:border-slate-700 shrink-0">
           <div className="font-bold text-slate-800 dark:text-slate-200">{format(dateObj, "dd MMM yyyy", { locale: es })}</div>
           <div className="text-sm font-medium text-slate-500">{format(dateObj, "HH:mm")} hrs.</div>
         </div>
 
         {/* Info */}
-        <div className="flex-1 pl-2">
-          <div className="flex items-center gap-2 mb-1">
-            <List className="h-5 w-5 text-slate-400" />
-            <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100">{appointment.service?.name || "Consulta general"}</h4>
+        <div className="flex-1 w-full pl-0 sm:pl-2 min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <List className="h-5 w-5 text-slate-400 shrink-0" />
+              <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">{appointment.service?.name || "Consulta general"}</h4>
+            </div>
+            {/* Status Icon Mobile */}
+            <div className="sm:hidden shrink-0 scale-75 origin-right">
+              {getStatusIcon(appointment.status)}
+            </div>
           </div>
-          <div className="text-sm text-slate-600 dark:text-slate-400 space-y-0.5 ml-7">
-            <p><span className="font-semibold">Profesional:</span> {appointment.created_by_profile?.full_name || "Sin asignar"}</p>
+          <div className="text-sm text-slate-600 dark:text-slate-400 space-y-0.5 ml-0 sm:ml-7 mt-2 sm:mt-0">
+            <p className="truncate"><span className="font-semibold">Profesional:</span> {appointment.created_by_profile?.full_name || "Sin asignar"}</p>
             <p><span className="font-semibold">Estado:</span> <span className="capitalize">{appointment.status.replace('_', ' ')}</span></p>
             {isExtended && (
               <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
@@ -87,7 +93,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
         </div>
 
         {/* Status Icon Large */}
-        <div className="pr-6 opacity-80 group-hover:opacity-100 transition-opacity">
+        <div className="hidden sm:block pr-6 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
           {getStatusIcon(appointment.status)}
         </div>
       </div>
@@ -97,26 +103,26 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   return (
     <div className="space-y-6">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border">
-        <div className="flex items-center gap-2 flex-1">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/50 p-2 sm:p-3 rounded-xl border">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1">
           <Button 
             variant="outline" 
-            className="bg-white border-slate-200 text-slate-600"
+            className="bg-white border-slate-200 text-slate-600 w-full sm:w-auto"
             onClick={() => { setSearchTerm(""); setStatusFilter("todos"); }}
           >
             Historial
           </Button>
-          <div className="relative flex-1 max-w-[300px]">
+          <div className="relative flex-1 w-full sm:max-w-[300px]">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar..." 
-              className="pl-9 bg-white" 
+              className="pl-9 bg-white w-full" 
             />
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button 
             variant={isExtended ? "default" : "outline"} 
             className={isExtended ? "bg-slate-800 text-white" : "bg-white text-slate-600"}

@@ -218,21 +218,39 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                   <TableCell>
                     <div className="flex gap-2">
                       {proc.before_image_url ? (
-                        <a href={proc.before_image_url} target="_blank" rel="noreferrer" className="text-xs flex items-center text-blue-600 hover:underline">
-                          <ImageIcon className="h-3 w-3 mr-1" /> Antes
-                        </a>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <button className="text-xs flex items-center text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
+                              <ImageIcon className="h-3 w-3 mr-1" /> Antes
+                            </button>
+                          </DialogTrigger>
+                          <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl border-none bg-transparent shadow-none p-0">
+                            <div className="relative flex justify-center items-center w-full h-full max-h-[90vh]">
+                              <img src={proc.before_image_url} alt="Antes" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       ) : <span className="text-xs text-muted-foreground">-</span>}
                       {proc.after_image_url && (
-                        <a href={proc.after_image_url} target="_blank" rel="noreferrer" className="text-xs flex items-center text-blue-600 hover:underline">
-                          <ImageIcon className="h-3 w-3 mr-1" /> Después
-                        </a>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <button className="text-xs flex items-center text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
+                              <ImageIcon className="h-3 w-3 mr-1" /> Después
+                            </button>
+                          </DialogTrigger>
+                          <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl border-none bg-transparent shadow-none p-0">
+                            <div className="relative flex justify-center items-center w-full h-full max-h-[90vh]">
+                              <img src={proc.after_image_url} alt="Después" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       )}
                       {proc.facial_diagram_data && (
                         <Dialog>
                           <DialogTrigger render={<Button variant="link" className="h-auto p-0 text-xs text-indigo-600 h-4" />}>
                               <Activity className="h-3 w-3 mr-1" /> Mapa Facial
                           </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                          <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
                               <DialogTitle>Esquema Facial del Tratamiento</DialogTitle>
                             </DialogHeader>

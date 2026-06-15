@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2 } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
@@ -23,7 +24,14 @@ const routes = [
 
 export function AdminSidebar({ profile, permissions }: { profile?: any, permissions?: any }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClient()
   const [open, setOpen] = useState(false)
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.refresh()
+  }
 
   const filteredRoutes = routes.filter(route => {
     if (profile?.role === 'clinic_admin') return true
@@ -89,23 +97,34 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
       </aside>
 
       {/* Mobile Header/Trigger (Only visible on small screens) */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-[#162439] text-white sticky top-0 z-50">
-        <Link href="/admin/dashboard" className="flex items-center w-[75%] max-w-[200px]">
+      <div className="md:hidden flex items-center justify-between p-3 bg-[#162439] text-white sticky top-0 z-50 shadow-md">
+        <Link href="/admin/dashboard" className="flex items-center w-[60%] max-w-[140px]">
           <img src="/logo3.png" alt="Medique Logo" className="h-auto w-full object-contain" />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger render={<Button variant="ghost" size="icon" className="text-white hover:bg-white/10" />}>
-            <Menu className="h-6 w-6" />
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+              <Menu className="h-6 w-6" />
+            </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-[#162439] text-white border-r-white/10 p-0 flex flex-col">
             <SheetHeader className="p-4 border-b border-white/10 flex justify-center items-center">
               <SheetTitle className="text-white flex items-center justify-center w-full">
-                <img src="/logo3.png" alt="Medique Logo" className="w-[80%] max-w-[260px] h-auto object-contain" />
+                <img src="/logo3.png" alt="Medique Logo" className="w-[70%] max-w-[200px] h-auto object-contain" />
               </SheetTitle>
             </SheetHeader>
             <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
               <SidebarLinks isMobile />
             </nav>
+            <div className="p-4 border-t border-white/10">
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-red-400 hover:bg-white/5 w-full text-left"
+              >
+                <LogOut className="h-5 w-5" />
+                Cerrar sesión
+              </button>
+            </div>
           </SheetContent>
         </Sheet>
       </div>
