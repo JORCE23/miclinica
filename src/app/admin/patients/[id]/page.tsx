@@ -35,28 +35,28 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full block">
         {/* 1. TOP HEADER (Primary Color Banner Style) */}
         <div className="bg-primary text-white shadow-md relative z-10">
-          <div className="max-w-[1600px] mx-auto px-6 pt-6 pb-0">
-            <div className="flex items-center gap-6 mb-6">
-              <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/20 rounded-full h-10 w-10 shrink-0">
-                <ChevronLeft className="h-6 w-6" />
+          <div className="max-w-[1600px] mx-auto px-4 md:px-6 pt-4 md:pt-6 pb-0">
+            <div className="flex items-start md:items-center gap-3 md:gap-6 mb-4 md:mb-6">
+              <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/20 rounded-full h-8 w-8 md:h-10 md:w-10 shrink-0 mt-1 md:mt-0">
+                <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
               </Button>
               
-              <div className="h-20 w-20 rounded-full bg-white text-primary flex items-center justify-center text-3xl font-bold shadow-md shrink-0 border-4 border-primary outline outline-4 outline-white/20">
+              <div className="h-12 w-12 md:h-20 md:w-20 rounded-full bg-white text-primary flex items-center justify-center text-xl md:text-3xl font-bold shadow-md shrink-0 border-2 md:border-4 border-primary outline outline-2 md:outline-4 outline-white/20">
                 {patient.full_name.charAt(0).toUpperCase()}
               </div>
               
-              <div className="flex-1 pb-2">
-                <h1 className="text-3xl font-bold tracking-tight mb-1">{patient.full_name}</h1>
-                <div className="flex items-center gap-3 text-white/90 text-sm">
-                  <span className="font-medium bg-black/10 px-2 py-0.5 rounded">RUT: {patient.rut || "N/A"}</span>
-                  <span className="opacity-80">|</span>
-                  <span>{patient.email || "Sin email"}</span>
+              <div className="flex-1 pb-0 md:pb-2 min-w-0">
+                <h1 className="text-xl md:text-3xl font-bold tracking-tight mb-1 md:mb-2 truncate">{patient.full_name}</h1>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-white/90 text-sm">
+                  <span className="font-medium bg-black/10 px-2 py-0.5 rounded w-max whitespace-nowrap">RUT: {patient.rut || "N/A"}</span>
+                  <span className="hidden sm:inline opacity-80">|</span>
+                  <span className="truncate">{patient.email || "Sin email"}</span>
                 </div>
               </div>
             </div>
             
             {/* HORIZONTAL NAV (Controlled Tabs) */}
-            <TabsList className="bg-transparent h-auto p-0 gap-6 flex justify-start border-none overflow-x-auto">
+            <TabsList className="bg-transparent h-auto p-0 gap-4 md:gap-6 flex w-full max-w-full justify-start border-none overflow-x-auto pb-2 [&>button]:shrink-0">
               <TabsTrigger 
                 value="administrative" 
                 className="text-white/70 hover:text-white data-[state=active]:text-white data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-white rounded-none pb-3 px-1 font-semibold text-sm uppercase tracking-wider transition-all whitespace-nowrap"
@@ -93,7 +93,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
 
         {/* 2. MAIN LAYOUT */}
         <div className="w-full pt-6">
-          <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-start">
+          <div className="max-w-[1600px] mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-start">
             
             {/* LEFT SIDEBAR */}
             <div className="md:sticky top-6">
