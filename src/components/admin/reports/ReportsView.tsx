@@ -1,29 +1,70 @@
 "use client"
 
 import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts"
 import { Button } from "@/components/ui/button"
-import { Download, Calendar as CalendarIcon, Filter } from "lucide-react"
-
-const monthlyRevenue = [
-  { name: 'Ene', ingresos: 4500000 },
-  { name: 'Feb', ingresos: 5200000 },
-  { name: 'Mar', ingresos: 4800000 },
-  { name: 'Abr', ingresos: 6100000 },
-  { name: 'May', ingresos: 5900000 },
-  { name: 'Jun', ingresos: 7200000 },
-]
-
-const servicesData = [
-  { name: 'Botox', citas: 145 },
-  { name: 'Ácido Hialurónico', citas: 120 },
-  { name: 'Limpieza Facial', citas: 98 },
-  { name: 'Peeling', citas: 75 },
-  { name: 'Láser', citas: 60 },
-]
+import { Download, Calendar as CalendarIcon, Filter, Loader2 } from "lucide-react"
 
 export function ReportsView() {
   const [dateRange, setDateRange] = useState("Este Año")
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["reports", dateRange],
+    queryFn: async () => {
+      const res = await fetch(`/api/reports?range=${encodeURIComponent(dateRange)}`)
+      if (!res.ok) throw new Error("Error fetching reports")
+      return res.json()
+    }
+  })
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <Loader2 className="h-8 w-8 animate-spin text-[#162439]" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return <div className="text-red-500 p-8 text-center">Error al cargar reportes.</div>
+  }
+
+  const { monthlyRevenue = [], servicesData = [], keyMetrics = {} } = data || {}
+
+  const handleExportCSV = () => {
+    if (!data) return
+
+    // BOM para que Excel detecte correctamente el UTF-8 y tildes
+    let csvContent = "\uFEFF" 
+
+    csvContent += "--- INGRESOS MENSUALES ---\n"
+    csvContent += "Mes;Ingresos\n"
+    monthlyRevenue.forEach((row: any) => {
+      csvContent += `${row.name};${row.ingresos}\n`
+    })
+    
+    csvContent += "\n--- SERVICIOS MÁS POPULARES ---\n"
+    csvContent += "Servicio;Citas\n"
+    servicesData.forEach((row: any) => {
+      csvContent += `"${row.name}";${row.citas}\n`
+    })
+
+    csvContent += "\n--- MÉTRICAS CLAVE ---\n"
+    csvContent += `Ticket Promedio;${keyMetrics.ticketPromedio}\n`
+    csvContent += `Ingresos Hoy;${keyMetrics.revenueToday}\n`
+    csvContent += `Retención Pacientes (%);${keyMetrics.retencionPacientes}\n`
+    csvContent += `No-Show Rate (%);${keyMetrics.noShowRate}\n`
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.setAttribute("href", url)
+    link.setAttribute("download", `reporte_estadisticas_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <div className="space-y-6">
@@ -42,10 +83,7 @@ export function ReportsView() {
           </select>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="border-[#D8E2ED] text-[#162439]">
-            <Filter className="w-4 h-4 mr-2" /> Filtros
-          </Button>
-          <Button className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button onClick={handleExportCSV} disabled={isLoading || !data} className="bg-[#162439] hover:bg-[#1E304D] text-white">
             <Download className="w-4 h-4 mr-2" /> Exportar CSV
           </Button>
         </div>
@@ -59,7 +97,7 @@ export function ReportsView() {
               <LineChart data={monthlyRevenue}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7E94', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7E94', fontSize: 12}} dx={-10} tickFormatter={(value) => `$${value/1000000}M`} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7E94', fontSize: 12}} dx={-10} tickFormatter={(value) => `$${value/1000}k`} />
                 <RechartsTooltip 
                   cursor={{stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '3 3'}}
                   contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
@@ -96,19 +134,23 @@ export function ReportsView() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 bg-[#F0F3F7] rounded-lg">
             <p className="text-sm text-[#6B7E94] mb-1">Ticket Promedio</p>
-            <p className="text-2xl font-bold text-[#162439]">$85.000</p>
+            <p className="text-2xl font-bold text-[#162439]">
+              {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(keyMetrics.ticketPromedio || 0)}
+            </p>
           </div>
           <div className="p-4 bg-[#F0F3F7] rounded-lg">
             <p className="text-sm text-[#6B7E94] mb-1">Retención Pacientes</p>
-            <p className="text-2xl font-bold text-[#162439]">68%</p>
+            <p className="text-2xl font-bold text-[#162439]">{keyMetrics.retencionPacientes || 0}%</p>
           </div>
           <div className="p-4 bg-[#F0F3F7] rounded-lg">
             <p className="text-sm text-[#6B7E94] mb-1">No-Show Rate</p>
-            <p className="text-2xl font-bold text-red-600">12%</p>
+            <p className="text-2xl font-bold text-red-600">{keyMetrics.noShowRate || 0}%</p>
           </div>
-          <div className="p-4 bg-[#F0F3F7] rounded-lg">
-            <p className="text-sm text-[#6B7E94] mb-1">Costo Adquisición (CAC)</p>
-            <p className="text-2xl font-bold text-[#162439]">$15.000</p>
+          <div className="p-4 bg-[#F0F3F7] rounded-lg border border-green-200">
+            <p className="text-sm text-[#6B7E94] mb-1">Ingresos Hoy</p>
+            <p className="text-2xl font-bold text-green-600">
+              {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(keyMetrics.revenueToday || 0)}
+            </p>
           </div>
         </div>
       </div>

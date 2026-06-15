@@ -10,6 +10,8 @@ export type AllergySeverity = "leve" | "moderada" | "severa";
 
 export type LoyaltyTransactionType = "ganados" | "canjeados" | "ajuste" | "expirados";
 
+export type PaymentMethod = "tarjeta" | "transferencia" | "efectivo";
+
 export interface Clinic {
   id: string;
   name: string;
@@ -156,6 +158,7 @@ export interface Appointment {
   status: AppointmentStatus;
   notes?: string;
   price?: number;
+  payment_method?: PaymentMethod;
   created_by?: string;
   created_at: string;
   updated_at: string;

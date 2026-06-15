@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { professionalSchema, ProfessionalFormValues } from "@/lib/validations/professional"
 import { Button } from "@/components/ui/button"
@@ -21,7 +21,7 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
   const queryClient = useQueryClient()
   const isEditing = !!initialData
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<ProfessionalFormValues>({
+  const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<ProfessionalFormValues>({
     resolver: zodResolver(professionalSchema),
     defaultValues: initialData || {
       is_active: true,
@@ -90,9 +90,15 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
           </div>
 
           <div className="flex items-center space-x-2 pt-2">
-            <Switch 
-              checked={isActive} 
-              onCheckedChange={(val) => setValue("is_active", val)} 
+            <Controller
+              control={control}
+              name="is_active"
+              render={({ field }) => (
+                <Switch 
+                  checked={!!field.value} 
+                  onCheckedChange={(checked) => field.onChange(checked)} 
+                />
+              )}
             />
             <Label>Profesional Activo</Label>
           </div>

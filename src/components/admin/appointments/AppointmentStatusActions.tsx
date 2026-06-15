@@ -12,6 +12,9 @@ import { useUpdateAppointmentStatus, useDeleteAppointment } from "@/hooks/useApp
 import { toast } from "sonner"
 import { useState } from "react"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 
 interface AppointmentStatusActionsProps {
   appointmentId: string
@@ -24,11 +27,14 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
   const deleteAppointment = useDeleteAppointment()
   const [confirmComplete, setConfirmComplete] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState("tarjeta")
+  const [assignPoints, setAssignPoints] = useState(true)
 
-  const handleStatusChange = async (newStatus: string, assignPoints: boolean = false) => {
+  const handleStatusChange = async (newStatus: string, assignPts: boolean = false, payMethod?: string) => {
     try {
-      await updateStatus.mutateAsync({ id: appointmentId, status: newStatus, assignPoints })
+      await updateStatus.mutateAsync({ id: appointmentId, status: newStatus, assignPoints: assignPts, paymentMethod: payMethod })
       toast.success(`Estado cambiado a ${newStatus}`)
+      setConfirmComplete(false)
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -61,11 +67,7 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
           {currentStatus !== "completada" && (
             <DropdownMenuItem 
               onClick={() => {
-                if (loyaltyPoints > 0) {
-                  setConfirmComplete(true)
-                } else {
-                  handleStatusChange("completada")
-                }
+                setConfirmComplete(true)
               }} 
               className="text-emerald-600"
             >
@@ -91,16 +93,61 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ConfirmDialog
-        open={confirmComplete}
-        onOpenChange={setConfirmComplete}
-        title="Completar Cita"
-        description={`Esta cita otorgará ${loyaltyPoints} puntos de fidelidad al paciente. ¿Deseas asignarlos automáticamente ahora?`}
-        confirmText="Sí, asignar puntos"
-        cancelText="No, solo completar"
-        onConfirm={() => handleStatusChange("completada", true)}
-        onCancel={() => handleStatusChange("completada", false)}
-      />
+      <Dialog open={confirmComplete} onOpenChange={setConfirmComplete}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Completar Cita</DialogTitle>
+            <DialogDescription>
+              Por favor, indica el método de pago utilizado por el paciente.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            <div className="space-y-3">
+              <Label>Método de Pago</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar método de pago" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tarjeta">Tarjeta</SelectItem>
+                  <SelectItem value="transferencia">Transferencia</SelectItem>
+                  <SelectItem value="efectivo">Efectivo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {loyaltyPoints > 0 && (
+              <div className="flex items-start space-x-2 p-3 bg-primary/5 rounded-md border border-primary/20">
+                <input 
+                  type="checkbox"
+                  id="assignPoints" 
+                  checked={assignPoints} 
+                  onChange={(e) => setAssignPoints(e.target.checked)} 
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <Label htmlFor="assignPoints" className="text-sm font-medium leading-none cursor-pointer">
+                    Otorgar Puntos de Fidelidad
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Esta cita sumará {loyaltyPoints} puntos al paciente automáticamente.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="sm:justify-end">
+            <Button variant="outline" onClick={() => setConfirmComplete(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => handleStatusChange("completada", assignPoints, paymentMethod)}>
+              Completar y Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ConfirmDialog
         open={confirmDelete}

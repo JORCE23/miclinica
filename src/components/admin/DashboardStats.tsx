@@ -2,22 +2,14 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Users, Calendar, UserPlus, Award, Clock, ArrowUpRight, Play, Settings, Plus, Star } from "lucide-react"
-import { format } from "date-fns"
+import { Users, Calendar, UserPlus, Award, Clock, ArrowUpRight, Play, Settings, Plus, Star, DollarSign } from "lucide-react"
+import { format, isToday, isTomorrow } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
 
-const mockRevenueData = [
-  { name: 'Lun', ingresos: 400000 },
-  { name: 'Mar', ingresos: 300000 },
-  { name: 'Mié', ingresos: 550000 },
-  { name: 'Jue', ingresos: 450000 },
-  { name: 'Vie', ingresos: 700000 },
-  { name: 'Sáb', ingresos: 850000 },
-  { name: 'Dom', ingresos: 120000 },
-]
+// Removed mockRevenueData to use real data from the API
 
 export function DashboardStats() {
   const [activeTab, setActiveTab] = useState<"overview" | "appointments" | "notifications">("overview")
@@ -39,6 +31,13 @@ export function DashboardStats() {
 
   const stats = data.stats
   const upcomingAppointments = data.upcomingAppointments
+
+  const formatAppointmentDate = (dateString: string) => {
+    const date = new Date(dateString)
+    if (isToday(date)) return `Hoy, ${format(date, "HH:mm")}`
+    if (isTomorrow(date)) return `Mañana, ${format(date, "HH:mm")}`
+    return format(date, "dd MMM, HH:mm", { locale: es })
+  }
 
   const statCards = [
     {
@@ -66,12 +65,12 @@ export function DashboardStats() {
       description: "Añadidos este mes",
     },
     {
-      title: "Puntos Otorgados",
-      value: stats.pointsGrantedThisMonth,
-      icon: Award,
-      color: "text-amber-500",
-      bgLight: "bg-amber-500/10",
-      description: "Puntos este mes",
+      title: "Ingresos Hoy",
+      value: new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(stats.revenueToday || 0),
+      icon: DollarSign,
+      color: "text-green-600",
+      bgLight: "bg-green-100",
+      description: "Generado hoy",
     }
   ]
 
@@ -142,7 +141,7 @@ export function DashboardStats() {
               <h2 className="text-sm font-semibold text-slate-800 mb-4">Ingresos de la Semana (Estimado)</h2>
               <div className="h-72 bg-white border rounded-xl p-4 shadow-sm">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={mockRevenueData}>
+                  <BarChart data={data.revenueData || []}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dx={-10} tickFormatter={(value) => `$${value/1000}k`} />
@@ -161,11 +160,11 @@ export function DashboardStats() {
           {/* Citas y Accesos */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <h2 className="text-sm font-semibold text-slate-800 mb-4">Próximas Citas (Hoy)</h2>
+              <h2 className="text-sm font-semibold text-slate-800 mb-4">Próximas 5 Citas</h2>
               <div className="space-y-3">
                 {upcomingAppointments.length === 0 ? (
                   <div className="p-8 text-center border rounded-lg bg-background">
-                    <p className="text-muted-foreground text-sm">No hay más citas programadas para hoy.</p>
+                    <p className="text-muted-foreground text-sm">No hay citas programadas próximamente.</p>
                   </div>
                 ) : (
                   upcomingAppointments.map((apt: any) => (
@@ -182,7 +181,7 @@ export function DashboardStats() {
                       <div className="mt-2 sm:mt-0 flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-sm font-bold text-slate-800">
-                            {format(new Date(apt.scheduled_at), "HH:mm")}
+                            {formatAppointmentDate(apt.scheduled_at)}
                           </p>
                           <p className="text-xs text-muted-foreground">{apt.duration_minutes} min</p>
                         </div>
@@ -237,14 +236,14 @@ export function DashboardStats() {
       {activeTab === "appointments" && (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-800">Todas las citas de hoy</h2>
+            <h2 className="text-sm font-semibold text-slate-800">Próximas Citas</h2>
             <Button variant="outline" size="sm" render={<Link href="/admin/appointments" />}>Ver Calendario Completo</Button>
           </div>
           <div className="space-y-3">
             {upcomingAppointments.length === 0 ? (
               <div className="p-12 text-center border rounded-lg bg-background">
                 <Calendar className="h-8 w-8 text-slate-300 mx-auto mb-3" />
-                <p className="text-muted-foreground font-medium">No hay citas para hoy</p>
+                <p className="text-muted-foreground font-medium">No hay citas próximas</p>
               </div>
             ) : (
               upcomingAppointments.map((apt: any) => (
@@ -261,7 +260,7 @@ export function DashboardStats() {
                   <div className="mt-2 sm:mt-0 flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-sm font-bold text-slate-800">
-                        {format(new Date(apt.scheduled_at), "HH:mm")}
+                        {formatAppointmentDate(apt.scheduled_at)}
                       </p>
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
                         {apt.status}

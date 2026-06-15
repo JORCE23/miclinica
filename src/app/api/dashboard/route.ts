@@ -57,15 +57,16 @@ export async function GET(request: Request) {
       .eq("role", "client")
       .gte("created_at", startOfMonth)
 
-    // 5. Puntos de fidelidad otorgados este mes
-    const { data: loyaltyTx } = await supabase
-      .from("loyalty_transactions")
-      .select("points")
+    // 5. Ingresos Hoy
+    const { data: todayCompletedAppointments } = await supabase
+      .from("appointments")
+      .select("price")
       .eq("clinic_id", clinicId)
-      .eq("type", "ganados")
-      .gte("created_at", startOfMonth)
+      .eq("status", "completada")
+      .gte("scheduled_at", startOfToday)
+      .lt("scheduled_at", endOfToday)
 
-    const pointsGrantedThisMonth = loyaltyTx?.reduce((sum, tx) => sum + tx.points, 0) || 0
+    const revenueToday = todayCompletedAppointments?.reduce((sum, apt) => sum + (Number(apt.price) || 0), 0) || 0
 
     // 6. Próximas 5 citas de hoy
     const { data: upcomingAppointments } = await supabase
@@ -77,10 +78,50 @@ export async function GET(request: Request) {
       `)
       .eq("clinic_id", clinicId)
       .gte("scheduled_at", now.toISOString())
-      .lt("scheduled_at", endOfToday)
       .in("status", ["pendiente", "confirmada"])
       .order("scheduled_at", { ascending: true })
       .limit(5)
+
+    // Calcular ingresos estimados y reales de la semana actual (Lunes a Domingo)
+    const currentDay = now.getDay()
+    const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay // 0 es Domingo
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() + diffToMonday)
+    startOfWeek.setHours(0, 0, 0, 0)
+    
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 7)
+    
+    const { data: weekAppointments } = await supabase
+      .from("appointments")
+      .select("price, scheduled_at, status")
+      .eq("clinic_id", clinicId)
+      .in("status", ["pendiente", "confirmada", "completada"])
+      .gte("scheduled_at", startOfWeek.toISOString())
+      .lt("scheduled_at", endOfWeek.toISOString())
+
+    const revenueMap: Record<string, number> = {
+      'Lun': 0, 'Mar': 0, 'Mié': 0, 'Jue': 0, 'Vie': 0, 'Sáb': 0, 'Dom': 0
+    }
+    const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+
+    weekAppointments?.forEach(apt => {
+      if (apt.price) {
+        const date = new Date(apt.scheduled_at)
+        const dayName = days[date.getDay()]
+        revenueMap[dayName] += Number(apt.price)
+      }
+    })
+
+    const revenueData = [
+      { name: 'Lun', ingresos: revenueMap['Lun'] },
+      { name: 'Mar', ingresos: revenueMap['Mar'] },
+      { name: 'Mié', ingresos: revenueMap['Mié'] },
+      { name: 'Jue', ingresos: revenueMap['Jue'] },
+      { name: 'Vie', ingresos: revenueMap['Vie'] },
+      { name: 'Sáb', ingresos: revenueMap['Sáb'] },
+      { name: 'Dom', ingresos: revenueMap['Dom'] },
+    ]
 
     return NextResponse.json({
       stats: {
@@ -88,9 +129,10 @@ export async function GET(request: Request) {
         todayAppointments: todayAppointmentsCount || 0,
         next7DaysAppointments: next7DaysAppointmentsCount || 0,
         newPatientsThisMonth: newPatientsThisMonth || 0,
-        pointsGrantedThisMonth
+        revenueToday
       },
-      upcomingAppointments: upcomingAppointments || []
+      upcomingAppointments: upcomingAppointments || [],
+      revenueData
     })
 
   } catch (error: any) {

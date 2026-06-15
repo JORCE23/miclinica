@@ -84,6 +84,8 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
     const localDate = new Date(data.scheduled_at)
     onSubmit({
       ...data,
+      professional_id: data.professional_id || null,
+      campaign_id: data.campaign_id || null,
       scheduled_at: localDate.toISOString(),
     })
   }
@@ -157,7 +159,13 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
             render={({ field }) => (
               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar profesional" />
+                  <SelectValue placeholder="Seleccionar profesional">
+                    {(value: string) => {
+                      if (!value) return "Seleccionar profesional"
+                      const prof = professionals?.find((p: any) => p.id === value)
+                      return prof ? `${prof.full_name}${prof.specialty ? ` — ${prof.specialty}` : ''}` : "Seleccionar profesional"
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Sin asignar</SelectItem>
@@ -180,7 +188,13 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
             render={({ field }) => (
               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Orgánico / Sin campaña" />
+                  <SelectValue placeholder="Orgánico / Sin campaña">
+                    {(value: string) => {
+                      if (!value) return "Orgánico / Sin campaña"
+                      const camp = campaigns?.find((c: any) => c.id === value)
+                      return camp ? `${camp.name} (${camp.type || camp.channel})` : "Orgánico / Sin campaña"
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Orgánico / Sin campaña</SelectItem>

@@ -5,13 +5,38 @@ import { usePatients } from "@/hooks/usePatients"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Search, ExternalLink } from "lucide-react"
+import { Search, ExternalLink, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { formatRut } from "@/lib/validations/rut"
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function PatientList() {
   const { data: patients, isLoading, error } = usePatients()
   const [searchTerm, setSearchTerm] = useState("")
+  const [patientToDelete, setPatientToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
+
+  const handleDelete = async () => {
+    if (!patientToDelete) return
+    setIsDeleting(true)
+    try {
+      const res = await fetch(`/api/patients/${patientToDelete}`, {
+        method: "DELETE",
+      })
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || "Error al borrar el paciente")
+      }
+      queryClient.invalidateQueries({ queryKey: ["patients"] })
+    } catch (error: any) {
+      alert(error.message)
+    } finally {
+      setIsDeleting(false)
+      setPatientToDelete(null)
+    }
+  }
 
   if (error) {
     return (
@@ -72,9 +97,19 @@ export function PatientList() {
                     <td className="p-4 align-middle">{patient.phone || "-"}</td>
                     <td className="p-4 align-middle">{patient.email}</td>
                     <td className="p-4 align-middle text-right">
-                      <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
-                          Ver Ficha <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
+                            Ver Ficha <ExternalLink className="ml-2 h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => setPatientToDelete(patient.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -87,6 +122,17 @@ export function PatientList() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!patientToDelete}
+        onOpenChange={(open) => !open && setPatientToDelete(null)}
+        title="¿Borrar paciente?"
+        description="Esta acción es irreversible. Se borrará el paciente junto con todo su historial médico, citas, y puntos de fidelidad."
+        confirmText={isDeleting ? "Borrando..." : "Borrar"}
+        cancelText="Cancelar"
+        onConfirm={handleDelete}
+        isDanger={true}
+      />
     </div>
   )
 }

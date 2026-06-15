@@ -34,8 +34,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
-    // 4. Crear el usuario en Auth usando la API de Admin
+    // 3.5. Verificar si el RUT o el correo ya están registrados
     const adminAuthClient = createAdminClient()
+    const orQuery = rut ? `email.eq.${email},rut.eq.${rut}` : `email.eq.${email}`
+    
+    const { data: existingProfiles } = await adminAuthClient
+      .from("profiles")
+      .select("email, rut")
+      .or(orQuery)
+
+    if (existingProfiles && existingProfiles.length > 0) {
+      const existsRut = rut && existingProfiles.some(p => p.rut === rut)
+      const existsEmail = existingProfiles.some(p => p.email === email)
+      
+      if (existsRut && existsEmail) {
+        return NextResponse.json({ error: "El RUT y el correo ya están registrados" }, { status: 400 })
+      } else if (existsRut) {
+        return NextResponse.json({ error: "El RUT ya está registrado" }, { status: 400 })
+      } else if (existsEmail) {
+        return NextResponse.json({ error: "El correo ya está registrado" }, { status: 400 })
+      }
+    }
+
+    // 4. Crear el usuario en Auth usando la API de Admin
     const { data: authData, error: authError } = await adminAuthClient.auth.admin.createUser({
       email,
       password,

@@ -35,6 +35,7 @@ export function useCreateAppointment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard_stats"] })
     },
   })
 }
@@ -57,6 +58,7 @@ export function useUpdateAppointment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard_stats"] })
     },
   })
 }
@@ -65,11 +67,11 @@ export function useUpdateAppointmentStatus() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, status, assignPoints = false }: { id: string; status: string; assignPoints?: boolean }) => {
+    mutationFn: async ({ id, status, assignPoints = false, paymentMethod }: { id: string; status: string; assignPoints?: boolean; paymentMethod?: string }) => {
       const response = await fetch(`/api/appointments/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, assignPoints }),
+        body: JSON.stringify({ status, assignPoints, paymentMethod }),
       })
       if (!response.ok) {
         const error = await response.json()
@@ -79,6 +81,7 @@ export function useUpdateAppointmentStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard_stats"] })
     },
   })
 }
@@ -99,6 +102,7 @@ export function useDeleteAppointment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard_stats"] })
     },
   })
 }

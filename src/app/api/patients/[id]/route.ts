@@ -84,14 +84,23 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
 
+    // Borrado en cascada manual de las dependencias del paciente para evitar errores de llave foránea
+    await supabase.from("loyalty_transactions").delete().eq("patient_id", params.id)
+    await supabase.from("loyalty_accounts").delete().eq("patient_id", params.id)
+    await supabase.from("medical_history").delete().eq("patient_id", params.id)
+    await supabase.from("allergies").delete().eq("patient_id", params.id)
+    await supabase.from("aesthetic_procedures_history").delete().eq("patient_id", params.id)
+    await supabase.from("appointments").delete().eq("patient_id", params.id)
+
+    // Finalmente borramos el perfil
     const { error } = await supabase
       .from("profiles")
-      .update({ is_active: false })
+      .delete()
       .eq("id", params.id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-    return NextResponse.json({ message: "Paciente desactivado" })
+    return NextResponse.json({ success: true, message: "Paciente borrado completamente" })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

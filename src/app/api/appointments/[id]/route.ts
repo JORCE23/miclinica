@@ -68,6 +68,12 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
 
+    // Desenlazar las transacciones de fidelidad asociadas para evitar el error de llave foránea
+    await supabase
+      .from("loyalty_transactions")
+      .update({ appointment_id: null })
+      .eq("appointment_id", params.id)
+
     const { error } = await supabase
       .from("appointments")
       .delete()

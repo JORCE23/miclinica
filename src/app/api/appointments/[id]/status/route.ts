@@ -13,7 +13,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const body = await request.json()
-    const { status, assignPoints } = body
+    const { status, assignPoints, paymentMethod } = body
 
     if (!status) {
       return NextResponse.json({ error: "Falta el estado" }, { status: 400 })
@@ -76,10 +76,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       }
     }
 
+    const updateData: any = { status, updated_at: new Date().toISOString() }
+    if (status === "completada" && paymentMethod) {
+      updateData.payment_method = paymentMethod
+    }
+
     // 3. Actualizar el estado de la cita
     const { data, error } = await supabase
       .from("appointments")
-      .update({ status, updated_at: new Date().toISOString() })
+      .update(updateData)
       .eq("id", params.id)
       .select()
       .single()
