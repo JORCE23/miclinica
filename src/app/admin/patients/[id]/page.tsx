@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { PersonalTab } from "@/components/admin/patients/tabs/PersonalTab"
 import { MedicalHistoryTab } from "@/components/admin/patients/tabs/MedicalHistoryTab"
@@ -17,6 +17,7 @@ import { PatientSidebar } from "@/components/admin/patients/PatientSidebar"
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("clinical")
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ["patient", params.id],
@@ -92,13 +93,26 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         </div>
 
         {/* 2. MAIN LAYOUT */}
-        <div className="w-full pt-6">
-          <div className="max-w-[1600px] mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-start">
+        <div className="w-full pt-4">
+          <div className="max-w-[1600px] mx-auto px-4 md:px-6 mb-4 flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="text-slate-500 hover:text-slate-700 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm"
+            >
+              {isSidebarOpen ? <PanelLeftClose className="h-4 w-4 mr-2" /> : <PanelLeftOpen className="h-4 w-4 mr-2" />}
+              {isSidebarOpen ? "Ocultar panel lateral" : "Mostrar panel lateral"}
+            </Button>
+          </div>
+          <div className={`max-w-[1600px] mx-auto px-4 md:px-6 grid gap-6 items-start transition-all duration-300 ${isSidebarOpen ? 'grid-cols-1 md:grid-cols-[300px_1fr]' : 'grid-cols-1'}`}>
             
             {/* LEFT SIDEBAR */}
-            <div className="md:sticky top-6">
-              <PatientSidebar patient={patient} setActiveTab={setActiveTab} />
-            </div>
+            {isSidebarOpen && (
+              <div className="md:sticky top-6">
+                <PatientSidebar patient={patient} setActiveTab={setActiveTab} activeTab={activeTab} />
+              </div>
+            )}
 
             {/* MAIN TABS CONTENT */}
             <div className="border bg-card rounded-lg p-6 min-w-0 w-full shadow-sm text-slate-800 dark:text-slate-200">

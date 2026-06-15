@@ -1,95 +1,143 @@
 "use client"
 
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { useState } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
+
+import { patientSchema, type PatientFormValues } from "@/lib/validations/patient"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { RutInput } from "@/components/shared/RutInput"
+import { Save, User, FileText } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { User, Calendar, CreditCard, Mail, Phone, FileText } from "lucide-react"
 
 export function PersonalTab({ patient }: { patient: any }) {
-  const calculateAge = (birthDate: string) => {
-    if (!birthDate) return "N/A"
-    const today = new Date()
-    const birth = new Date(birthDate)
-    let age = today.getFullYear() - birth.getFullYear()
-    const m = today.getMonth() - birth.getMonth()
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      age--
+  const [isLoading, setIsLoading] = useState(false)
+  const queryClient = useQueryClient()
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<PatientFormValues>({
+    resolver: zodResolver(patientSchema),
+    defaultValues: {
+      full_name: patient.full_name || "",
+      rut: patient.rut || "",
+      birth_date: patient.birth_date ? patient.birth_date.substring(0, 10) : "",
+      phone: patient.phone || "",
+      email: patient.email || "",
+      notes: patient.notes || "",
+    },
+  })
+
+  async function onSubmit(data: PatientFormValues) {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/patients/${patient.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Ocurrió un error al actualizar el paciente")
+      }
+
+      toast.success("Datos actualizados exitosamente")
+      queryClient.invalidateQueries({ queryKey: ["patient", patient.id] })
+    } catch (error: any) {
+      toast.error(error.message)
+    } finally {
+      setIsLoading(false)
     }
-    return age
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5 text-[#7B9AB5]" /> Información Básica
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5 pt-6">
-          <div className="flex gap-3">
-            <User className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <span className="text-sm text-muted-foreground block">Nombre Completo</span>
-              <span className="font-medium text-base">{patient.full_name}</span>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <User className="h-5 w-5 text-[#7B9AB5]" /> Editar Información Básica
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="space-y-2">
+              <Label htmlFor="full_name">Nombre Completo *</Label>
+              <Input id="full_name" {...register("full_name")} />
+              {errors.full_name && <p className="text-sm text-red-500">{errors.full_name.message}</p>}
             </div>
-          </div>
-          <div className="flex gap-3">
-            <CreditCard className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <span className="text-sm text-muted-foreground block">RUT</span>
-              <span className="font-medium text-base">{patient.rut || "No registrado"}</span>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <span className="text-sm text-muted-foreground block">Fecha de Nacimiento</span>
-              <span className="font-medium text-base">
-                {patient.birth_date ? format(new Date(patient.birth_date), "dd 'de' MMMM, yyyy", { locale: es }) : "No registrada"} 
-                {patient.birth_date && <span className="text-[#162439] font-semibold ml-1">({calculateAge(patient.birth_date)} años)</span>}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#7B9AB5]" /> Contacto y Notas
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5 pt-6">
-          <div className="flex gap-3">
-            <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <span className="text-sm text-muted-foreground block">Correo Electrónico</span>
-              <span className="font-medium text-base">{patient.email}</span>
+            <div className="space-y-2">
+              <Label htmlFor="rut">RUT</Label>
+              <Controller
+                name="rut"
+                control={control}
+                render={({ field }) => (
+                  <RutInput
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    error={errors.rut?.message}
+                  />
+                )}
+              />
             </div>
-          </div>
-          <div className="flex gap-3">
-            <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <span className="text-sm text-muted-foreground block">Teléfono</span>
-              <span className="font-medium text-base">{patient.phone || "No registrado"}</span>
+
+            <div className="space-y-2">
+              <Label htmlFor="birth_date">Fecha de Nacimiento</Label>
+              <Input id="birth_date" type="date" {...register("birth_date")} />
+              {errors.birth_date && <p className="text-sm text-red-500">{errors.birth_date.message}</p>}
             </div>
-          </div>
-          <div className="flex gap-3">
-            <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <span className="text-sm text-muted-foreground block">Canal de origen (Source)</span>
-              <span className="font-medium text-base">{patient.source || "No registrado"}</span>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="h-5 w-5 text-[#7B9AB5]" /> Editar Contacto y Notas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">Correo Electrónico *</Label>
+              <Input id="email" type="email" {...register("email")} />
+              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
             </div>
-          </div>
-          <div className="pt-2">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">Notas Internas</span>
-            <p className="text-sm bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 text-amber-900 dark:text-amber-200 p-4 rounded-lg leading-relaxed">
-              {patient.notes || "Sin notas adicionales."}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input id="phone" {...register("phone")} />
+              {errors.phone && <p className="text-sm text-red-500">{errors.phone.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notas Internas</Label>
+              <Textarea
+                id="notes"
+                {...register("notes")}
+                className="h-24 resize-none"
+              />
+              {errors.notes && <p className="text-sm text-red-500">{errors.notes.message}</p>}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="flex justify-end mt-6">
+        <Button type="submit" disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <Save className="mr-2 h-4 w-4" />
+          {isLoading ? "Guardando..." : "Guardar Cambios"}
+        </Button>
+      </div>
+    </form>
   )
 }

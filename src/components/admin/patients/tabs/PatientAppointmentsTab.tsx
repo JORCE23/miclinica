@@ -9,9 +9,12 @@ import { format, isToday, isFuture, isPast, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   const [searchTerm, setSearchTerm] = useState("")
+  const [isExtended, setIsExtended] = useState(false)
+  const [statusFilter, setStatusFilter] = useState("todos")
 
   const { data: rawAppointments = [], isLoading } = useQuery({
     queryKey: ["appointments", patientId],
@@ -25,12 +28,19 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   if (isLoading) return <div className="p-8 text-center text-slate-500">Cargando historial de atenciones...</div>
 
   const appointments = rawAppointments.filter((a: any) => {
-    if (!searchTerm) return true
-    const searchLower = searchTerm.toLowerCase()
-    const serviceMatch = a.service?.name?.toLowerCase().includes(searchLower)
-    const profMatch = a.created_by_profile?.full_name?.toLowerCase().includes(searchLower)
-    const statusMatch = a.status?.toLowerCase().includes(searchLower)
-    return serviceMatch || profMatch || statusMatch
+    let matchesSearch = true
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase()
+      const serviceMatch = a.service?.name?.toLowerCase().includes(searchLower)
+      const profMatch = a.created_by_profile?.full_name?.toLowerCase().includes(searchLower)
+      const statusMatch = a.status?.toLowerCase().includes(searchLower)
+      matchesSearch = serviceMatch || profMatch || statusMatch
+    }
+    let matchesStatus = true
+    if (statusFilter !== "todos") {
+      matchesStatus = a.status === statusFilter
+    }
+    return matchesSearch && matchesStatus
   })
 
   const todayAppointments = appointments.filter((a: any) => isToday(parseISO(a.scheduled_at)))
@@ -66,6 +76,13 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
           <div className="text-sm text-slate-600 dark:text-slate-400 space-y-0.5 ml-7">
             <p><span className="font-semibold">Profesional:</span> {appointment.created_by_profile?.full_name || "Sin asignar"}</p>
             <p><span className="font-semibold">Estado:</span> <span className="capitalize">{appointment.status.replace('_', ' ')}</span></p>
+            {isExtended && (
+              <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                {appointment.price !== undefined && appointment.price !== null && <p><span className="font-semibold">Precio:</span> ${Number(appointment.price).toLocaleString()}</p>}
+                {appointment.duration_minutes !== undefined && appointment.duration_minutes !== null && <p><span className="font-semibold">Duración:</span> {appointment.duration_minutes} min</p>}
+                {appointment.notes && <p className="italic mt-1 text-slate-500">"{appointment.notes}"</p>}
+              </div>
+            )}
           </div>
         </div>
 
@@ -82,7 +99,13 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border">
         <div className="flex items-center gap-2 flex-1">
-          <Button variant="outline" className="bg-white border-slate-200 text-slate-600">Historial</Button>
+          <Button 
+            variant="outline" 
+            className="bg-white border-slate-200 text-slate-600"
+            onClick={() => { setSearchTerm(""); setStatusFilter("todos"); }}
+          >
+            Historial
+          </Button>
           <div className="relative flex-1 max-w-[300px]">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input 
@@ -94,8 +117,36 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="bg-white text-slate-600"><Eye className="mr-2 h-4 w-4" /> Extendida</Button>
-          <Button variant="outline" className="bg-white text-slate-600"><Filter className="mr-2 h-4 w-4" /> Filtrar</Button>
+          <Button 
+            variant={isExtended ? "default" : "outline"} 
+            className={isExtended ? "bg-slate-800 text-white" : "bg-white text-slate-600"}
+            onClick={() => setIsExtended(!isExtended)}
+          >
+            <Eye className="mr-2 h-4 w-4" /> Extendida
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant={statusFilter !== "todos" ? "default" : "outline"} 
+                className={statusFilter !== "todos" ? "bg-slate-800 text-white" : "bg-white text-slate-600"}
+              >
+                <Filter className="mr-2 h-4 w-4" /> 
+                {statusFilter !== "todos" ? statusFilter.replace('_', ' ') : "Filtrar"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Filtrar por estado</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setStatusFilter("todos")}>Todos</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("pendiente")}>Pendiente</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("confirmada")}>Confirmada</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("completada")}>Completada</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("cancelada")}>Cancelada</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("no_asistio")}>No asistió</DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button render={<Link href={`/admin/appointments/new?patientId=${patientId}`} />} className="bg-emerald-500 hover:bg-emerald-600 text-white border-0">
               <Plus className="mr-1 h-4 w-4" /> Nuevo
           </Button>

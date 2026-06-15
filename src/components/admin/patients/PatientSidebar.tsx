@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { Bell, Phone, Activity, Heart, Contact, Star } from "lucide-react"
 
-export function PatientSidebar({ patient, setActiveTab }: { patient: any, setActiveTab?: (tab: string) => void }) {
+export function PatientSidebar({ patient, setActiveTab, activeTab }: { patient: any, setActiveTab?: (tab: string) => void, activeTab?: string }) {
   // Fetch medical history for the pre-existencias box
   const { data: medicalHistory = [] } = useQuery({
     queryKey: ["medical-history", patient.id],
@@ -48,21 +48,21 @@ export function PatientSidebar({ patient, setActiveTab }: { patient: any, setAct
       <div className="w-16 flex flex-col gap-2 bg-slate-100 dark:bg-slate-800/50 rounded-xl py-4 items-center">
         <div 
           onClick={() => setActiveTab && setActiveTab('clinical')}
-          className="p-3 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 transition shadow-sm" 
+          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'clinical' ? 'bg-primary text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-primary hover:bg-primary/10'}`}
           title="Ficha Clínica"
         >
           <Activity className="h-5 w-5" />
         </div>
         <div 
           onClick={() => setActiveTab && setActiveTab('administrative')}
-          className="p-3 text-slate-400 hover:text-primary hover:bg-primary/10 cursor-pointer rounded-lg transition" 
+          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'administrative' ? 'bg-primary text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-primary hover:bg-primary/10'}`}
           title="Datos Personales"
         >
           <Contact className="h-5 w-5" />
         </div>
         <div 
           onClick={() => setActiveTab && setActiveTab('loyalty')}
-          className="p-3 text-slate-400 hover:text-primary hover:bg-primary/10 cursor-pointer rounded-lg transition" 
+          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'loyalty' ? 'bg-primary text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-primary hover:bg-primary/10'}`}
           title="Fidelidad"
         >
           <Star className="h-5 w-5" />
