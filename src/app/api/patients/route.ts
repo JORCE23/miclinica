@@ -4,52 +4,77 @@ import { requireAuth } from "@/lib/security/auth-guard"
 import { checkRateLimit, getIp } from "@/lib/security/rate-limit"
 import { sanitizeInput } from "@/lib/security/sanitize"
 
+// Debe coincidir con el CHECK de profiles.source
+const ALLOWED_SOURCES = new Set([
+  "meta_ads",
+  "google",
+  "referido",
+  "organico",
+  "directo",
+  "whatsapp",
+  "otro",
+])
+
+function generateProvisionalPassword(length = 16): string {
+  const charset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789"
+  const bytes = new Uint8Array(length)
+  globalThis.crypto.getRandomValues(bytes)
+  let out = ""
+  for (let i = 0; i < length; i++) out += charset[bytes[i] % charset.length]
+  return out
+}
+
 export async function POST(request: Request) {
   try {
     // 1. Rate Limiting
     const ip = getIp(request)
     const { success, limit, remaining } = checkRateLimit(ip)
-    
     if (!success) {
-      return NextResponse.json({ error: "Demasiadas peticiones" }, { 
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
+      return NextResponse.json(
+        { error: "Demasiadas peticiones" },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+          },
         }
-      })
+      )
     }
 
-    // 2. Auth Guard y variables
+    // 2. Auth Guard
     const { context, errorResponse } = await requireAuth("clinic_admin")
     if (errorResponse) return errorResponse
 
-    // 3. Sanitización y obtención de datos
+    // 3. Sanitización (password queda intacta — ver sanitize.ts)
     const rawBody = await request.json()
-    const body = sanitizeInput(rawBody) // Sanitizar TODOS los inputs del body
-    
+    const body = sanitizeInput(rawBody)
+
     const { email, password, full_name, rut, birth_date, phone, notes, source } = body
 
     if (!email || !full_name) {
-      return NextResponse.json({ error: "El correo y nombre completo son obligatorios" }, { status: 400 })
+      return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
-    // PASO 2: Sincronización de Contraseña. Si viene vacía, autogeneramos una.
-    const finalPassword = password || (Math.random().toString(36).slice(-10) + 'A1!')
+    // Normalizar source contra el CHECK de la BD (defensa en profundidad)
+    const normalizedSource = source && ALLOWED_SOURCES.has(source) ? source : null
 
-    // 3.5. Verificar si el RUT o el correo ya están registrados
+    // Contraseña: usar la provista (>=6) o generar una provisional segura
+    const finalPassword = password && password.length >= 6 ? password : generateProvisionalPassword()
+
     const adminAuthClient = createAdminClient()
+
+    // 3.5. Verificar duplicados de RUT/correo
     const orQuery = rut ? `email.eq.${email},rut.eq.${rut}` : `email.eq.${email}`
-    
     const { data: existingProfiles } = await adminAuthClient
       .from("profiles")
       .select("email, rut")
       .or(orQuery)
 
     if (existingProfiles && existingProfiles.length > 0) {
-      const existsRut = rut && existingProfiles.some(p => p.rut === rut)
-      const existsEmail = existingProfiles.some(p => p.email === email)
-      
+      const existsRut = rut && existingProfiles.some((p) => p.rut === rut)
+      const existsEmail = existingProfiles.some((p) => p.email === email)
+
       if (existsRut && existsEmail) {
         return NextResponse.json({ error: "El RUT y el correo ya están registrados" }, { status: 400 })
       } else if (existsRut) {
@@ -59,14 +84,12 @@ export async function POST(request: Request) {
       }
     }
 
-    // 4. Crear el usuario en Auth usando la API de Admin
+    // 4. Crear usuario en Auth
     const { data: authData, error: authError } = await adminAuthClient.auth.admin.createUser({
       email,
       password: finalPassword,
       email_confirm: true,
-      user_metadata: {
-        role: "client",
-      },
+      user_metadata: { role: "client" },
     })
 
     if (authError || !authData.user) {
@@ -75,24 +98,22 @@ export async function POST(request: Request) {
 
     const newUserId = authData.user.id
 
-    // 5. Insertar el perfil del paciente en la tabla profiles
-    const { error: profileError } = await adminAuthClient
-      .from("profiles")
-      .insert({
-        id: newUserId,
-        clinic_id: context!.clinicId,
-        role: "client",
-        full_name,
-        rut: rut || null,
-        birth_date: birth_date || null,
-        phone: phone || null,
-        email,
-        source: source || null,
-        notes: notes || null,
-      })
+    // 5. Insertar perfil del paciente
+    const { error: profileError } = await adminAuthClient.from("profiles").insert({
+      id: newUserId,
+      clinic_id: context!.clinicId,
+      role: "client",
+      full_name,
+      rut: rut || null,
+      birth_date: birth_date || null,
+      phone: phone || null,
+      email,
+      notes: notes || null,
+      source: normalizedSource,
+    })
 
     if (profileError) {
-      // PASO 3: Riesgo de Integridad (Rollback de Usuario Huérfano)
+      // ROLLBACK: eliminar el usuario de Auth para no dejarlo huérfano
       await adminAuthClient.auth.admin.deleteUser(newUserId)
       return NextResponse.json({ error: profileError.message }, { status: 400 })
     }

@@ -7,31 +7,31 @@ export interface AuthContext {
   role: string
 }
 
-/**
- * Checks environment variables, authenticates the user session via Supabase, 
- * and extracts the profile data for authorization.
- * 
- * @param requiredRole - Opcional. Si se pasa, requiere que el usuario tenga este rol.
- * @returns AuthContext si es exitoso, o NextResponse si hay error.
- */
-export async function requireAuth(requiredRole?: string): Promise<{ context?: AuthContext; errorResponse?: NextResponse }> {
-  // 1. Validar variables de entorno (Prevenir fugas y asegurar configuración)
+export async function requireAuth(
+  requiredRole?: string
+): Promise<{ context?: AuthContext; errorResponse?: NextResponse }> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     console.error("CRITICAL: Faltan variables de entorno de Supabase")
-    return { errorResponse: NextResponse.json({ error: "Configuración de servidor inválida" }, { status: 500 }) }
+    return {
+      errorResponse: NextResponse.json({ error: "Configuración de servidor inválida" }, { status: 500 }),
+    }
   }
 
   try {
     const supabase = createClient()
-    
-    // 2. Delegar Autenticación a Supabase Auth
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
+    // Valida el JWT contra el servidor de Auth (getUser, NO getSession)
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
     if (authError || !user) {
-      return { errorResponse: NextResponse.json({ error: "No autorizado. Token inválido o ausente." }, { status: 401 }) }
+      return {
+        errorResponse: NextResponse.json({ error: "No autorizado. Token inválido o ausente." }, { status: 401 }),
+      }
     }
 
-    // 3. Obtener perfil y validar roles
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("clinic_id, role")
@@ -43,7 +43,9 @@ export async function requireAuth(requiredRole?: string): Promise<{ context?: Au
     }
 
     if (!profile.clinic_id) {
-      return { errorResponse: NextResponse.json({ error: "Usuario no pertenece a ninguna clínica" }, { status: 403 }) }
+      return {
+        errorResponse: NextResponse.json({ error: "Usuario no pertenece a ninguna clínica" }, { status: 403 }),
+      }
     }
 
     if (requiredRole && profile.role !== requiredRole) {
@@ -54,11 +56,13 @@ export async function requireAuth(requiredRole?: string): Promise<{ context?: Au
       context: {
         userId: user.id,
         clinicId: profile.clinic_id,
-        role: profile.role
-      }
+        role: profile.role,
+      },
     }
   } catch (error) {
     console.error("Auth Guard Error:", error)
-    return { errorResponse: NextResponse.json({ error: "Error interno de validación de seguridad" }, { status: 500 }) }
+    return {
+      errorResponse: NextResponse.json({ error: "Error interno de validación de seguridad" }, { status: 500 }),
+    }
   }
 }

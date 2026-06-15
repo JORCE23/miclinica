@@ -95,7 +95,7 @@ export default async function ClientDashboardPage() {
                   </div>
                   <div>
                     <span className="font-medium text-slate-900 dark:text-white block">
-                      {nextApt.service?.name}
+                      {(nextApt.service as any)?.name}
                     </span>
                     <span className="text-sm text-muted-foreground block mt-1">
                       Duración aprox: {nextApt.duration_minutes} min

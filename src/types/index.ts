@@ -126,12 +126,15 @@ export interface Campaign {
   id: string;
   clinic_id: string;
   name: string;
+  type: string;
   channel: 'meta' | 'google' | 'organico' | 'email' | 'whatsapp' | 'otro';
   status: 'activa' | 'pausada' | 'finalizada';
   start_date?: string;
   end_date?: string;
   budget?: number;
   spent?: number;
+  reach?: number;
+  conversions?: number;
   leads_generated: number;
   appointments_gen: number;
   sales_generated?: number;

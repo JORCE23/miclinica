@@ -102,7 +102,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
         </div>
       </div>
 
-      <Accordion type="multiple" defaultValue={["hoy", "proximas", "pasadas"]} className="space-y-4">
+      <Accordion defaultValue={["hoy", "proximas", "pasadas"]} className="space-y-4">
         
         <AccordionItem value="proximas" className="border-none">
           <AccordionTrigger className="text-slate-500 hover:text-slate-700 py-2 font-bold text-sm tracking-wider uppercase">

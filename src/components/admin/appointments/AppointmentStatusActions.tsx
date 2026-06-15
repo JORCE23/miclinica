@@ -105,7 +105,7 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
           <div className="space-y-6 py-4">
             <div className="space-y-3">
               <Label>Método de Pago</Label>
-              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <Select value={paymentMethod} onValueChange={(v) => setPaymentMethod(v || "tarjeta")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar método de pago" />
                 </SelectTrigger>

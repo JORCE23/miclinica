@@ -2,7 +2,7 @@
 
 import { Calendar, dateFnsLocalizer, ToolbarProps, View, Views } from "react-big-calendar"
 import { format, parse, startOfWeek, getDay } from "date-fns"
-import es from "date-fns/locale/es"
+import { es } from "date-fns/locale"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import { useRouter } from "next/navigation"
 import { useAppointments } from "@/hooks/useAppointments"

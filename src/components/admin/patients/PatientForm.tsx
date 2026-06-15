@@ -12,7 +12,23 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { RutInput } from "@/components/shared/RutInput"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const SOURCE_OPTIONS: { value: string; label: string }[] = [
+  { value: "meta_ads", label: "Meta Ads (Instagram / Facebook)" },
+  { value: "google", label: "Google" },
+  { value: "referido", label: "Referido" },
+  { value: "organico", label: "Orgánico" },
+  { value: "directo", label: "Directo" },
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "otro", label: "Otro" },
+]
 
 export function PatientForm() {
   const router = useRouter()
@@ -39,7 +55,6 @@ export function PatientForm() {
 
   async function onSubmit(data: PatientFormValues) {
     setIsLoading(true)
-
     try {
       const response = await fetch("/api/patients", {
         method: "POST",
@@ -106,29 +121,32 @@ export function PatientForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Contraseña Provisional</Label>
-          <Input id="password" type="password" placeholder="Se autogenerará si lo dejas en blanco" {...register("password")} />
+          <Label htmlFor="password">Contraseña Provisional (opcional)</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Se genera automáticamente si lo dejas vacío"
+            {...register("password")}
+          />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="source">Canal de origen (Source)</Label>
+          <Label htmlFor="source">Canal de origen</Label>
           <Controller
             name="source"
             control={control}
             render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-                <SelectTrigger id="source" className={errors.source ? "border-red-500" : "border-[#D8E2ED] focus:ring-[#162439]"}>
-                  <SelectValue placeholder="Selecciona un canal..." />
+              <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                <SelectTrigger id="source">
+                  <SelectValue placeholder="Seleccionar canal de origen" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="meta_ads">Meta Ads (Instagram/Facebook)</SelectItem>
-                  <SelectItem value="google">Google</SelectItem>
-                  <SelectItem value="referido">Referido</SelectItem>
-                  <SelectItem value="organico">Orgánico</SelectItem>
-                  <SelectItem value="directo">Directo</SelectItem>
-                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                  <SelectItem value="otro">Otro</SelectItem>
+                  {SOURCE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
@@ -139,17 +157,17 @@ export function PatientForm() {
 
       <div className="space-y-2">
         <Label htmlFor="notes">Notas Internas</Label>
-        <Textarea id="notes" placeholder="Información adicional relevante..." {...register("notes")} className="h-24" />
+        <Textarea
+          id="notes"
+          placeholder="Información adicional relevante..."
+          {...register("notes")}
+          className="h-24"
+        />
         {errors.notes && <p className="text-sm text-red-500">{errors.notes.message}</p>}
       </div>
 
       <div className="flex justify-end gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push("/admin/patients")}
-          disabled={isLoading}
-        >
+        <Button type="button" variant="outline" onClick={() => router.push("/admin/patients")} disabled={isLoading}>
           Cancelar
         </Button>
         <Button type="submit" disabled={isLoading} className="bg-[#162439] hover:bg-[#1E304D] text-white">

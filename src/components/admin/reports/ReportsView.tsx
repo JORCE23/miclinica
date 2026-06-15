@@ -101,7 +101,7 @@ export function ReportsView() {
                 <RechartsTooltip 
                   cursor={{stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '3 3'}}
                   contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
-                  formatter={(value: number) => [`$${value.toLocaleString()}`, 'Ingresos']}
+                  formatter={(value: any) => [`$${value.toLocaleString()}`, 'Ingresos']}
                 />
                 <Line type="monotone" dataKey="ingresos" stroke="#162439" strokeWidth={3} dot={{r: 4, fill: '#162439'}} activeDot={{r: 6}} />
               </LineChart>
@@ -120,7 +120,7 @@ export function ReportsView() {
                 <RechartsTooltip 
                   cursor={{fill: '#f1f5f9'}}
                   contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
-                  formatter={(value: number) => [`${value} citas`, 'Frecuencia']}
+                  formatter={(value: any) => [`${value} citas`, 'Frecuencia']}
                 />
                 <Bar dataKey="citas" fill="#7B9AB5" radius={[0, 4, 4, 0]} barSize={24} />
               </BarChart>

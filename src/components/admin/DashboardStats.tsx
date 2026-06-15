@@ -148,7 +148,7 @@ export function DashboardStats() {
                     <RechartsTooltip 
                       cursor={{fill: '#f1f5f9'}}
                       contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
-                      formatter={(value: number) => [`$${value.toLocaleString()}`, 'Ingresos']}
+                      formatter={(value: any) => [`$${value.toLocaleString()}`, 'Ingresos']}
                     />
                     <Bar dataKey="ingresos" fill="#162439" radius={[4, 4, 0, 0]} barSize={32} />
                   </BarChart>
