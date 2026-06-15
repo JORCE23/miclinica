@@ -117,7 +117,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
             <Input 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar..." 
+              placeholder="Buscar atención..." 
               className="pl-9 bg-white w-full" 
             />
           </div>
