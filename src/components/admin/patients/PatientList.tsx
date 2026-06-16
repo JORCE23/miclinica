@@ -5,11 +5,12 @@ import { usePatients } from "@/hooks/usePatients"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Search, ExternalLink, Trash2 } from "lucide-react"
+import { Search, ExternalLink, UserX } from "lucide-react"
 import Link from "next/link"
 import { formatRut } from "@/lib/validations/rut"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
 import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 export function PatientList() {
   const { data: patients, isLoading, error } = usePatients()
@@ -18,7 +19,7 @@ export function PatientList() {
   const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
 
-  const handleDelete = async () => {
+  const handleDeactivate = async () => {
     if (!patientToDelete) return
     setIsDeleting(true)
     try {
@@ -27,11 +28,12 @@ export function PatientList() {
       })
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || "Error al borrar el paciente")
+        throw new Error(errorData.error || "Error al desactivar el paciente")
       }
+      toast.success("Paciente desactivado. Su historial clínico se conserva íntegro.")
       queryClient.invalidateQueries({ queryKey: ["patients"] })
     } catch (error: any) {
-      alert(error.message)
+      toast.error(error.message)
     } finally {
       setIsDeleting(false)
       setPatientToDelete(null)
@@ -101,13 +103,14 @@ export function PatientList() {
                         <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
                             Ver Ficha <ExternalLink className="ml-2 h-4 w-4" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-amber-600 hover:text-amber-800 hover:bg-amber-50"
                           onClick={() => setPatientToDelete(patient.id)}
+                          title="Desactivar paciente"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <UserX className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -126,11 +129,11 @@ export function PatientList() {
       <ConfirmDialog
         open={!!patientToDelete}
         onOpenChange={(open) => !open && setPatientToDelete(null)}
-        title="¿Borrar paciente?"
-        description="Esta acción es irreversible. Se borrará el paciente junto con todo su historial médico, citas, y puntos de fidelidad."
-        confirmText={isDeleting ? "Borrando..." : "Borrar"}
+        title="¿Desactivar paciente?"
+        description="El paciente dejará de aparecer en la lista activa. Su historial clínico, citas y puntos de fidelidad se conservan íntegramente y puede ser reactivado desde su ficha."
+        confirmText={isDeleting ? "Desactivando..." : "Desactivar"}
         cancelText="Cancelar"
-        onConfirm={handleDelete}
+        onConfirm={handleDeactivate}
         isDanger={true}
       />
     </div>
