@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { logAudit } from "@/lib/security/audit"
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -54,6 +55,14 @@ export async function POST(request: Request, { params }: { params: { id: string 
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+    await logAudit(supabase, {
+      clinicId:  profile.clinic_id,
+      actorId:   user.id,
+      action:    "CREATE_PROCEDURE",
+      patientId: params.id,
+      recordId:  data.id,
+    })
 
     return NextResponse.json(data, { status: 201 })
   } catch (error: any) {

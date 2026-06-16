@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { logAudit } from "@/lib/security/audit"
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -90,6 +91,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+    if (status === "completada" && appointment.status !== "completada") {
+      await logAudit(supabase, {
+        clinicId:  profile.clinic_id,
+        actorId:   user.id,
+        action:    "COMPLETE_APPOINTMENT",
+        patientId: appointment.patient_id,
+        recordId:  params.id,
+      })
+    }
 
     return NextResponse.json(data)
   } catch (error: any) {
