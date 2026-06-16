@@ -242,8 +242,8 @@ export default function PublicBookingPage({ params }: { params: { slug: string }
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-700">Email (Opcional)</label>
-                      <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="correo@ejemplo.com" />
+                      <label className="text-sm font-medium text-slate-700">Email *</label>
+                      <Input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="correo@ejemplo.com" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-slate-700">Teléfono (Opcional)</label>
@@ -265,7 +265,7 @@ export default function PublicBookingPage({ params }: { params: { slug: string }
                     <Button 
                       type="submit" 
                       className="w-full text-lg py-6"
-                      disabled={bookMutation.isPending || rut.length < 8 || !fullName}
+                      disabled={bookMutation.isPending || rut.length < 8 || !fullName || !email}
                     >
                       {bookMutation.isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Confirmar Reserva"}
                     </Button>
