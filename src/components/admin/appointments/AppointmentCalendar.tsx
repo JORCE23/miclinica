@@ -48,7 +48,7 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
       <div className="flex items-center gap-2">
         <button
           onClick={goToCurrent}
@@ -160,7 +160,7 @@ export function AppointmentCalendar() {
   maxTime.setHours(22, 0, 0)
 
   return (
-    <div className="h-[620px] w-full bg-card rounded-2xl shadow-soft border border-border/70 p-3 md:p-5 calendar-container">
+    <div className="h-[760px] w-full bg-card rounded-2xl shadow-soft border border-border/70 p-3 md:p-5 calendar-container">
       <Calendar
         localizer={localizer}
         events={events}

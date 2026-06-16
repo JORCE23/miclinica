@@ -231,6 +231,10 @@
 .calendar-container .rbc-event {
   @apply p-0 transition-transform hover:scale-[1.02] hover:z-50;
 }
+/* Ocultamos la etiqueta de hora por defecto: el evento ya muestra su propia hora */
+.calendar-container .rbc-event-label {
+  display: none;
+}
 .calendar-container .rbc-event.rbc-selected {
   @apply outline outline-2 outline-primary/50 shadow-md;
 }
