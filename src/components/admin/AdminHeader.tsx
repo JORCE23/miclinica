@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, Bell, Plus, LogOut, Package, CalendarClock, Calendar, Cake, AlertTriangle } from "lucide-react"
+import { Search, Bell, Plus, LogOut, Package, CalendarClock, Calendar, Cake, AlertTriangle, ChevronDown, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -48,29 +48,29 @@ export function AdminHeader({ profile }: { profile?: any }) {
   }
 
   return (
-    <header className="hidden md:flex h-16 bg-white/80 backdrop-blur-md border-b border-[#D8E2ED]/70 items-center justify-between px-6 gap-4 sticky top-0 z-30">
-      <form onSubmit={handleSearch} className="flex-1 max-w-xl relative hidden md:block">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7E94] pointer-events-none" />
+    <header className="hidden md:flex h-16 bg-white/75 backdrop-blur-xl border-b border-[#E2E8F0] items-center justify-between px-5 gap-4 sticky top-0 z-30">
+      <form onSubmit={handleSearch} className="flex-1 max-w-md relative hidden md:block">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8] pointer-events-none" />
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-[#F0F3F7] border-transparent text-[#162439] placeholder:text-[#6B7E94] focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:bg-white focus-visible:border-[#D8E2ED] rounded-xl pl-10 h-10 transition-all"
-          placeholder="Buscar pacientes... (Presiona Enter)"
+          className="w-full bg-[#F1F5F9] border-transparent text-[#162439] placeholder:text-[#94a3b8] focus-visible:ring-2 focus-visible:ring-brand/15 focus-visible:bg-white focus-visible:border-brand/30 rounded-xl pl-10 h-10 transition-all"
+          placeholder="Buscar pacientes..."
         />
       </form>
 
-      <div className="flex items-center gap-3 ml-auto">
+      <div className="flex items-center gap-2 ml-auto">
         <Link href="/admin/appointments/new" className="hidden sm:flex">
-          <Button className="bg-[#162439] hover:bg-[#1E304D] text-white rounded-xl shadow-soft transition-all hover:shadow-md">
-            <Plus className="w-4 h-4 mr-2" /> Nueva Cita
+          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow transition-all font-medium">
+            <Plus className="w-4 h-4 mr-1.5" /> Nueva Cita
           </Button>
         </Link>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="relative p-2 text-[#6B7E94] hover:text-[#162439] hover:bg-[#F0F3F7] rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
-            <Bell className="h-5 w-5" />
+          <DropdownMenuTrigger className="relative h-9 w-9 flex items-center justify-center text-[#64748b] hover:text-[#162439] hover:bg-[#F1F5F9] rounded-xl transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
+            <Bell className="h-[18px] w-[18px]" />
             {notifItems.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center">
+              <span className="absolute top-1 right-1 min-w-[17px] h-[17px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center">
                 {notifItems.length}
               </span>
             )}
@@ -106,28 +106,46 @@ export function AdminHeader({ profile }: { profile?: any }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
+        <div className="h-7 w-px bg-[#E2E8F0] mx-1" />
+
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 hover:bg-[#F0F3F7] p-1.5 pr-3 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
+          <DropdownMenuTrigger className="group/profile flex items-center gap-2.5 hover:bg-[#F1F5F9] py-1 pl-1 pr-2.5 rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
             {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+              <img src={profile.avatar_url} alt="Avatar" className="w-9 h-9 rounded-xl object-cover ring-2 ring-white shadow-soft" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-[#7B9AB5] flex items-center justify-center text-xs font-bold text-white">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-sm font-bold text-white ring-2 ring-white shadow-soft">
                 {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
-            <div className="hidden md:flex flex-col text-left">
+            <div className="hidden md:flex flex-col text-left leading-tight">
               <span className="text-sm font-semibold text-[#162439] leading-none">{profile?.full_name?.split(" ")[0] || "Admin"}</span>
-              <span className="text-[10px] text-[#6B7E94] mt-0.5">Mi Perfil</span>
+              <span className="text-[11px] text-[#94a3b8] mt-0.5">Mi Perfil</span>
             </div>
+            <ChevronDown className="h-4 w-4 text-[#94a3b8] transition-transform group-data-[state=open]/profile:rotate-180" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem className="cursor-pointer" render={<Link href="/admin/settings" className="w-full" />}>
-              Configuración
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" /> Cerrar sesión
-            </DropdownMenuItem>
+          <DropdownMenuContent align="end" className="w-60 p-0 overflow-hidden">
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-muted/30">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="w-10 h-10 rounded-xl object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-sm font-bold text-white">
+                  {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-[#162439] truncate">{profile?.full_name || "Admin"}</p>
+                <p className="text-xs text-muted-foreground">Administrador</p>
+              </div>
+            </div>
+            <div className="p-1">
+              <DropdownMenuItem className="cursor-pointer rounded-lg" render={<Link href="/admin/settings" className="w-full" />}>
+                <User className="h-4 w-4 mr-2 text-muted-foreground" /> Configuración
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-red-600 cursor-pointer rounded-lg" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" /> Cerrar sesión
+              </DropdownMenuItem>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
