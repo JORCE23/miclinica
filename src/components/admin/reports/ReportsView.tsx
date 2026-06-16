@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from "recharts"
 import { Button } from "@/components/ui/button"
 import { Download, Calendar as CalendarIcon, Loader2 } from "lucide-react"
 
@@ -31,6 +31,7 @@ export function ReportsView() {
   }
 
   const { monthlyRevenue = [], servicesData = [], keyMetrics = {} } = data || {}
+  const clpFmt = (n: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(n || 0)
 
   const handleExportCSV = () => {
     if (!data) return
@@ -94,17 +95,24 @@ export function ReportsView() {
           <h2 className="text-lg font-semibold text-[#162439] mb-6">Evolución de Ingresos</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyRevenue}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7E94', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7E94', fontSize: 12}} dx={-10} tickFormatter={(value) => `$${value/1000}k`} />
-                <RechartsTooltip 
-                  cursor={{stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '3 3'}}
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
-                  formatter={(value: any) => [`$${value.toLocaleString()}`, 'Ingresos']}
+              <AreaChart data={monthlyRevenue} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="repRevFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#0D9488" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF2F6" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={8} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} width={48} tickFormatter={(value) => `$${value/1000}k`} />
+                <RechartsTooltip
+                  cursor={{stroke: '#0D9488', strokeWidth: 1, strokeDasharray: '4 4'}}
+                  contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)', fontSize: '13px'}}
+                  labelStyle={{fontWeight: 600, color: '#162439'}}
+                  formatter={(value: any) => [clpFmt(Number(value)), 'Ingresos']}
                 />
-                <Line type="monotone" dataKey="ingresos" stroke="#162439" strokeWidth={3} dot={{r: 4, fill: '#162439'}} activeDot={{r: 6}} />
-              </LineChart>
+                <Area type="monotone" dataKey="ingresos" stroke="#0D9488" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#0D9488', stroke: '#fff', strokeWidth: 2}} />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -113,16 +121,22 @@ export function ReportsView() {
           <h2 className="text-lg font-semibold text-[#162439] mb-6">Servicios más populares</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={servicesData} layout="vertical" margin={{ left: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
-                <XAxis type="number" axisLine={false} tickLine={false} tick={{fill: '#6B7E94', fontSize: 12}} />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#162439', fontSize: 12, fontWeight: 500}} />
-                <RechartsTooltip 
-                  cursor={{fill: '#f1f5f9'}}
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+              <BarChart data={servicesData} layout="vertical" margin={{ left: 20 }}>
+                <defs>
+                  <linearGradient id="repBar" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#0D9488" />
+                    <stop offset="100%" stopColor="#2DD4BF" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="4 4" horizontal={false} stroke="#EEF2F6" />
+                <XAxis type="number" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#162439', fontSize: 12, fontWeight: 500}} width={110} />
+                <RechartsTooltip
+                  cursor={{fill: 'rgb(13 148 136 / 0.06)'}}
+                  contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)', fontSize: '13px'}}
                   formatter={(value: any) => [`${value} citas`, 'Frecuencia']}
                 />
-                <Bar dataKey="citas" fill="#7B9AB5" radius={[0, 4, 4, 0]} barSize={24} />
+                <Bar dataKey="citas" fill="url(#repBar)" radius={[0, 6, 6, 0]} barSize={22} />
               </BarChart>
             </ResponsiveContainer>
           </div>
