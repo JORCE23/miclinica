@@ -121,12 +121,16 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
         toast.error("El correo electrónico no es válido")
         return
       }
-      if (np.rut.trim() && !validateRut(np.rut)) {
+      if (!np.rut.trim()) {
+        toast.error("El RUT es obligatorio")
+        return
+      }
+      if (!validateRut(np.rut)) {
         toast.error("El RUT no es válido")
         return
       }
-      if (np.phone.trim() && !/\d/.test(np.phone)) {
-        toast.error("El teléfono debe contener números")
+      if (np.phone.replace(/\D/g, "").length < 8) {
+        toast.error("El teléfono es obligatorio (ingresa un número válido)")
         return
       }
       setCreatingPatient(true)
@@ -225,7 +229,7 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">RUT</Label>
+              <Label className="text-xs">RUT *</Label>
               <Input
                 value={np.rut}
                 onChange={(e) => setNp({ ...np, rut: formatRut(e.target.value) })}
@@ -237,7 +241,7 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
               )}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Teléfono</Label>
+              <Label className="text-xs">Teléfono *</Label>
               <Input
                 value={np.phone}
                 onChange={(e) => setNp({ ...np, phone: e.target.value.replace(/[^0-9+\s()-]/g, "") })}
