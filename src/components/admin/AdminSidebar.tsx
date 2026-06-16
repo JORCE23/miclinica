@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, ChevronLeft, ChevronRight } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, ChevronLeft, ChevronRight, Bot } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -18,6 +18,7 @@ const routes = [
   { label: "Fidelidad",        icon: Gift,            href: "/admin/loyalty"       },
   { label: "Marketing",        icon: Megaphone,       href: "/admin/marketing"     },
   { label: "Automatizaciones", icon: Zap,             href: "/admin/automations"   },
+  { label: "Agente IA",        icon: Bot,             href: "/admin/ai-agent"      },
   { label: "Reportes",         icon: BarChart2,       href: "/admin/reports"       },
   { label: "Configuración",    icon: Settings,        href: "/admin/settings"      },
 ]
@@ -61,7 +62,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
     if (route.label === "Reportes" && !permissions?.can_view_reports) return false
 
     // Rutas exclusivas para admin
-    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración"].includes(route.label)) {
+    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración", "Agente IA"].includes(route.label)) {
       if (profile?.role !== 'clinic_admin') return false
     }
 
