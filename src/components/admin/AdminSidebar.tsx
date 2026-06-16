@@ -84,21 +84,14 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
             onClick={() => isMobile && setOpen(false)}
             title={isCollapsed ? route.label : undefined}
             className={cn(
-              "group relative flex items-center gap-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-              isCollapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5",
+              "group relative flex items-center gap-2.5 rounded-full text-sm font-medium transition-all duration-200",
+              isCollapsed ? "justify-center px-0 py-2.5" : "px-4 py-2.5",
               isActive
-                ? "bg-white/[0.08] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
-                : "text-white/55 hover:bg-white/[0.05] hover:text-white"
+                ? "bg-white/[0.12] text-white ring-1 ring-inset ring-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]"
+                : "text-white/55 hover:bg-white/[0.06] hover:text-white"
             )}
           >
-            {/* Indicador de activo */}
-            <span
-              className={cn(
-                "absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-brand-light transition-all duration-200",
-                isActive ? "opacity-100" : "opacity-0"
-              )}
-            />
-            <route.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform", isActive ? "text-brand-light" : "")} />
+            <route.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-105", isActive ? "text-brand-light" : "")} />
             {!isCollapsed && <span className="truncate">{route.label}</span>}
           </Link>
         )
@@ -175,7 +168,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
             <div className="p-4 border-t border-white/10">
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-red-400 hover:bg-white/5 w-full text-left"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-red-400 hover:bg-white/5 w-full text-left"
               >
                 <LogOut className="h-5 w-5" />
                 Cerrar sesión
