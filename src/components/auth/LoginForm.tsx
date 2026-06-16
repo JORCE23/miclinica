@@ -1,7 +1,6 @@
 ﻿"use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +12,6 @@ export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -38,7 +36,7 @@ export function LoginForm() {
       
       // Explicit redirect works more reliably than refresh depending on Next version
       window.location.href = "/" // Forces full reload so middleware catches the session cookie
-    } catch (err) {
+    } catch {
       toast.error("Error inesperado", {
         description: "Ocurrió un error al intentar iniciar sesión.",
       })

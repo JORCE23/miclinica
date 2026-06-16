@@ -1,5 +1,4 @@
 import { DashboardStats } from "@/components/admin/DashboardStats"
-import { LayoutDashboard } from "lucide-react"
 
 export const metadata = {
   title: "Dashboard | Admin",

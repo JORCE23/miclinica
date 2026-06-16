@@ -25,7 +25,7 @@ export default async function AdminLayout({
     redirect("/client/dashboard")
   }
 
-  let permissions = null
+  const permissions = null
 
 
   return (

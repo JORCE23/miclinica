@@ -23,7 +23,7 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
   const queryClient = useQueryClient()
   const isEditing = !!initialData
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<ProfessionalFormValues>({
+  const { register, handleSubmit, formState: { errors }, watch, control } = useForm<ProfessionalFormValues>({
     resolver: zodResolver(professionalSchema),
     defaultValues: initialData || {
       is_active: true,
@@ -85,7 +85,7 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
     }
   }
 
-  const isActive = watch("is_active")
+  watch("is_active")
 
   return (
     <div className="bg-white p-6 rounded-xl border border-[#D8E2ED] shadow-sm max-w-2xl">

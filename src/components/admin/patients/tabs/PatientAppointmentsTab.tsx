@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
-import { Plus, Search, Filter, Eye, List, CheckCircle2, Circle, XCircle, Clock } from "lucide-react"
+import { Plus, Search, Filter, Eye, List, CheckCircle2, XCircle, Clock } from "lucide-react"
 import Link from "next/link"
 import { format, isToday, isFuture, isPast, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
@@ -86,7 +86,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
               <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                 {appointment.price !== undefined && appointment.price !== null && <p><span className="font-semibold">Precio:</span> ${Number(appointment.price).toLocaleString()}</p>}
                 {appointment.duration_minutes !== undefined && appointment.duration_minutes !== null && <p><span className="font-semibold">Duración:</span> {appointment.duration_minutes} min</p>}
-                {appointment.notes && <p className="italic mt-1 text-slate-500">"{appointment.notes}"</p>}
+                {appointment.notes && <p className="italic mt-1 text-slate-500">&ldquo;{appointment.notes}&rdquo;</p>}
               </div>
             )}
           </div>

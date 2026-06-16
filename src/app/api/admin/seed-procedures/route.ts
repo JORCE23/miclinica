@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import fs from "fs/promises"
 import path from "path"
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const supabase = createClient()
     

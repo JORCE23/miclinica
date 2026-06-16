@@ -3,7 +3,6 @@
 import { useAppointments } from "@/hooks/useAppointments"
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -14,7 +13,7 @@ import { es } from "date-fns/locale"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { AppointmentStatusActions } from "./AppointmentStatusActions"
 import { motion } from "framer-motion"
-import { Calendar as CalendarIcon, Clock, User, Sparkles, Receipt } from "lucide-react"
+import { Calendar as CalendarIcon, Clock, Sparkles, Receipt } from "lucide-react"
 
 const container = {
   hidden: { opacity: 0 },
