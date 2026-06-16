@@ -40,47 +40,29 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { patient_id, points, description, type } = body // type: 'ajuste'
+    const { patient_id, points, description, type } = body
 
     if (!patient_id || points === undefined) {
       return NextResponse.json({ error: "Faltan datos" }, { status: 400 })
     }
 
-    // Primero obtener la cuenta actual para saber el balance, o crearla si no existe
-    let { data: account } = await supabase
-      .from("loyalty_accounts")
-      .select("*")
-      .eq("patient_id", patient_id)
-      .single()
-
+    const ALLOWED_TYPES = new Set(["ganados", "canjeados", "ajuste", "expirados"])
+    const resolvedType = type && ALLOWED_TYPES.has(type) ? type : "ajuste"
     const pointsNumber = Number(points)
 
-    if (!account) {
-      const { data: newAcc } = await supabase.from("loyalty_accounts").insert({
-        clinic_id: profile.clinic_id,
-        patient_id,
-        total_points: pointsNumber > 0 ? pointsNumber : 0,
-        lifetime_points: pointsNumber > 0 ? pointsNumber : 0,
-      }).select().single()
-      account = newAcc
-    } else {
-      const newTotal = Math.max(0, account.total_points + pointsNumber)
-      const newLifetime = pointsNumber > 0 ? account.lifetime_points + pointsNumber : account.lifetime_points
-
-      await supabase.from("loyalty_accounts").update({
-        total_points: newTotal,
-        lifetime_points: newLifetime
-      }).eq("id", account.id)
+    if (!Number.isInteger(pointsNumber)) {
+      return NextResponse.json({ error: "Los puntos deben ser un número entero" }, { status: 400 })
     }
 
-    // Registrar la transacción
-    await supabase.from("loyalty_transactions").insert({
-      clinic_id: profile.clinic_id,
-      patient_id,
-      type: type || "ajuste",
-      points: pointsNumber,
-      description: description || "Ajuste manual",
+    const { error: rpcError } = await supabase.rpc("adjust_loyalty_points", {
+      p_clinic_id:   profile.clinic_id,
+      p_patient_id:  patient_id,
+      p_points:      pointsNumber,
+      p_description: description || "Ajuste manual",
+      p_type:        resolvedType,
     })
+
+    if (rpcError) return NextResponse.json({ error: rpcError.message }, { status: 400 })
 
     return NextResponse.json({ message: "Puntos ajustados" }, { status: 200 })
   } catch (error: any) {

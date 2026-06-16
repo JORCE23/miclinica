@@ -33,46 +33,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // 2. Si se marca como completada y se asignan puntos
     if (status === "completada" && appointment.status !== "completada" && assignPoints) {
       const points = appointment.service?.loyalty_points_earned || 0
-      
+
       if (points > 0) {
-        // Insertar transacción de fidelidad
-        const { error: txError } = await supabase.from("loyalty_transactions").insert({
-          clinic_id: profile.clinic_id,
-          patient_id: appointment.patient_id,
-          appointment_id: appointment.id,
-          type: "ganados",
-          points: points,
-          description: `Puntos ganados por servicio completado`,
+        const { error: rpcError } = await supabase.rpc("award_loyalty_points", {
+          p_clinic_id:      profile.clinic_id,
+          p_patient_id:     appointment.patient_id,
+          p_appointment_id: appointment.id,
+          p_points:         points,
         })
 
-        if (txError) throw txError
-
-        // Actualizar o crear la cuenta de fidelidad
-        const { data: loyaltyAccount } = await supabase
-          .from("loyalty_accounts")
-          .select("*")
-          .eq("patient_id", appointment.patient_id)
-          .eq("clinic_id", profile.clinic_id)
-          .single()
-
-        if (loyaltyAccount) {
-          await supabase
-            .from("loyalty_accounts")
-            .update({
-              total_points: loyaltyAccount.total_points + points,
-              lifetime_points: loyaltyAccount.lifetime_points + points,
-            })
-            .eq("id", loyaltyAccount.id)
-        } else {
-          await supabase
-            .from("loyalty_accounts")
-            .insert({
-              clinic_id: profile.clinic_id,
-              patient_id: appointment.patient_id,
-              total_points: points,
-              lifetime_points: points,
-            })
-        }
+        if (rpcError) throw rpcError
       }
     }
 
