@@ -223,7 +223,7 @@
   @apply border-l border-slate-100;
 }
 .calendar-container .rbc-timeslot-group {
-  @apply border-b border-slate-100 min-h-[34px];
+  @apply border-b border-slate-100 min-h-[38px];
 }
 .calendar-container .rbc-time-gutter .rbc-timeslot-group {
   @apply border-r border-slate-100 bg-slate-50/30 text-xs font-medium text-slate-500 flex justify-center;
