@@ -134,6 +134,40 @@
     transform: translateY(-2px);
   }
 
+  /* Patrón de rejilla sutil para paneles de marca */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  /* Tarjeta de cristal (glassmorphism) */
+  .glass-panel {
+    background: rgb(255 255 255 / 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  /* Encabezado de página reutilizable (look premium) */
+  .page-header {
+    @apply relative overflow-hidden rounded-2xl bg-brand-panel text-white shadow-elevated px-6 py-6 md:px-8 md:py-7;
+  }
+
+  /* Orbes flotantes animados */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float 9s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+
   /* Scrollbar fino para el sidebar y áreas con scroll */
   .sidebar-scroll {
     scrollbar-width: thin;

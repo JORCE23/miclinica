@@ -72,7 +72,7 @@ export function PatientList() {
         </div>
       </div>
 
-      <div className="border rounded-md bg-white">
+      <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
         {isLoading ? (
           <div className="p-4 space-y-4">
             <Skeleton className="h-10 w-full" />

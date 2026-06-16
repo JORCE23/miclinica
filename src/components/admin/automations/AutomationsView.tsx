@@ -109,13 +109,13 @@ export function AutomationsView() {
           const Icon = meta.icon
 
           return (
-            <div 
-              key={automation.type} 
-              className={`bg-white p-6 rounded-xl border ${automation.is_active ? 'border-[#7B9AB5] shadow-md' : 'border-[#D8E2ED] shadow-sm'} transition-all`}
+            <div
+              key={automation.type}
+              className={`p-6 rounded-2xl border bg-card transition-all hover-lift hover:shadow-card ${automation.is_active ? 'border-brand/30 shadow-card' : 'border-border/70 shadow-soft hover:border-brand/30'}`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-lg ${automation.is_active ? 'bg-[#162439] text-white' : 'bg-[#F0F3F7] text-[#6B7E94]'}`}>
+                  <div className={`p-3 rounded-xl ${automation.is_active ? 'bg-brand text-white' : 'bg-brand-soft text-brand'}`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <div>

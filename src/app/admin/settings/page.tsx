@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/admin/PageHeader"
 import { Settings, Building2, MapPin, Phone, Mail } from "lucide-react"
 import { toast } from "sonner"
 
@@ -65,19 +66,13 @@ export default function SettingsPage() {
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-3 text-slate-900 dark:text-white">
-            <Settings className="h-8 w-8 text-sky-500" />
-            Configuración de la Clínica
-          </h2>
-          <p className="text-muted-foreground mt-2">
-            Administra la información pública y los detalles de tu clínica.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Configuración de la Clínica"
+        description="Administra la información pública y los detalles de tu clínica."
+        icon={Settings}
+      />
 
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+      <Card className="rounded-2xl border border-border/70 bg-card shadow-soft">
         <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-6">
           <CardTitle className="text-lg">Información General</CardTitle>
           <CardDescription>

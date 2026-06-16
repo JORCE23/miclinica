@@ -69,7 +69,7 @@ export function ServiceList() {
 
   return (
     <>
-      <div className="relative w-full overflow-x-auto rounded-md border bg-card">
+      <div className="relative w-full overflow-x-auto rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
         <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow>

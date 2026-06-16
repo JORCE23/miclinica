@@ -4,8 +4,9 @@ import { useState } from "react"
 import { ServiceList } from "@/components/admin/services/ServiceList"
 import { ServiceForm } from "@/components/admin/services/ServiceForm"
 import { useCreateService } from "@/hooks/useServices"
+import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, Sparkles } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -31,18 +32,15 @@ export default function ServicesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Catálogo de Servicios</h1>
-          <p className="text-muted-foreground">
-            Gestiona los procedimientos y servicios que ofrece la clínica.
-          </p>
-        </div>
-        
+      <PageHeader
+        title="Catálogo de Servicios"
+        description="Gestiona los procedimientos y servicios que ofrece la clínica."
+        icon={Sparkles}
+      >
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-[#162439] hover:bg-[#1E304D] text-white">
+              <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
                 <Plus className="mr-2 h-4 w-4" /> Nuevo Servicio
               </Button>
             }
@@ -51,13 +49,13 @@ export default function ServicesPage() {
             <DialogHeader>
               <DialogTitle>Crear Nuevo Servicio</DialogTitle>
             </DialogHeader>
-            <ServiceForm 
-              onSubmit={handleCreateSubmit} 
-              isSubmitting={createService.isPending} 
+            <ServiceForm
+              onSubmit={handleCreateSubmit}
+              isSubmitting={createService.isPending}
             />
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       <ServiceList />
     </div>
