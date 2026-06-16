@@ -16,9 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Appointment } from "@/types"
 import { useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { UserPlus, UserCheck } from "lucide-react"
 
 interface AppointmentFormProps {
   initialData?: Appointment
@@ -66,6 +68,11 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
 
   const selectedServiceId = watch("service_id")
 
+  // Modo de paciente: seleccionar existente o crear uno nuevo en el momento
+  const [patientMode, setPatientMode] = useState<"existing" | "new">("existing")
+  const [creatingPatient, setCreatingPatient] = useState(false)
+  const [np, setNp] = useState({ full_name: "", rut: "", phone: "", email: "", birth_date: "" })
+
   // Auto-completar duración y precio cuando cambia el servicio
   useEffect(() => {
     if (selectedServiceId && services) {
@@ -90,35 +97,124 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
     })
   }
 
+  // Wrapper de envío: si el modo es "nuevo paciente", lo crea primero y luego agenda.
+  const onSubmitWrapper = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (patientMode === "new" && !defaultPatientId) {
+      if (!np.full_name.trim() || !np.email.trim()) {
+        toast.error("Nombre y correo del paciente nuevo son obligatorios")
+        return
+      }
+      setCreatingPatient(true)
+      try {
+        const res = await fetch("/api/patients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name: np.full_name.trim(),
+            email: np.email.trim(),
+            rut: np.rut.trim() || undefined,
+            phone: np.phone.trim() || undefined,
+            birth_date: np.birth_date || undefined,
+            source: "directo",
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok || !data?.id) {
+          toast.error(data?.error || "No se pudo crear el paciente")
+          setCreatingPatient(false)
+          return
+        }
+        setValue("patient_id", data.id, { shouldValidate: true })
+        toast.success("Paciente creado")
+      } catch {
+        toast.error("No se pudo crear el paciente")
+        setCreatingPatient(false)
+        return
+      }
+      setCreatingPatient(false)
+    }
+    handleSubmit(handleFormSubmit)()
+  }
+
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+    <form onSubmit={onSubmitWrapper} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="patient_id">Paciente *</Label>
-        <Controller
-          name="patient_id"
-          control={control}
-          render={({ field }) => (
-            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultPatientId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar paciente">
-                  {(value: string) => {
-                    if (!value) return "Seleccionar paciente"
-                    const patient = patients?.find((p) => p.id === value)
-                    return patient ? `${patient.full_name} (${patient.rut || patient.email})` : "Seleccionar paciente"
-                  }}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {patients?.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.full_name} ({patient.rut || patient.email})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="patient_id">Paciente *</Label>
+          {!defaultPatientId && (
+            <div className="flex gap-1 bg-muted/60 rounded-lg p-0.5">
+              <button
+                type="button"
+                onClick={() => setPatientMode("existing")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${patientMode === "existing" ? "bg-card text-brand-dark shadow-soft" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <UserCheck className="h-3.5 w-3.5" /> Existente
+              </button>
+              <button
+                type="button"
+                onClick={() => setPatientMode("new")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${patientMode === "new" ? "bg-card text-brand-dark shadow-soft" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <UserPlus className="h-3.5 w-3.5" /> Nuevo
+              </button>
+            </div>
           )}
-        />
-        {errors.patient_id && <p className="text-sm text-red-500">{errors.patient_id.message}</p>}
+        </div>
+
+        {(patientMode === "existing" || defaultPatientId) ? (
+          <>
+            <Controller
+              name="patient_id"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!defaultPatientId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar paciente">
+                      {(value: string) => {
+                        if (!value) return "Seleccionar paciente"
+                        const patient = patients?.find((p) => p.id === value)
+                        return patient ? `${patient.full_name} (${patient.rut || patient.email})` : "Seleccionar paciente"
+                      }}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {patients?.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                        {patient.full_name} ({patient.rut || patient.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.patient_id && <p className="text-sm text-red-500">{errors.patient_id.message}</p>}
+          </>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl border border-border/70 bg-muted/20">
+            <div className="sm:col-span-2 space-y-1.5">
+              <Label className="text-xs">Nombre completo *</Label>
+              <Input value={np.full_name} onChange={(e) => setNp({ ...np, full_name: e.target.value })} placeholder="Ej. Camila Rojas" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">RUT</Label>
+              <Input value={np.rut} onChange={(e) => setNp({ ...np, rut: e.target.value })} placeholder="12.345.678-9" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Teléfono</Label>
+              <Input value={np.phone} onChange={(e) => setNp({ ...np, phone: e.target.value })} placeholder="+56 9 ..." />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Correo electrónico *</Label>
+              <Input type="email" value={np.email} onChange={(e) => setNp({ ...np, email: e.target.value })} placeholder="correo@ejemplo.com" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Fecha de nacimiento</Label>
+              <Input type="date" value={np.birth_date} onChange={(e) => setNp({ ...np, birth_date: e.target.value })} />
+            </div>
+            <p className="sm:col-span-2 text-[11px] text-muted-foreground">Se creará el paciente y luego se agendará la cita automáticamente.</p>
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -254,8 +350,8 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isSubmitting} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
-          {isSubmitting ? "Guardando..." : initialData ? "Actualizar Cita" : "Agendar Cita"}
+        <Button type="submit" disabled={isSubmitting || creatingPatient} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
+          {creatingPatient ? "Creando paciente..." : isSubmitting ? "Guardando..." : initialData ? "Actualizar Cita" : "Agendar Cita"}
         </Button>
       </div>
     </form>

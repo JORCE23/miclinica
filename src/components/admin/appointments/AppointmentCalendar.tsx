@@ -152,17 +152,12 @@ export function AppointmentCalendar() {
     }
   }
 
-  // Dynamically calculate minTime to prevent squishing early events
-  const earliestHour = events.reduce((min, event) => {
-    const hours = event.start.getHours()
-    return hours < min ? hours : min
-  }, 8) // default minimum is 08:00
-
+  // Horario fijo de la agenda: 08:00 a 22:00
   const minTime = new Date()
-  minTime.setHours(earliestHour, 0, 0)
-  
+  minTime.setHours(8, 0, 0)
+
   const maxTime = new Date()
-  maxTime.setHours(21, 0, 0)
+  maxTime.setHours(22, 0, 0)
 
   return (
     <div className="h-[600px] w-full bg-card rounded-2xl shadow-soft border border-border/70 p-4 md:p-6 calendar-container">
@@ -179,6 +174,8 @@ export function AppointmentCalendar() {
         onNavigate={setDate}
         min={minTime}
         max={maxTime}
+        step={30}
+        timeslots={1}
         components={{
           event: CustomEvent,
           toolbar: CustomToolbar,
