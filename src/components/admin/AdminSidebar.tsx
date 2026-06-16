@@ -106,7 +106,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "relative bg-[#162439] text-white flex-col hidden md:flex sticky top-0 h-screen shrink-0 border-r border-white/[0.06] transition-[width] duration-300 ease-in-out sidebar-scroll overflow-y-auto overflow-x-hidden",
+          "relative bg-brand-panel text-white flex-col hidden md:flex sticky top-0 h-screen shrink-0 border-r border-white/[0.06] transition-[width] duration-300 ease-in-out sidebar-scroll overflow-y-auto overflow-x-hidden",
           collapsed ? "w-[76px]" : "w-60"
         )}
       >
@@ -114,17 +114,18 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
         <button
           onClick={toggleCollapsed}
           aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
-          className="absolute -right-3 top-7 z-20 hidden md:flex h-6 w-6 items-center justify-center rounded-full bg-[#1E304D] text-white/80 border border-white/10 shadow-md hover:bg-steel hover:text-white transition-colors"
+          className="absolute -right-3 top-7 z-20 hidden md:flex h-6 w-6 items-center justify-center rounded-full bg-[#1E304D] text-white/80 border border-white/10 shadow-md hover:bg-brand hover:text-white transition-colors"
         >
           {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>
 
-        <div className={cn("border-b border-white/[0.06] flex justify-center items-center transition-all", collapsed ? "px-2 py-5" : "px-4 py-6")}>
-          <Link href="/admin/dashboard" className="flex items-center w-full justify-center">
+        <div className={cn("relative border-b border-white/[0.06] flex justify-center items-center transition-all", collapsed ? "px-2 py-5" : "px-4 py-7")}>
+          <div className="pointer-events-none absolute -top-4 right-3 h-20 w-24 rounded-full bg-brand/25 blur-2xl" />
+          <Link href="/admin/dashboard" className="relative flex items-center w-full justify-center">
             {collapsed ? (
-              <img src="/logo-medique-simbolo.png" alt="Medique" className="w-9 h-9 object-contain" />
+              <img src="/logo-medique-simbolo.png" alt="Medique" className="w-9 h-9 object-contain drop-shadow-[0_2px_8px_rgba(45,212,191,0.25)]" />
             ) : (
-              <img src="/logo3.png" alt="Medique Logo" className="w-[180px] h-auto object-contain" />
+              <img src="/logo3.png" alt="Medique Logo" className="w-[180px] h-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]" />
             )}
           </Link>
         </div>
@@ -148,18 +149,19 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
       </aside>
 
       {/* Mobile Header/Trigger (Only visible on small screens) */}
-      <div className="md:hidden flex items-center justify-between p-3 bg-[#162439] text-white sticky top-0 z-50 shadow-md">
+      <div className="md:hidden flex items-center justify-between p-3 bg-brand-panel text-white sticky top-0 z-50 shadow-md">
         <Link href="/admin/dashboard" className="flex items-center w-[60%] max-w-[140px]">
-          <img src="/logo3.png" alt="Medique Logo" className="h-auto w-full object-contain" />
+          <img src="/logo3.png" alt="Medique Logo" className="h-auto w-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]" />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger render={<Button variant="ghost" size="icon" className="text-white hover:bg-white/10" />}>
             <Menu className="h-6 w-6" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-[#162439] text-white border-r-white/10 p-0 flex flex-col sidebar-scroll">
-            <SheetHeader className="p-4 border-b border-white/10 flex justify-center items-center">
-              <SheetTitle className="text-white flex items-center justify-center w-full">
-                <img src="/logo3.png" alt="Medique Logo" className="w-[70%] max-w-[200px] h-auto object-contain" />
+          <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-brand-panel text-white border-r-white/10 p-0 flex flex-col sidebar-scroll">
+            <SheetHeader className="relative p-5 border-b border-white/10 flex justify-center items-center">
+              <div className="pointer-events-none absolute -top-2 right-6 h-20 w-24 rounded-full bg-brand/25 blur-2xl" />
+              <SheetTitle className="relative text-white flex items-center justify-center w-full">
+                <img src="/logo3.png" alt="Medique Logo" className="w-[70%] max-w-[200px] h-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]" />
               </SheetTitle>
             </SheetHeader>
             <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
