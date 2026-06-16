@@ -31,6 +31,14 @@ interface AppointmentFormProps {
 
 import { format } from "date-fns"
 
+const PRESET_DURATIONS = [15, 30, 45, 60, 90, 120, 150, 180]
+const durLabel = (m: number) => {
+  if (m < 60) return `${m} min`
+  const h = Math.floor(m / 60)
+  const mm = m % 60
+  return mm ? `${h} h ${mm} min` : `${h} h`
+}
+
 export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId }: AppointmentFormProps) {
   const { data: patients } = usePatients()
   const { data: services } = useServices(true) // Solo servicios activos
@@ -308,23 +316,30 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
 
       <div className="space-y-2">
         <Label htmlFor="scheduled_at">Fecha y Hora *</Label>
-        <Input 
-          id="scheduled_at" 
-          type="datetime-local" 
-          {...register("scheduled_at")} 
+        <Input
+          id="scheduled_at"
+          type="datetime-local"
+          step={900}
+          {...register("scheduled_at")}
         />
         {errors.scheduled_at && <p className="text-sm text-red-500">{errors.scheduled_at.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="duration_minutes">Duración (min) *</Label>
-          <Input 
-            id="duration_minutes" 
-            type="number" 
-            min="5" 
-            {...register("duration_minutes")} 
-          />
+          <Label htmlFor="duration_minutes">Duración *</Label>
+          <select
+            id="duration_minutes"
+            {...register("duration_minutes")}
+            className="w-full h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none transition-all focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/15"
+          >
+            {Array.from(new Set([...PRESET_DURATIONS, Number(watch("duration_minutes")) || 60]))
+              .filter((m) => m > 0)
+              .sort((a, b) => a - b)
+              .map((m) => (
+                <option key={m} value={m}>{durLabel(m)}</option>
+              ))}
+          </select>
           {errors.duration_minutes && <p className="text-sm text-red-500">{errors.duration_minutes.message}</p>}
         </div>
 
