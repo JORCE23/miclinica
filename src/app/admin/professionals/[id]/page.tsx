@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { ProfessionalForm } from "@/components/admin/professionals/ProfessionalForm"
+import { PageHeader } from "@/components/admin/PageHeader"
+import { UserCheck } from "lucide-react"
 
 export default function EditProfessionalPage({ params }: { params: { id: string } }) {
   const { data: professional, isLoading } = useQuery({
@@ -18,11 +20,12 @@ export default function EditProfessionalPage({ params }: { params: { id: string 
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-display font-semibold text-[#162439]">Editar Profesional</h1>
-        <p className="text-[#6B7E94] mt-1">Actualiza los datos de {professional.full_name}</p>
-      </div>
-      
+      <PageHeader
+        title="Editar Profesional"
+        description={`Actualiza los datos de ${professional.full_name}`}
+        icon={UserCheck}
+      />
+
       <ProfessionalForm initialData={professional} />
     </div>
   )

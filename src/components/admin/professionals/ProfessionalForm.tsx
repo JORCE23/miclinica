@@ -88,29 +88,29 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
   watch("is_active")
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-[#D8E2ED] shadow-sm max-w-2xl">
+    <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-6 md:p-7 max-w-2xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Nombre Completo *</Label>
-            <Input {...register("full_name")} placeholder="Ej. Dra. María Pérez" className="border-[#D8E2ED] focus-visible:ring-[#162439]" />
+            <Input {...register("full_name")} placeholder="Ej. Dra. María Pérez" />
             {errors.full_name && <p className="text-sm text-red-500">{errors.full_name.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label>Especialidad</Label>
-            <Input {...register("specialty")} placeholder="Ej. Médico Estético" className="border-[#D8E2ED] focus-visible:ring-[#162439]" />
+            <Input {...register("specialty")} placeholder="Ej. Médico Estético" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Email</Label>
-              <Input {...register("email")} type="email" placeholder="correo@ejemplo.com" className="border-[#D8E2ED] focus-visible:ring-[#162439]" />
+              <Input {...register("email")} type="email" placeholder="correo@ejemplo.com" />
               {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
             </div>
             <div className="space-y-2">
               <Label>Teléfono</Label>
-              <Input {...register("phone")} placeholder="+56 9 1234 5678" className="border-[#D8E2ED] focus-visible:ring-[#162439]" />
+              <Input {...register("phone")} placeholder="+56 9 1234 5678" />
             </div>
           </div>
 
@@ -129,13 +129,13 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
           </div>
 
           {!isEditing && (
-            <div className="pt-4 border-t border-[#D8E2ED] space-y-4">
+            <div className="pt-4 border-t border-border space-y-4">
               <div className="flex items-center space-x-2">
                 <Switch 
                   checked={createAccount} 
                   onCheckedChange={setCreateAccount} 
                 />
-                <Label className="font-semibold text-[#162439]">Crear cuenta de acceso al sistema</Label>
+                <Label className="font-semibold text-foreground">Crear cuenta de acceso al sistema</Label>
               </div>
 
               {createAccount && (
@@ -146,8 +146,8 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
                       type="text" 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Asigna una contraseña inicial" 
-                      className="border-[#D8E2ED] bg-white" 
+                      placeholder="Asigna una contraseña inicial"
+                      className="bg-white"
                     />
                   </div>
                   
@@ -182,11 +182,11 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-[#D8E2ED]">
+        <div className="flex justify-end gap-3 pt-4 border-t border-border">
           <Button type="button" variant="outline" onClick={() => router.push('/admin/professionals')}>
             Cancelar
           </Button>
-          <Button type="submit" className="bg-[#162439] hover:bg-[#1E304D] text-white" disabled={mutation.isPending}>
+          <Button type="submit" className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl" disabled={mutation.isPending}>
             {mutation.isPending ? "Guardando..." : "Guardar Profesional"}
           </Button>
         </div>

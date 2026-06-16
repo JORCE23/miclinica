@@ -170,7 +170,7 @@ export function PatientForm() {
         <Button type="button" variant="outline" onClick={() => router.push("/admin/patients")} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading} className="bg-[#162439] hover:bg-[#1E304D] text-white">
+        <Button type="submit" disabled={isLoading} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
           {isLoading ? "Guardando..." : "Guardar Paciente"}
         </Button>
       </div>

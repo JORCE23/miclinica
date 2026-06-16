@@ -60,7 +60,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   const AppointmentCard = ({ appointment }: { appointment: any }) => {
     const dateObj = parseISO(appointment.scheduled_at)
     return (
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow mb-3 relative overflow-hidden group">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border/70 rounded-2xl bg-white shadow-soft hover:shadow-card transition-shadow mb-3 relative overflow-hidden group">
         {/* Date Box */}
         <div className="bg-slate-100/80 dark:bg-slate-800 rounded-lg p-3 text-center w-full sm:w-auto sm:min-w-[120px] flex flex-row sm:flex-col justify-between sm:justify-center items-center sm:h-full border border-slate-200 dark:border-slate-700 shrink-0">
           <div className="font-bold text-slate-800 dark:text-slate-200">{format(dateObj, "dd MMM yyyy", { locale: es })}</div>
@@ -103,7 +103,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   return (
     <div className="space-y-6">
       {/* Toolbar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/50 p-2 sm:p-3 rounded-xl border">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-muted/40 p-2 sm:p-3 rounded-2xl border border-border/70">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1">
           <Button 
             variant="outline" 
@@ -153,7 +153,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button render={<Link href={`/admin/appointments/new?patientId=${patientId}`} />} className="bg-emerald-500 hover:bg-emerald-600 text-white border-0">
+          <Button render={<Link href={`/admin/appointments/new?patientId=${patientId}`} />} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl border-0">
               <Plus className="mr-1 h-4 w-4" /> Nuevo
           </Button>
         </div>

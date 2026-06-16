@@ -79,11 +79,11 @@ export function LoyaltyTab({ patientId }: { patientId: string }) {
       <div className="mt-8">
         <h3 className="text-lg font-medium mb-4">Historial de Transacciones</h3>
         {transactions?.length === 0 ? (
-          <div className="text-center py-8 border border-dashed rounded-md text-muted-foreground">
+          <div className="text-center py-8 border border-dashed rounded-2xl text-muted-foreground">
             No hay transacciones de puntos registradas.
           </div>
         ) : (
-          <div className="rounded-md border bg-card">
+          <div className="rounded-2xl border border-border/70 bg-card">
             <Table>
               <TableHeader>
                 <TableRow>
