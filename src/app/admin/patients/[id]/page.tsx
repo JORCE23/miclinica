@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
   ChevronLeft, Pencil, Calendar, Bell, ShieldAlert, ShieldCheck, HeartPulse,
-  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature,
+  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -17,12 +17,16 @@ import { ProceduresTab } from "@/components/admin/patients/tabs/ProceduresTab"
 import { PatientAppointmentsTab } from "@/components/admin/patients/tabs/PatientAppointmentsTab"
 import { LoyaltyTab } from "@/components/admin/patients/tabs/LoyaltyTab"
 import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
+import { ClinicalRecordTab } from "@/components/admin/patients/tabs/ClinicalRecordTab"
+import { SimulationTab } from "@/components/admin/patients/tabs/SimulationTab"
 
 const TABS = [
-  { value: "clinical", label: "Ficha Clínica", icon: Activity },
+  { value: "ficha", label: "Ficha Clínica", icon: ClipboardList },
+  { value: "clinical", label: "Procedimientos", icon: Activity },
   { value: "medical", label: "Antecedentes", icon: HeartPulse },
   { value: "appointments", label: "Atenciones", icon: Calendar },
   { value: "consents", label: "Consentimientos", icon: FileSignature },
+  { value: "simulation", label: "Simulación", icon: Wand2 },
   { value: "administrative", label: "Datos", icon: IdCard },
   { value: "loyalty", label: "Fidelidad", icon: ShieldCheck },
 ]
@@ -39,7 +43,7 @@ function calculateAge(birthDate?: string) {
 
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState("clinical")
+  const [activeTab, setActiveTab] = useState("ficha")
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ["patient", params.id],
@@ -214,6 +218,10 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
             </div>
           </TabsContent>
 
+          <TabsContent value="ficha" className="mt-0 outline-none">
+            <ClinicalRecordTab patientId={patient.id} />
+          </TabsContent>
+
           <TabsContent value="clinical" className="mt-0 outline-none">
             <ProceduresTab patientId={patient.id} />
           </TabsContent>
@@ -224,6 +232,10 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
 
           <TabsContent value="consents" className="mt-0 outline-none">
             <ConsentsTab patientId={patient.id} patientName={patient.full_name} />
+          </TabsContent>
+
+          <TabsContent value="simulation" className="mt-0 outline-none">
+            <SimulationTab patientId={patient.id} />
           </TabsContent>
 
           <TabsContent value="loyalty" className="mt-0 outline-none">

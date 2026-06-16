@@ -7,7 +7,8 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, Calendar } from "lucide-react"
+import { ChevronLeft, Calendar, FileText } from "lucide-react"
+import Link from "next/link"
 
 export default function EditAppointmentPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -65,6 +66,14 @@ export default function EditAppointmentPage({ params }: { params: { id: string }
         description="Modifica los detalles de la reserva seleccionada."
         icon={Calendar}
       >
+        {appointment.patient_id && (
+          <Button
+            render={<Link href={`/admin/patients/${appointment.patient_id}`} />}
+            className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow"
+          >
+            <FileText className="h-4 w-4 mr-2" /> Ir a ficha clínica
+          </Button>
+        )}
         <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/10 hover:text-white">
           <ChevronLeft className="h-5 w-5" />
         </Button>
