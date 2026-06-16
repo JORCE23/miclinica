@@ -9,7 +9,7 @@ import { Plus, Calendar as CalendarIcon, List as ListIcon } from "lucide-react"
 import Link from "next/link"
 
 export default function AppointmentsPage() {
-  const [view, setView] = useState<"list" | "calendar">("list")
+  const [view, setView] = useState<"list" | "calendar">("calendar")
 
   return (
     <div className="space-y-6">
