@@ -20,12 +20,21 @@ export async function GET(request: Request) {
     if (errorResponse) return errorResponse
 
     const supabase = createClient()
-    const { data: patients, error } = await supabase
+    const url = new URL(request.url)
+    const includeInactive = url.searchParams.get("include_inactive") === "true"
+
+    let query = supabase
       .from("profiles")
       .select("*")
       .eq("clinic_id", context!.clinicId)
       .eq("role", "client")
       .order("created_at", { ascending: false })
+
+    if (!includeInactive) {
+      query = query.eq("is_active", true)
+    }
+
+    const { data: patients, error } = await query
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })

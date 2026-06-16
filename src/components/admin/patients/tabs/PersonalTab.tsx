@@ -12,12 +12,43 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { RutInput } from "@/components/shared/RutInput"
-import { Save, User, FileText } from "lucide-react"
+import { Save, User, FileText, AlertTriangle, RotateCcw } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function PersonalTab({ patient }: { patient: any }) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isReactivating, setIsReactivating] = useState(false)
   const queryClient = useQueryClient()
+
+  async function handleReactivate() {
+    setIsReactivating(true)
+    try {
+      const res = await fetch(`/api/patients/${patient.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: patient.full_name,
+          rut: patient.rut || "",
+          birth_date: patient.birth_date || "",
+          phone: patient.phone || "",
+          email: patient.email || "",
+          notes: patient.notes || "",
+          is_active: true,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || "Error al reactivar")
+      }
+      toast.success("Paciente reactivado exitosamente")
+      queryClient.invalidateQueries({ queryKey: ["patient", patient.id] })
+      queryClient.invalidateQueries({ queryKey: ["patients"] })
+    } catch (error: any) {
+      toast.error(error.message)
+    } finally {
+      setIsReactivating(false)
+    }
+  }
 
   const {
     register,
@@ -132,6 +163,29 @@ export function PersonalTab({ patient }: { patient: any }) {
         </Card>
       </div>
       
+      {!patient.is_active && (
+        <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800/50 p-4">
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-amber-800 dark:text-amber-300 text-sm">Paciente inactivo</p>
+            <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+              Este paciente fue desactivado. Su historial clínico se conserva íntegro.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleReactivate}
+            disabled={isReactivating}
+            className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 shrink-0"
+          >
+            <RotateCcw className="mr-2 h-3.5 w-3.5" />
+            {isReactivating ? "Reactivando..." : "Reactivar"}
+          </Button>
+        </div>
+      )}
+
       <div className="flex justify-end mt-6">
         <Button type="submit" disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
           <Save className="mr-2 h-4 w-4" />

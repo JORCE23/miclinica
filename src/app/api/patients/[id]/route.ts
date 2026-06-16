@@ -73,34 +73,30 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  // Un DELETE real podría ser destructivo (fk constraints), usualmente hacemos soft delete cambiando is_active
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
-    if (!profile || profile.role !== "clinic_admin") {
+    const { data: adminProfile } = await supabase
+      .from("profiles")
+      .select("role, clinic_id")
+      .eq("id", user.id)
+      .single()
+    if (!adminProfile || adminProfile.role !== "clinic_admin") {
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
 
-    // Borrado en cascada manual de las dependencias del paciente para evitar errores de llave foránea
-    await supabase.from("loyalty_transactions").delete().eq("patient_id", params.id)
-    await supabase.from("loyalty_accounts").delete().eq("patient_id", params.id)
-    await supabase.from("medical_history").delete().eq("patient_id", params.id)
-    await supabase.from("allergies").delete().eq("patient_id", params.id)
-    await supabase.from("aesthetic_procedures_history").delete().eq("patient_id", params.id)
-    await supabase.from("appointments").delete().eq("patient_id", params.id)
-
-    // Finalmente borramos el perfil
+    // Soft delete: marca como inactivo. Nunca se eliminan físicamente fichas clínicas.
     const { error } = await supabase
       .from("profiles")
-      .delete()
+      .update({ is_active: false, updated_at: new Date().toISOString() })
       .eq("id", params.id)
+      .eq("clinic_id", adminProfile.clinic_id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-    return NextResponse.json({ success: true, message: "Paciente borrado completamente" })
+    return NextResponse.json({ success: true, message: "Paciente desactivado exitosamente" })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
