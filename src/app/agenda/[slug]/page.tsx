@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useQuery, useMutation } from "@tanstack/react-query"
-import { format, addDays, startOfToday } from "date-fns"
+import { format, startOfToday } from "date-fns"
 import { es } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

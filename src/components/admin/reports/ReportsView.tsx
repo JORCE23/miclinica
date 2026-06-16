@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts"
 import { Button } from "@/components/ui/button"
-import { Download, Calendar as CalendarIcon, Filter, Loader2 } from "lucide-react"
+import { Download, Calendar as CalendarIcon, Loader2 } from "lucide-react"
 
 export function ReportsView() {
   const [dateRange, setDateRange] = useState("Este Año")

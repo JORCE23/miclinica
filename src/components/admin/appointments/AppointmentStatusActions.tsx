@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, CheckCircle, XCircle, Clock, CheckCircle2, UserX } from "lucide-react"
+import { MoreHorizontal, CheckCircle, XCircle, CheckCircle2, UserX } from "lucide-react"
 import { useUpdateAppointmentStatus, useDeleteAppointment } from "@/hooks/useAppointments"
 import { toast } from "sonner"
 import { useState } from "react"

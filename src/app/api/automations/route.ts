@@ -24,7 +24,7 @@ const DEFAULT_AUTOMATIONS = [
   }
 ]
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()

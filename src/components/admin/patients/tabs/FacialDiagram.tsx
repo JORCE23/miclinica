@@ -3,7 +3,7 @@
 import { useState, useRef, MouseEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Trash2, Plus } from "lucide-react"
+import { Trash2 } from "lucide-react"
 
 export interface DiagramPoint {
   id: string
@@ -99,7 +99,7 @@ export function FacialDiagram({ points, onChange, disabled }: FacialDiagramProps
           />
           
           <div style={{ transform: 'translateZ(50px)', position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            {visiblePoints.map((point, index) => {
+            {visiblePoints.map((point) => {
               // Encontrar el índice global del punto para que el número (Punto 1, Punto 2) coincida
               const globalIndex = points.findIndex(p => p.id === point.id)
               

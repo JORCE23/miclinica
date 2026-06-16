@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Gift, TrendingUp, TrendingDown, Info, Award } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"

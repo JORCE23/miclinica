@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Clock, DollarSign, Star } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ServiceForm } from "./ServiceForm"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"

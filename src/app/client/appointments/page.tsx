@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar as CalendarIcon, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react"
+import { Calendar as CalendarIcon, Clock } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { StatusBadge } from "@/components/shared/StatusBadge"
