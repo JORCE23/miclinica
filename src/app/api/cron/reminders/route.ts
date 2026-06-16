@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { addHours, format } from "date-fns"
+import { addDays, startOfDay, endOfDay, format } from "date-fns"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { isUltramsgConfigured, sendWhatsappMessage } from "@/lib/whatsapp/ultramsg"
 
@@ -22,8 +22,10 @@ export async function GET(request: Request) {
   }
 
   const admin = createAdminClient()
-  const from = addHours(new Date(), 23).toISOString()
-  const to = addHours(new Date(), 25).toISOString()
+  // Corre una vez al día (plan Hobby): recuerda todas las citas de MAÑANA.
+  const tomorrow = addDays(new Date(), 1)
+  const from = startOfDay(tomorrow).toISOString()
+  const to = endOfDay(tomorrow).toISOString()
 
   const { data: appts, error } = await admin
     .from("appointments")
