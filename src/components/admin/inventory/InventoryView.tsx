@@ -7,8 +7,9 @@ import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
 import {
   Package, Boxes, PackageX, AlertTriangle, Plus, Search, Pencil, Trash2,
-  Minus, Layers, X, Save, TrendingDown,
+  Minus, Layers, X, Save, TrendingDown, CalendarClock,
 } from "lucide-react"
+import { BatchesDialog } from "./BatchesDialog"
 
 type Product = {
   id: string
@@ -43,6 +44,7 @@ export function InventoryView() {
   const [adjType, setAdjType] = useState<"entrada" | "salida" | "ajuste">("entrada")
   const [adjQty, setAdjQty] = useState("1")
   const [adjReason, setAdjReason] = useState("")
+  const [batchFor, setBatchFor] = useState<Product | null>(null)
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["inventory"],
@@ -53,7 +55,16 @@ export function InventoryView() {
     },
   })
 
+  const { data: batchAlerts } = useQuery<{ expiredCount: number; expiringCount: number }>({
+    queryKey: ["inventory-batches-alerts"],
+    queryFn: async () => {
+      const r = await fetch("/api/inventory/batches")
+      return r.ok ? r.json() : { expiredCount: 0, expiringCount: 0 }
+    },
+  })
+
   const refresh = () => qc.invalidateQueries({ queryKey: ["inventory"] })
+  const refreshBatches = () => qc.invalidateQueries({ queryKey: ["inventory-batches-alerts"] })
 
   const lowOf = (p: Product) => p.stock > 0 && p.stock <= p.min_stock
   const outOf = (p: Product) => p.stock <= 0
@@ -147,6 +158,7 @@ export function InventoryView() {
     { label: "Productos", value: products.length, icon: Boxes, grad: "from-[#0D9488] to-[#2DD4BF]" },
     { label: "Stock bajo", value: lowCount, icon: TrendingDown, grad: "from-[#D97706] to-[#FbBf24]" },
     { label: "Agotados", value: outCount, icon: PackageX, grad: "from-[#DC2626] to-[#F87171]" },
+    { label: "Por vencer", value: batchAlerts?.expiringCount ?? 0, icon: CalendarClock, grad: "from-[#EA580C] to-[#FB923C]" },
     { label: "Valor inventario", value: clp(totalValue), icon: Layers, grad: "from-[#2563EB] to-[#60A5FA]" },
   ]
 
@@ -175,8 +187,21 @@ export function InventoryView() {
         </div>
       )}
 
+      {/* Alerta de vencimientos */}
+      {((batchAlerts?.expiredCount ?? 0) > 0 || (batchAlerts?.expiringCount ?? 0) > 0) && (
+        <div className="flex items-start gap-3 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-orange-800">
+          <CalendarClock className="h-5 w-5 shrink-0 mt-0.5 text-orange-500" />
+          <p className="text-sm">
+            <span className="font-semibold">Vencimientos:</span>{" "}
+            {(batchAlerts?.expiredCount ?? 0) > 0 && <>{batchAlerts?.expiredCount} lote(s) <span className="font-semibold">vencido(s)</span>. </>}
+            {(batchAlerts?.expiringCount ?? 0) > 0 && <>{batchAlerts?.expiringCount} lote(s) <span className="font-semibold">por vencer</span> (próximos 30 días). </>}
+            Revisa los lotes de cada producto.
+          </p>
+        </div>
+      )}
+
       {/* Métricas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {metricCards.map((c, i) => (
           <div key={i} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 flex items-center gap-3">
             <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${c.grad} flex items-center justify-center text-white shadow-soft shrink-0`}>
@@ -283,6 +308,9 @@ export function InventoryView() {
                           <Button variant="ghost" size="sm" onClick={() => { setAdjustFor(p); setAdjType("entrada"); setAdjQty("1"); setAdjReason("") }} className="text-brand hover:text-brand-dark">
                             Ajustar
                           </Button>
+                          <button onClick={() => setBatchFor(p)} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted" title="Lotes y vencimientos">
+                            <CalendarClock className="h-4 w-4" />
+                          </button>
                           <button onClick={() => openEdit(p)} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted" title="Editar">
                             <Pencil className="h-4 w-4" />
                           </button>
@@ -380,6 +408,16 @@ export function InventoryView() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal: lotes y vencimientos */}
+      {batchFor && (
+        <BatchesDialog
+          productId={batchFor.id}
+          productName={batchFor.name}
+          onClose={() => setBatchFor(null)}
+          onChanged={refreshBatches}
+        />
       )}
     </div>
   )
