@@ -160,7 +160,7 @@ export function AppointmentCalendar() {
   maxTime.setHours(22, 0, 0)
 
   return (
-    <div className="h-[600px] w-full bg-card rounded-2xl shadow-soft border border-border/70 p-4 md:p-6 calendar-container">
+    <div className="h-[620px] w-full bg-card rounded-2xl shadow-soft border border-border/70 p-3 md:p-5 calendar-container">
       <Calendar
         localizer={localizer}
         events={events}
@@ -175,7 +175,7 @@ export function AppointmentCalendar() {
         min={minTime}
         max={maxTime}
         step={30}
-        timeslots={1}
+        timeslots={2}
         components={{
           event: CustomEvent,
           toolbar: CustomToolbar,
