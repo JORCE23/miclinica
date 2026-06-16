@@ -53,7 +53,7 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-muted hover:text-foreground h-8 w-8 p-0">
+        <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-xl text-sm font-medium transition-colors hover:bg-brand-soft hover:text-brand h-8 w-8 p-0">
           <span className="sr-only">Abrir menú</span>
           <MoreHorizontal className="h-4 w-4" />
         </DropdownMenuTrigger>
@@ -94,7 +94,7 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
       </DropdownMenu>
 
       <Dialog open={confirmComplete} onOpenChange={setConfirmComplete}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>Completar Cita</DialogTitle>
             <DialogDescription>
@@ -142,7 +142,7 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
             <Button variant="outline" onClick={() => setConfirmComplete(false)}>
               Cancelar
             </Button>
-            <Button onClick={() => handleStatusChange("completada", assignPoints, paymentMethod)}>
+            <Button onClick={() => handleStatusChange("completada", assignPoints, paymentMethod)} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
               Completar y Guardar
             </Button>
           </DialogFooter>

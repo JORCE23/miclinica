@@ -94,10 +94,10 @@ export function PersonalTab({ patient }: { patient: any }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-slate-200 shadow-sm">
-          <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
+        <Card className="border-border/70 shadow-soft">
+          <CardHeader className="bg-muted/40 border-b pb-4">
             <CardTitle className="text-lg flex items-center gap-2">
-              <User className="h-5 w-5 text-[#7B9AB5]" /> Editar Información Básica
+              <User className="h-5 w-5 text-brand" /> Editar Información Básica
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
@@ -131,10 +131,10 @@ export function PersonalTab({ patient }: { patient: any }) {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm">
-          <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-4">
+        <Card className="border-border/70 shadow-soft">
+          <CardHeader className="bg-muted/40 border-b pb-4">
             <CardTitle className="text-lg flex items-center gap-2">
-              <FileText className="h-5 w-5 text-[#7B9AB5]" /> Editar Contacto y Notas
+              <FileText className="h-5 w-5 text-brand" /> Editar Contacto y Notas
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
@@ -187,7 +187,7 @@ export function PersonalTab({ patient }: { patient: any }) {
       )}
 
       <div className="flex justify-end mt-6">
-        <Button type="submit" disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button type="submit" disabled={isLoading} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
           <Save className="mr-2 h-4 w-4" />
           {isLoading ? "Guardando..." : "Guardar Cambios"}
         </Button>

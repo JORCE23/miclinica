@@ -6,8 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, Calendar } from "lucide-react"
 import { Suspense } from "react"
+import { PageHeader } from "@/components/admin/PageHeader"
 
 function NewAppointmentForm() {
   const router = useRouter()
@@ -28,17 +29,15 @@ function NewAppointmentForm() {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+      <PageHeader
+        title="Nueva Cita"
+        description="Agenda una nueva reserva para un paciente."
+        icon={Calendar}
+      >
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/10 hover:text-white">
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Nueva Cita</h1>
-          <p className="text-muted-foreground">
-            Agenda una nueva reserva para un paciente.
-          </p>
-        </div>
-      </div>
+      </PageHeader>
 
       <Card>
         <CardHeader>

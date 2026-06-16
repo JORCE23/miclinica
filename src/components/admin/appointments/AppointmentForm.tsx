@@ -254,7 +254,7 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isSubmitting} className="bg-[#162439] hover:bg-[#1E304D] text-white">
+        <Button type="submit" disabled={isSubmitting} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
           {isSubmitting ? "Guardando..." : initialData ? "Actualizar Cita" : "Agendar Cita"}
         </Button>
       </div>

@@ -48,21 +48,21 @@ export function PatientSidebar({ patient, setActiveTab, activeTab }: { patient: 
       <div className="w-16 flex flex-col gap-2 bg-slate-100 dark:bg-slate-800/50 rounded-xl py-4 items-center">
         <div 
           onClick={() => setActiveTab && setActiveTab('clinical')}
-          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'clinical' ? 'bg-primary text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-primary hover:bg-primary/10'}`}
+          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'clinical' ? 'bg-brand text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-brand hover:bg-primary/10'}`}
           title="Ficha Clínica"
         >
           <Activity className="h-5 w-5" />
         </div>
         <div 
           onClick={() => setActiveTab && setActiveTab('administrative')}
-          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'administrative' ? 'bg-primary text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-primary hover:bg-primary/10'}`}
+          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'administrative' ? 'bg-brand text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-brand hover:bg-primary/10'}`}
           title="Datos Personales"
         >
           <Contact className="h-5 w-5" />
         </div>
         <div 
           onClick={() => setActiveTab && setActiveTab('loyalty')}
-          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'loyalty' ? 'bg-primary text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-primary hover:bg-primary/10'}`}
+          className={`p-3 rounded-lg cursor-pointer transition ${activeTab === 'loyalty' ? 'bg-brand text-white shadow-sm hover:bg-primary/90' : 'text-slate-400 hover:text-brand hover:bg-primary/10'}`}
           title="Fidelidad"
         >
           <Star className="h-5 w-5" />
@@ -72,7 +72,7 @@ export function PatientSidebar({ patient, setActiveTab, activeTab }: { patient: 
       {/* Info Cards */}
       <div className="flex-1 flex flex-col gap-4">
         {/* Yellow Box (Notes) */}
-        <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
+        <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-4">
           <div className="flex items-start gap-2 text-amber-800 dark:text-amber-300">
             <Bell className="h-4 w-4 mt-1 shrink-0" />
             <div>
@@ -83,7 +83,7 @@ export function PatientSidebar({ patient, setActiveTab, activeTab }: { patient: 
         </div>
 
         {/* Primary Box (Vitals / Resumen) */}
-        <div className="bg-primary text-white rounded-xl p-5 shadow-sm">
+        <div className="bg-brand-panel text-white rounded-2xl p-5 shadow-soft">
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
             <div className="flex items-center gap-2">
               <Contact className="h-4 w-4 opacity-70" />
@@ -105,7 +105,7 @@ export function PatientSidebar({ patient, setActiveTab, activeTab }: { patient: 
         </div>
 
         {/* Pre-existencias (White Box) */}
-        <div className="bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm flex-1">
+        <div className="bg-white dark:bg-slate-900 border border-border/70 rounded-2xl overflow-hidden shadow-sm flex-1">
           <div className="bg-slate-50 dark:bg-slate-800/50 px-4 py-3 border-b font-semibold text-sm text-slate-700 dark:text-slate-200">
             Pre existencias y médicos
           </div>

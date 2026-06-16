@@ -5,6 +5,9 @@ import { AppointmentForm } from "@/components/admin/appointments/AppointmentForm
 import { type AppointmentFormValues } from "@/lib/validations/appointment"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { PageHeader } from "@/components/admin/PageHeader"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, Calendar } from "lucide-react"
 
 export default function EditAppointmentPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -57,14 +60,17 @@ export default function EditAppointmentPage({ params }: { params: { id: string }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Editar Cita</h1>
-        <p className="text-muted-foreground">
-          Modifica los detalles de la reserva seleccionada.
-        </p>
-      </div>
+      <PageHeader
+        title="Editar Cita"
+        description="Modifica los detalles de la reserva seleccionada."
+        icon={Calendar}
+      >
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/10 hover:text-white">
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      </PageHeader>
 
-      <div className="border rounded-md p-6 bg-card">
+      <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-6 md:p-7">
         <AppointmentForm 
           initialData={appointment}
           onSubmit={(data) => updateMutation.mutate(data)} 

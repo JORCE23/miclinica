@@ -129,14 +129,14 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Procedimientos Estéticos Previos</h3>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
             <Plus className="h-4 w-4 mr-2" /> Agregar Procedimiento
           </Button>
         )}
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-4 border rounded-xl space-y-6 bg-muted/20">
+        <form onSubmit={handleSubmit} className="p-4 border border-border/70 rounded-2xl space-y-6 bg-muted/20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Procedimiento *</label>
@@ -182,7 +182,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
           
           <div className="flex justify-end space-x-2 pt-4 border-t">
             <Button type="button" variant="ghost" onClick={() => setIsAdding(false)} disabled={isUploading}>Cancelar</Button>
-            <Button type="submit" disabled={addMutation.isPending || isUploading} className="bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" disabled={addMutation.isPending || isUploading} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
               {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Guardando...</> : "Guardar Procedimiento"}
             </Button>
           </div>
@@ -192,11 +192,11 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
       {isLoading ? (
         <div className="text-center text-muted-foreground py-8">Cargando procedimientos...</div>
       ) : procedures?.length === 0 ? (
-        <div className="text-center py-8 border border-dashed rounded-md">
+        <div className="text-center py-8 border border-dashed rounded-2xl">
           No hay procedimientos estéticos registrados.
         </div>
       ) : (
-        <div className="relative w-full overflow-x-auto rounded-md border bg-card">
+        <div className="relative w-full overflow-x-auto rounded-2xl border border-border/70 bg-card">
           <Table className="min-w-[800px]">
             <TableHeader>
               <TableRow>

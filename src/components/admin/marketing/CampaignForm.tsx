@@ -77,12 +77,12 @@ export function CampaignForm({ initialData }: CampaignFormProps) {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-[#D8E2ED] shadow-sm max-w-3xl">
+    <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-6 md:p-7 max-w-3xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label>Nombre de Campaña *</Label>
-            <Input {...register("name")} placeholder="Ej. Promo Verano" className="border-[#D8E2ED]" />
+            <Input {...register("name")} placeholder="Ej. Promo Verano" />
             {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
           </div>
 
@@ -93,7 +93,7 @@ export function CampaignForm({ initialData }: CampaignFormProps) {
               control={control}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger className="border-[#D8E2ED]">
+                  <SelectTrigger>
                     <SelectValue placeholder="Seleccionar tipo" />
                   </SelectTrigger>
                   <SelectContent>
@@ -113,7 +113,7 @@ export function CampaignForm({ initialData }: CampaignFormProps) {
               control={control}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger className="border-[#D8E2ED]">
+                  <SelectTrigger>
                     <SelectValue placeholder="Seleccionar estado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -131,43 +131,43 @@ export function CampaignForm({ initialData }: CampaignFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label>Fecha Inicio</Label>
-            <Input type="date" {...register("start_date")} className="border-[#D8E2ED]" />
+            <Input type="date" {...register("start_date")} />
           </div>
           <div className="space-y-2">
             <Label>Fecha Fin</Label>
-            <Input type="date" {...register("end_date")} className="border-[#D8E2ED]" />
+            <Input type="date" {...register("end_date")} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="space-y-2">
             <Label>Presupuesto</Label>
-            <Input type="number" {...register("budget")} className="border-[#D8E2ED]" />
+            <Input type="number" {...register("budget")} />
           </div>
           <div className="space-y-2">
             <Label>Gastado</Label>
-            <Input type="number" {...register("spent")} className="border-[#D8E2ED]" />
+            <Input type="number" {...register("spent")} />
           </div>
           <div className="space-y-2">
             <Label>Alcance</Label>
-            <Input type="number" {...register("reach")} className="border-[#D8E2ED]" />
+            <Input type="number" {...register("reach")} />
           </div>
           <div className="space-y-2">
             <Label>Conversiones</Label>
-            <Input type="number" {...register("conversions")} className="border-[#D8E2ED]" />
+            <Input type="number" {...register("conversions")} />
           </div>
         </div>
 
         <div className="space-y-2">
           <Label>Descripción / Notas</Label>
-          <Textarea {...register("description")} className="border-[#D8E2ED]" placeholder="Objetivo de la campaña..." />
+          <Textarea {...register("description")} placeholder="Objetivo de la campaña..." />
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-[#D8E2ED]">
+        <div className="flex justify-end gap-3 pt-4 border-t border-border">
           <Button type="button" variant="outline" onClick={() => router.push('/admin/marketing')}>
             Cancelar
           </Button>
-          <Button type="submit" className="bg-[#162439] hover:bg-[#1E304D] text-white" disabled={mutation.isPending}>
+          <Button type="submit" className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl" disabled={mutation.isPending}>
             {mutation.isPending ? "Guardando..." : "Guardar Campaña"}
           </Button>
         </div>

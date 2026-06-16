@@ -57,14 +57,14 @@ export function MedicalHistoryTab({ patientId }: { patientId: string }) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Antecedentes Mórbidos</h3>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
             <Plus className="h-4 w-4 mr-2" /> Agregar Condición
           </Button>
         )}
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-4 border rounded-md space-y-4 bg-muted/50">
+        <form onSubmit={handleSubmit} className="p-4 border border-border/70 rounded-2xl space-y-4 bg-muted/50">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Condición / Enfermedad *</label>
@@ -81,7 +81,7 @@ export function MedicalHistoryTab({ patientId }: { patientId: string }) {
           </div>
           <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={() => setIsAdding(false)}>Cancelar</Button>
-            <Button type="submit" disabled={addMutation.isPending}>Guardar</Button>
+            <Button type="submit" disabled={addMutation.isPending} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">Guardar</Button>
           </div>
         </form>
       )}
@@ -89,14 +89,14 @@ export function MedicalHistoryTab({ patientId }: { patientId: string }) {
       {isLoading ? (
         <div className="text-center text-muted-foreground py-8">Cargando historial...</div>
       ) : history?.length === 0 ? (
-        <div className="text-center py-8 border border-dashed rounded-md">
+        <div className="text-center py-8 border border-dashed rounded-2xl">
           No hay antecedentes registrados para este paciente.
         </div>
       ) : (
         <div className="relative border-l border-muted ml-3 space-y-8 py-4">
           {history?.map((item: any) => (
             <div key={item.id} className="relative pl-6">
-              <span className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-[#162439] ring-4 ring-background" />
+              <span className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-brand ring-4 ring-background" />
               <div className="flex flex-col space-y-1">
                 <span className="font-medium text-lg">{item.condition}</span>
                 <span className="text-sm text-muted-foreground">

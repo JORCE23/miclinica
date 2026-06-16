@@ -65,14 +65,14 @@ export function AllergiesTab({ patientId }: { patientId: string }) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Alergias Conocidas</h3>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">
             <Plus className="h-4 w-4 mr-2" /> Agregar Alergia
           </Button>
         )}
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-4 border rounded-md space-y-4 bg-muted/50">
+        <form onSubmit={handleSubmit} className="p-4 border border-border/70 rounded-2xl space-y-4 bg-muted/50">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Alérgeno *</label>
@@ -97,7 +97,7 @@ export function AllergiesTab({ patientId }: { patientId: string }) {
           </div>
           <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={() => setIsAdding(false)}>Cancelar</Button>
-            <Button type="submit" disabled={addMutation.isPending}>Guardar</Button>
+            <Button type="submit" disabled={addMutation.isPending} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">Guardar</Button>
           </div>
         </form>
       )}
@@ -105,13 +105,13 @@ export function AllergiesTab({ patientId }: { patientId: string }) {
       {isLoading ? (
         <div className="text-center text-muted-foreground py-8">Cargando alergias...</div>
       ) : allergies?.length === 0 ? (
-        <div className="text-center py-8 border border-dashed rounded-md">
+        <div className="text-center py-8 border border-dashed rounded-2xl">
           No hay alergias registradas para este paciente.
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {allergies?.map((item: any) => (
-            <div key={item.id} className="border p-4 rounded-lg shadow-sm bg-card flex flex-col justify-between">
+            <div key={item.id} className="border border-border/70 p-4 rounded-2xl shadow-soft bg-card flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-lg">{item.allergen}</span>

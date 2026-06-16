@@ -34,9 +34,11 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-10">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full block">
-        {/* 1. TOP HEADER (Primary Color Banner Style) */}
-        <div className="bg-primary text-white shadow-md relative z-10">
-          <div className="max-w-[1600px] mx-auto px-4 md:px-6 pt-4 md:pt-6 pb-0">
+        {/* 1. TOP HEADER (Premium Navy Banner) */}
+        <div className="max-w-[1600px] mx-auto px-4 md:px-6 pt-4 md:pt-6">
+          <div className="bg-brand-panel text-white shadow-elevated relative z-10 rounded-2xl overflow-hidden">
+            <div className="bg-grid opacity-50 absolute inset-0 pointer-events-none" />
+            <div className="relative z-10 px-4 md:px-6 pt-4 md:pt-6 pb-0">
             <div className="flex items-start md:items-center gap-3 md:gap-6 mb-4 md:mb-6">
               <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/20 rounded-full h-8 w-8 md:h-10 md:w-10 shrink-0 mt-1 md:mt-0">
                 <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
@@ -89,6 +91,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                 Fidelidad
               </TabsTrigger>
             </TabsList>
+            </div>
           </div>
         </div>
 
@@ -115,7 +118,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
             )}
 
             {/* MAIN TABS CONTENT */}
-            <div className="border bg-card rounded-lg p-6 min-w-0 w-full shadow-sm text-slate-800 dark:text-slate-200">
+            <div className="rounded-2xl border border-border/70 bg-card p-6 min-w-0 w-full shadow-soft text-slate-800 dark:text-slate-200">
               <TabsContent value="administrative" className="mt-0 outline-none">
                 <PersonalTab patient={patient} />
               </TabsContent>
