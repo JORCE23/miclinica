@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
   ChevronLeft, Pencil, Calendar, Bell, ShieldAlert, ShieldCheck, HeartPulse,
-  CalendarDays, Phone, Activity, Mail, IdCard,
+  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -16,11 +16,13 @@ import { AllergiesTab } from "@/components/admin/patients/tabs/AllergiesTab"
 import { ProceduresTab } from "@/components/admin/patients/tabs/ProceduresTab"
 import { PatientAppointmentsTab } from "@/components/admin/patients/tabs/PatientAppointmentsTab"
 import { LoyaltyTab } from "@/components/admin/patients/tabs/LoyaltyTab"
+import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
 
 const TABS = [
   { value: "clinical", label: "Ficha Clínica", icon: Activity },
   { value: "medical", label: "Antecedentes", icon: HeartPulse },
   { value: "appointments", label: "Atenciones", icon: Calendar },
+  { value: "consents", label: "Consentimientos", icon: FileSignature },
   { value: "administrative", label: "Datos", icon: IdCard },
   { value: "loyalty", label: "Fidelidad", icon: ShieldCheck },
 ]
@@ -218,6 +220,10 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
 
           <TabsContent value="appointments" className="mt-0 outline-none">
             <PatientAppointmentsTab patientId={patient.id} />
+          </TabsContent>
+
+          <TabsContent value="consents" className="mt-0 outline-none">
+            <ConsentsTab patientId={patient.id} patientName={patient.full_name} />
           </TabsContent>
 
           <TabsContent value="loyalty" className="mt-0 outline-none">

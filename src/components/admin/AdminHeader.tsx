@@ -1,19 +1,39 @@
 "use client"
 
 import Link from "next/link"
-import { Search, Bell, Plus, LogOut } from "lucide-react"
+import { Search, Bell, Plus, LogOut, Package, CalendarClock, Calendar, Cake, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+
+type Notif = { id: string; type: string; severity: "info" | "warning" | "danger"; title: string; description: string; href: string }
+
+const NOTIF_ICON: Record<string, typeof Bell> = {
+  inventario: Package, vencimiento: CalendarClock, agenda: Calendar, "cumpleaños": Cake,
+}
+const SEV_CLS: Record<string, string> = {
+  danger: "bg-red-100 text-red-600", warning: "bg-amber-100 text-amber-600", info: "bg-brand-soft text-brand-dark",
+}
 
 export function AdminHeader({ profile }: { profile?: any }) {
   const supabase = createClient()
   const router = useRouter()
 
   const [searchQuery, setSearchQuery] = useState("")
+
+  const { data: notifs } = useQuery<{ count: number; items: Notif[] }>({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      const r = await fetch("/api/notifications")
+      return r.ok ? r.json() : { count: 0, items: [] }
+    },
+    refetchInterval: 60000,
+  })
+  const notifItems = notifs?.items || []
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -49,14 +69,40 @@ export function AdminHeader({ profile }: { profile?: any }) {
         <DropdownMenu>
           <DropdownMenuTrigger className="relative p-2 text-[#6B7E94] hover:text-[#162439] hover:bg-[#F0F3F7] rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
             <Bell className="h-5 w-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            {notifItems.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center">
+                {notifItems.length}
+              </span>
+            )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-64 p-4">
-            <div className="flex flex-col text-center items-center py-6 px-2">
-              <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
-              <p className="text-sm font-medium text-[#162439]">No hay notificaciones</p>
-              <p className="text-xs text-muted-foreground mt-1">Te avisaremos cuando haya novedades en la clínica.</p>
+          <DropdownMenuContent align="end" className="w-80 p-0 overflow-hidden">
+            <div className="px-4 py-3 border-b border-border bg-muted/30">
+              <p className="text-sm font-semibold text-[#162439]">Notificaciones</p>
             </div>
+            {notifItems.length === 0 ? (
+              <div className="flex flex-col text-center items-center py-8 px-2">
+                <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                <p className="text-sm font-medium text-[#162439]">Todo al día</p>
+                <p className="text-xs text-muted-foreground mt-1">No hay novedades por ahora.</p>
+              </div>
+            ) : (
+              <div className="max-h-[360px] overflow-y-auto py-1">
+                {notifItems.map((n) => {
+                  const Icon = NOTIF_ICON[n.type] || AlertTriangle
+                  return (
+                    <Link key={n.id} href={n.href} className="flex items-start gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors">
+                      <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${SEV_CLS[n.severity]}`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[#162439] leading-snug">{n.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">{n.description}</p>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
