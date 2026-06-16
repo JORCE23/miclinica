@@ -29,6 +29,12 @@ const config = {
           light: '#A8C2D8',
           muted: '#BDD0E0',
         },
+        brand: {
+          DEFAULT: '#0D9488',
+          light: '#2DD4BF',
+          dark: '#0F766E',
+          soft: '#CCFBF1',
+        },
         'ms-bg': '#F0F3F7',
         'ms-surface': '#FFFFFF',
         'ms-border': '#D8E2ED',
@@ -81,6 +87,8 @@ const config = {
       boxShadow: {
         soft: "0 1px 2px rgb(16 36 57 / 0.04), 0 4px 16px -4px rgb(16 36 57 / 0.08)",
         card: "0 1px 3px rgb(16 36 57 / 0.05), 0 8px 24px -8px rgb(16 36 57 / 0.10)",
+        elevated: "0 2px 4px rgb(16 36 57 / 0.04), 0 12px 32px -8px rgb(16 36 57 / 0.14)",
+        glow: "0 0 0 1px rgb(13 148 136 / 0.08), 0 8px 24px -6px rgb(13 148 136 / 0.20)",
       },
       keyframes: {
         "accordion-down": {

@@ -45,9 +45,9 @@ export function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleLogin} className="space-y-4">
+    <Card className="shadow-card">
+      <CardContent className="pt-6 sm:p-7">
+        <form onSubmit={handleLogin} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email">Correo electrónico</Label>
             <Input
@@ -69,7 +69,7 @@ export function LoginForm() {
               required
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full h-11 bg-brand text-white hover:bg-brand-dark shadow-glow" disabled={loading}>
             {loading ? "Ingresando..." : "Ingresar"}
           </Button>
         </form>

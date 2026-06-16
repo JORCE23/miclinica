@@ -121,7 +121,7 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
       </div>
 
       {/* Desktop View: Glass Table */}
-      <div className="hidden md:block relative w-full overflow-hidden rounded-3xl border border-border/50 bg-card/40 backdrop-blur-md shadow-sm">
+      <div className="hidden md:block relative w-full overflow-hidden rounded-2xl border border-border/70 bg-card shadow-soft">
         <Table className="min-w-[1000px]">
           <TableHeader className="bg-muted/30">
             <TableRow className="border-b-border/50 hover:bg-transparent">

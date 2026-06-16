@@ -101,6 +101,73 @@
     box-shadow: 0 1px 2px rgb(16 36 57 / 0.04), 0 4px 16px -4px rgb(16 36 57 / 0.08);
   }
 
+  /* Fondo de la app con gradientes sutiles (look SaaS premium) */
+  .bg-app {
+    background-color: #F0F3F7;
+    background-image:
+      radial-gradient(at 100% 0%, rgb(13 148 136 / 0.06) 0px, transparent 45%),
+      radial-gradient(at 0% 0%, rgb(22 36 57 / 0.05) 0px, transparent 40%);
+  }
+
+  /* Panel de marca con gradiente navy (login, headers destacados) */
+  .bg-brand-panel {
+    background-color: #162439;
+    background-image:
+      radial-gradient(at 80% 10%, rgb(45 212 191 / 0.18) 0px, transparent 50%),
+      radial-gradient(at 10% 90%, rgb(30 48 77 / 0.9) 0px, transparent 55%),
+      linear-gradient(160deg, #1E304D 0%, #162439 55%, #0F1A2A 100%);
+  }
+
+  /* Realce de texto con el acento de marca */
+  .text-gradient-brand {
+    background: linear-gradient(135deg, #0D9488 0%, #2DD4BF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Hover de elevación para tarjetas interactivas */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Patrón de rejilla sutil para paneles de marca */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  /* Tarjeta de cristal (glassmorphism) */
+  .glass-panel {
+    background: rgb(255 255 255 / 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  /* Encabezado de página reutilizable (look premium) */
+  .page-header {
+    @apply relative overflow-hidden rounded-2xl bg-brand-panel text-white shadow-elevated px-6 py-6 md:px-8 md:py-7;
+  }
+
+  /* Orbes flotantes animados */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float 9s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+
   /* Scrollbar fino para el sidebar y áreas con scroll */
   .sidebar-scroll {
     scrollbar-width: thin;

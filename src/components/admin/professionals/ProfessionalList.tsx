@@ -45,16 +45,15 @@ export function ProfessionalList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-[#162439]">Equipo</h2>
+      <div className="flex justify-end items-center">
         <Link href="/admin/professionals/new">
-          <Button className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
             <Plus className="w-4 h-4 mr-2" /> Nuevo Profesional
           </Button>
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-[#D8E2ED] overflow-hidden">
+      <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
         <Table className="admin-table">
           <TableHeader>
             <TableRow>

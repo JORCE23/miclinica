@@ -1,13 +1,16 @@
 import { CampaignList } from "@/components/admin/marketing/CampaignList"
+import { PageHeader } from "@/components/admin/PageHeader"
+import { Megaphone } from "lucide-react"
 
 export default function MarketingPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-display font-semibold text-[#162439]">Marketing</h1>
-        <p className="text-[#6B7E94] mt-1">Gestiona tus campañas de marketing para adquirir y fidelizar pacientes</p>
-      </div>
-      
+      <PageHeader
+        title="Marketing"
+        description="Gestiona tus campañas de marketing para adquirir y fidelizar pacientes"
+        icon={Megaphone}
+      />
+
       <CampaignList />
     </div>
   )

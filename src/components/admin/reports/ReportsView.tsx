@@ -68,7 +68,7 @@ export function ReportsView() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 justify-between bg-white p-4 rounded-xl border border-[#D8E2ED] shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between p-4 rounded-2xl border border-border/70 bg-card shadow-soft">
         <div className="flex items-center gap-2">
           <CalendarIcon className="h-5 w-5 text-[#6B7E94]" />
           <select 
@@ -83,14 +83,14 @@ export function ReportsView() {
           </select>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleExportCSV} disabled={isLoading || !data} className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button onClick={handleExportCSV} disabled={isLoading || !data} className="bg-brand hover:bg-brand-dark text-white">
             <Download className="w-4 h-4 mr-2" /> Exportar CSV
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-[#D8E2ED] shadow-sm">
+        <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
           <h2 className="text-lg font-semibold text-[#162439] mb-6">Evolución de Ingresos</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -109,7 +109,7 @@ export function ReportsView() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-[#D8E2ED] shadow-sm">
+        <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
           <h2 className="text-lg font-semibold text-[#162439] mb-6">Servicios más populares</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -129,24 +129,24 @@ export function ReportsView() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-[#D8E2ED] shadow-sm">
+      <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
         <h2 className="text-lg font-semibold text-[#162439] mb-4">Métricas Clave</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 bg-[#F0F3F7] rounded-lg">
+          <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Ticket Promedio</p>
             <p className="text-2xl font-bold text-[#162439]">
               {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(keyMetrics.ticketPromedio || 0)}
             </p>
           </div>
-          <div className="p-4 bg-[#F0F3F7] rounded-lg">
+          <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Retención Pacientes</p>
             <p className="text-2xl font-bold text-[#162439]">{keyMetrics.retencionPacientes || 0}%</p>
           </div>
-          <div className="p-4 bg-[#F0F3F7] rounded-lg">
+          <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">No-Show Rate</p>
             <p className="text-2xl font-bold text-red-600">{keyMetrics.noShowRate || 0}%</p>
           </div>
-          <div className="p-4 bg-[#F0F3F7] rounded-lg border border-green-200">
+          <div className="p-4 rounded-xl border border-green-200 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Ingresos Hoy</p>
             <p className="text-2xl font-bold text-green-600">
               {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(keyMetrics.revenueToday || 0)}

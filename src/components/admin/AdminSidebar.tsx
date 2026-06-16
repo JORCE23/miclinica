@@ -89,11 +89,11 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
             {/* Indicador de activo */}
             <span
               className={cn(
-                "absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-steel transition-all duration-200",
+                "absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-brand-light transition-all duration-200",
                 isActive ? "opacity-100" : "opacity-0"
               )}
             />
-            <route.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform", isActive && "text-white")} />
+            <route.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform", isActive ? "text-brand-light" : "")} />
             {!isCollapsed && <span className="truncate">{route.label}</span>}
           </Link>
         )
