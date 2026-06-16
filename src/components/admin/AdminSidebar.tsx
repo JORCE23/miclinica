@@ -33,6 +33,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
   const supabase = createClient()
   const [open, setOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   // Persistencia del estado colapsado (solo UI, no afecta la lógica)
   useEffect(() => {
@@ -99,51 +100,63 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
     </>
   )
 
+  // El menú está expandido si está fijado abierto, o si el mouse está encima (hover-to-expand)
+  const expanded = !collapsed || hovered
+
   return (
     <>
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "relative bg-brand-panel text-white flex-col hidden md:flex sticky top-0 h-screen shrink-0 border-r border-white/[0.06] transition-[width] duration-300 ease-in-out sidebar-scroll overflow-y-auto overflow-x-hidden",
+          "relative hidden md:block shrink-0 transition-[width] duration-300 ease-in-out",
           collapsed ? "w-[76px]" : "w-60"
         )}
       >
-        {/* Botón de colapsar/expandir */}
-        <button
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
-          className="group/collapse absolute -right-3 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-7 w-7 items-center justify-center rounded-full bg-[#22364f] text-white/75 border border-white/10 shadow-lg ring-1 ring-black/10 hover:bg-brand hover:text-white hover:border-brand transition-all duration-200"
+        <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={cn(
+            "fixed top-0 left-0 z-40 h-screen bg-brand-panel text-white flex flex-col border-r border-white/[0.06] transition-[width] duration-300 ease-in-out sidebar-scroll overflow-y-auto overflow-x-hidden",
+            expanded ? "w-60" : "w-[76px]",
+            collapsed && hovered ? "shadow-2xl shadow-black/40" : ""
+          )}
         >
-          {collapsed
-            ? <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover/collapse:translate-x-0.5" />
-            : <ChevronLeft className="h-3.5 w-3.5 transition-transform group-hover/collapse:-translate-x-0.5" />}
-        </button>
+          {/* Botón de colapsar/expandir (fija o suelta el menú) */}
+          <button
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Fijar menú abierto" : "Colapsar menú"}
+            className="group/collapse absolute -right-3 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-7 w-7 items-center justify-center rounded-full bg-[#22364f] text-white/75 border border-white/10 shadow-lg ring-1 ring-black/10 hover:bg-brand hover:text-white hover:border-brand transition-all duration-200"
+          >
+            {collapsed
+              ? <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover/collapse:translate-x-0.5" />
+              : <ChevronLeft className="h-3.5 w-3.5 transition-transform group-hover/collapse:-translate-x-0.5" />}
+          </button>
 
-        <div className={cn("flex justify-center items-center transition-all", collapsed ? "px-2 pt-6 pb-4" : "px-5 pt-7 pb-5")}>
-          <Link href="/admin/dashboard" className="flex items-center w-full justify-center">
-            {collapsed ? (
-              <img src="/logo-medique-simbolo.png" alt="Medique" className="w-9 h-9 object-contain" />
+          <div className={cn("flex justify-center items-center transition-all", expanded ? "px-5 pt-7 pb-5" : "px-2 pt-6 pb-4")}>
+            <Link href="/admin/dashboard" className="flex items-center w-full justify-center">
+              {expanded ? (
+                <img src="/logo3.png" alt="Medique Logo" className="w-[180px] h-auto object-contain drop-shadow-[0_1px_6px_rgba(0,0,0,0.25)]" />
+              ) : (
+                <img src="/logo-medique-simbolo.png" alt="Medique" className="w-9 h-9 object-contain" />
+              )}
+            </Link>
+          </div>
+
+          <nav className={cn("flex-1 py-5 space-y-1", expanded ? "px-3" : "px-2.5")}>
+            <SidebarLinks isCollapsed={!expanded} />
+          </nav>
+
+          <div className={cn("border-t border-white/[0.06]", expanded ? "px-4 py-5" : "px-2 py-4")}>
+            {expanded ? (
+              <div className="flex items-center gap-3 px-2">
+                <p className="text-[11px] leading-relaxed text-white/35">Software + Marketing para Clínicas Estéticas</p>
+              </div>
             ) : (
-              <img src="/logo3.png" alt="Medique Logo" className="w-[180px] h-auto object-contain drop-shadow-[0_1px_6px_rgba(0,0,0,0.25)]" />
+              <div className="flex justify-center">
+                <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+              </div>
             )}
-          </Link>
-        </div>
-
-        <nav className={cn("flex-1 py-5 space-y-1", collapsed ? "px-2.5" : "px-3")}>
-          <SidebarLinks isCollapsed={collapsed} />
-        </nav>
-
-        <div className={cn("border-t border-white/[0.06]", collapsed ? "px-2 py-4" : "px-4 py-5")}>
-          {!collapsed && (
-            <div className="flex items-center gap-3 px-2">
-              <p className="text-[11px] leading-relaxed text-white/35">Software + Marketing para Clínicas Estéticas</p>
-            </div>
-          )}
-          {collapsed && (
-            <div className="flex justify-center">
-              <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-            </div>
-          )}
+          </div>
         </div>
       </aside>
 
