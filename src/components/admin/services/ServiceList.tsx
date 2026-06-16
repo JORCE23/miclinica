@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Clock, DollarSign, Star } from "lucide-react"
+import { Edit, Trash2, Clock, DollarSign, Star, Package } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ServiceForm } from "./ServiceForm"
+import { ServiceInsumosDialog } from "./ServiceInsumosDialog"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
 
@@ -28,6 +29,7 @@ export function ServiceList() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   const [deletingService, setDeletingService] = useState<Service | null>(null)
+  const [insumosService, setInsumosService] = useState<Service | null>(null)
 
   if (isLoading) {
     return <div className="p-8 text-center text-muted-foreground">Cargando servicios...</div>
@@ -124,8 +126,16 @@ export function ServiceList() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Insumos que consume"
+                      onClick={() => setInsumosService(service)}
+                    >
+                      <Package className="h-4 w-4 text-brand" />
+                    </Button>
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => {
                         setEditingService(service)
@@ -163,6 +173,14 @@ export function ServiceList() {
           )}
         </DialogContent>
       </Dialog>
+
+      {insumosService && (
+        <ServiceInsumosDialog
+          serviceId={insumosService.id}
+          serviceName={insumosService.name}
+          onClose={() => setInsumosService(null)}
+        />
+      )}
 
       <ConfirmDialog
         open={!!deletingService}

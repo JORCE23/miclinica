@@ -70,6 +70,44 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         patientId: appointment.patient_id,
         recordId:  params.id,
       })
+
+      // Descontar del inventario los insumos que consume el servicio (si hay).
+      // Es opcional: si falla, no interrumpe la completación de la cita.
+      try {
+        if (appointment.service_id) {
+          const { data: recipe } = await supabase
+            .from("service_products")
+            .select("product_id, quantity")
+            .eq("clinic_id", profile.clinic_id)
+            .eq("service_id", appointment.service_id)
+
+          for (const item of recipe || []) {
+            const { data: prod } = await supabase
+              .from("inventory_products")
+              .select("stock")
+              .eq("id", item.product_id)
+              .eq("clinic_id", profile.clinic_id)
+              .single()
+            if (!prod) continue
+            const newStock = Math.max(0, prod.stock - (item.quantity || 0))
+            await supabase
+              .from("inventory_products")
+              .update({ stock: newStock, updated_at: new Date().toISOString() })
+              .eq("id", item.product_id)
+              .eq("clinic_id", profile.clinic_id)
+            await supabase.from("inventory_movements").insert({
+              clinic_id:  profile.clinic_id,
+              product_id: item.product_id,
+              type:       "salida",
+              quantity:   item.quantity || 0,
+              reason:     "Consumo en atención",
+              created_by: user.id,
+            })
+          }
+        }
+      } catch (e) {
+        console.error("[status] descuento inventario:", e)
+      }
     }
 
     return NextResponse.json(data)
