@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, ChevronLeft, ChevronRight, Bot, Package } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, ChevronLeft, ChevronRight, Bot, Package, Wallet, DoorOpen } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -13,6 +13,8 @@ const routes = [
   { label: "Dashboard",        icon: LayoutDashboard, href: "/admin/dashboard"     },
   { label: "Pacientes",        icon: Users,           href: "/admin/patients"      },
   { label: "Reservas",         icon: Calendar,        href: "/admin/appointments"  },
+  { label: "Sala de espera",   icon: DoorOpen,        href: "/admin/waiting-room"  },
+  { label: "Caja",             icon: Wallet,          href: "/admin/cash"          },
   { label: "Servicios",        icon: Sparkles,        href: "/admin/services"      },
   { label: "Inventario",       icon: Package,         href: "/admin/inventory"     },
   { label: "Equipo",           icon: UserCheck,       href: "/admin/professionals" },
@@ -63,7 +65,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
     if (route.label === "Reportes" && !permissions?.can_view_reports) return false
 
     // Rutas exclusivas para admin
-    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración", "Agente IA", "Inventario"].includes(route.label)) {
+    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración", "Agente IA", "Inventario", "Caja"].includes(route.label)) {
       if (profile?.role !== 'clinic_admin') return false
     }
 
