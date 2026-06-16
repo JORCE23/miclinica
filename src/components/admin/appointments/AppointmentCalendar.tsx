@@ -50,37 +50,37 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
       <div className="flex items-center gap-2">
-        <button 
+        <button
           onClick={goToCurrent}
-          className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-medium text-sm rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          className="px-4 h-9 bg-card border border-border/70 text-slate-700 font-medium text-sm rounded-xl hover:border-brand/40 hover:text-brand-dark transition-colors shadow-soft"
         >
           Hoy
         </button>
-        <div className="flex items-center bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-          <button onClick={goToBack} className="p-2 text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors border-r border-slate-200">
-            <ChevronLeft className="w-5 h-5" />
+        <div className="flex items-center gap-1 bg-card border border-border/70 rounded-xl shadow-soft p-1">
+          <button onClick={goToBack} className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-600 hover:bg-muted hover:text-brand-dark transition-colors">
+            <ChevronLeft className="w-4 h-4" />
           </button>
-          <button onClick={goToNext} className="p-2 text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors">
-            <ChevronRight className="w-5 h-5" />
+          <button onClick={goToNext} className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-600 hover:bg-muted hover:text-brand-dark transition-colors">
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <h2 className="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-        <CalendarIcon className="w-5 h-5 text-primary" />
+      <h2 className="font-display text-xl font-semibold text-slate-800 tracking-tight flex items-center gap-2">
+        <CalendarIcon className="w-5 h-5 text-brand" />
         {label()}
       </h2>
 
-      <div className="flex items-center bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden text-sm font-medium">
+      <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 text-sm font-medium">
         {['month', 'week', 'day', 'agenda'].map((view) => (
           <button
             key={view}
             onClick={() => toolbar.onView(view as any)}
-            className={`px-4 py-2 transition-colors capitalize ${
-              toolbar.view === view 
-                ? "bg-primary/10 text-primary font-bold" 
-                : "text-slate-600 hover:bg-slate-50"
-            } ${view !== 'agenda' ? 'border-r border-slate-200' : ''}`}
+            className={`px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+              toolbar.view === view
+                ? "bg-card text-brand-dark shadow-soft"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
           >
             {view === 'month' ? 'Mes' : view === 'week' ? 'Semana' : view === 'day' ? 'Día' : 'Agenda'}
           </button>
@@ -144,10 +144,10 @@ export function AppointmentCalendar() {
         backgroundColor,
         color,
         border: "none",
-        borderLeft: `4px solid ${borderColor}`,
-        borderRadius: "6px",
+        borderLeft: `3px solid ${borderColor}`,
+        borderRadius: "8px",
         opacity: 1,
-        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        boxShadow: "0 1px 3px 0 rgba(16, 36, 57, 0.08)",
       },
     }
   }
@@ -165,7 +165,7 @@ export function AppointmentCalendar() {
   maxTime.setHours(21, 0, 0)
 
   return (
-    <div className="h-[600px] w-full bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 calendar-container">
+    <div className="h-[600px] w-full bg-card rounded-2xl shadow-soft border border-border/70 p-4 md:p-6 calendar-container">
       <Calendar
         localizer={localizer}
         events={events}

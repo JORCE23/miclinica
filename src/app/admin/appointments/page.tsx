@@ -18,25 +18,26 @@ export default function AppointmentsPage() {
         description="Gestiona la agenda de la clínica, confirma asistencias y asigna puntos."
         icon={CalendarIcon}
       >
-        {/* Opcional: Toggle entre vista lista y calendario (placeholder por ahora) */}
-        <div className="flex items-center space-x-1 rounded-xl border border-white/15 bg-white/10 p-1 mr-1">
-          <Button
-            variant={view === "list" ? "secondary" : "ghost"}
-            size="sm"
+        {/* Toggle entre vista lista y calendario */}
+        <div className="flex items-center gap-1 rounded-full border border-white/15 bg-white/10 p-1 mr-1">
+          <button
             onClick={() => setView("list")}
-            className={view === "list" ? "h-8 px-2" : "h-8 px-2 text-white/70 hover:text-white hover:bg-white/10"}
+            title="Vista de lista"
+            className={`h-8 w-8 flex items-center justify-center rounded-full transition-colors ${
+              view === "list" ? "bg-white text-[#162439] shadow-soft" : "text-white/70 hover:text-white hover:bg-white/15"
+            }`}
           >
             <ListIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={view === "calendar" ? "secondary" : "ghost"}
-            size="sm"
+          </button>
+          <button
             onClick={() => setView("calendar")}
-            className={view === "calendar" ? "h-8 px-2" : "h-8 px-2 text-white/70 hover:text-white hover:bg-white/10"}
             title="Vista de calendario"
+            className={`h-8 w-8 flex items-center justify-center rounded-full transition-colors ${
+              view === "calendar" ? "bg-white text-[#162439] shadow-soft" : "text-white/70 hover:text-white hover:bg-white/15"
+            }`}
           >
             <CalendarIcon className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
 
         <Link href="/admin/appointments/new">
