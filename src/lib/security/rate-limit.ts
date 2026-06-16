@@ -51,7 +51,7 @@ function checkInMemory(
 ): { success: boolean; remaining: number } {
   const now = Date.now()
   const windowStart = now - windowMs
-  let timestamps = (fallbackMap.get(ip) ?? []).filter((t) => t > windowStart)
+  const timestamps = (fallbackMap.get(ip) ?? []).filter((t) => t > windowStart)
 
   if (timestamps.length >= limit) {
     return { success: false, remaining: 0 }

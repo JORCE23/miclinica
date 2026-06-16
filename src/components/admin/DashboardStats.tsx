@@ -75,21 +75,21 @@ export function DashboardStats() {
   ]
 
   return (
-    <div className="bg-card rounded-xl shadow-sm border p-6 md:p-8 min-h-[500px]">
+    <div className="bg-card rounded-2xl shadow-soft border border-border/70 p-6 md:p-8 min-h-[500px]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Resumen de Clínica</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-800">Resumen de Clínica</h1>
           <p className="text-slate-500 text-sm mt-1">
             Aquí está el resumen de tu clínica para hoy, {format(new Date(), "d 'de' MMMM", { locale: es })}.
           </p>
         </div>
-        
+
         <div className="flex gap-2">
-          <Button render={<Link href="/admin/patients/new" />} variant="outline" className="border-border">
+          <Button render={<Link href="/admin/patients/new" />} variant="outline" className="border-border rounded-xl">
             <Plus className="h-4 w-4 mr-2" />
             Crear Paciente
           </Button>
-          <Button render={<Link href="/admin/appointments/new" />} className="bg-primary hover:bg-primary/90">
+          <Button render={<Link href="/admin/appointments/new" />} className="bg-primary hover:bg-primary/90 rounded-xl shadow-soft">
             <Calendar className="h-4 w-4 mr-2" />
             Nueva Cita
           </Button>
@@ -125,13 +125,13 @@ export function DashboardStats() {
             <h2 className="text-sm font-semibold text-slate-800 mb-4">Indicadores Principales</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {statCards.map((stat, i) => (
-                <div key={i} className="rounded-lg p-4 border flex items-center gap-4 bg-background">
-                  <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${stat.bgLight}`}>
+                <div key={i} className="rounded-xl p-4 border border-border/70 flex items-center gap-4 bg-background hover:shadow-soft hover:border-primary/20 transition-all duration-200">
+                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${stat.bgLight}`}>
                     <stat.icon className={`h-6 w-6 ${stat.color}`} />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground font-medium">{stat.title}</p>
-                    <h3 className="text-xl font-bold text-slate-800">{stat.value}</h3>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{stat.title}</p>
+                    <h3 className="text-2xl font-bold text-slate-800 leading-tight">{stat.value}</h3>
                   </div>
                 </div>
               ))}
@@ -139,7 +139,7 @@ export function DashboardStats() {
             
             <div className="mt-8 mb-4">
               <h2 className="text-sm font-semibold text-slate-800 mb-4">Ingresos de la Semana (Estimado)</h2>
-              <div className="h-72 bg-white border rounded-xl p-4 shadow-sm">
+              <div className="h-72 bg-white border border-border/70 rounded-2xl p-4 shadow-soft">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.revenueData || []}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
@@ -168,7 +168,7 @@ export function DashboardStats() {
                   </div>
                 ) : (
                   upcomingAppointments.map((apt: any) => (
-                    <div key={apt.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-background hover:border-primary/50 transition-colors">
+                    <div key={apt.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border/70 rounded-xl bg-background hover:border-primary/40 hover:shadow-soft transition-all">
                       <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
                           {apt.patient.full_name.charAt(0).toUpperCase()}
@@ -198,7 +198,7 @@ export function DashboardStats() {
             <div>
               <h2 className="text-sm font-semibold text-slate-800 mb-4">Accesos Rápidos</h2>
               <div className="space-y-3">
-                <Link href="/admin/patients/new" className="flex items-center gap-3 p-3 border rounded-lg bg-background hover:border-primary/50 transition-colors group">
+                <Link href="/admin/patients/new" className="flex items-center gap-3 p-3 border border-border/70 rounded-xl bg-background hover:border-primary/40 hover:shadow-soft transition-all group">
                   <div className="p-2 bg-primary/10 rounded text-primary">
                     <UserPlus className="h-4 w-4" />
                   </div>
@@ -208,7 +208,7 @@ export function DashboardStats() {
                   </div>
                 </Link>
 
-                <Link href="/admin/loyalty" className="flex items-center gap-3 p-3 border rounded-lg bg-background hover:border-primary/50 transition-colors group">
+                <Link href="/admin/loyalty" className="flex items-center gap-3 p-3 border border-border/70 rounded-xl bg-background hover:border-primary/40 hover:shadow-soft transition-all group">
                   <div className="p-2 bg-purple-500/10 rounded text-purple-600">
                     <Star className="h-4 w-4" />
                   </div>
@@ -218,7 +218,7 @@ export function DashboardStats() {
                   </div>
                 </Link>
                 
-                <Link href="/admin/settings" className="flex items-center gap-3 p-3 border rounded-lg bg-background hover:border-primary/50 transition-colors group">
+                <Link href="/admin/settings" className="flex items-center gap-3 p-3 border border-border/70 rounded-xl bg-background hover:border-primary/40 hover:shadow-soft transition-all group">
                   <div className="p-2 bg-slate-100 rounded text-slate-600">
                     <Settings className="h-4 w-4" />
                   </div>
@@ -247,7 +247,7 @@ export function DashboardStats() {
               </div>
             ) : (
               upcomingAppointments.map((apt: any) => (
-                <div key={apt.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-background hover:border-primary/50 transition-colors">
+                <div key={apt.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border/70 rounded-xl bg-background hover:border-primary/40 hover:shadow-soft transition-all">
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
                       {apt.patient.full_name.charAt(0).toUpperCase()}
