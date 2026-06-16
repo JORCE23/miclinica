@@ -120,30 +120,98 @@ export function AiAgentView() {
   const [input, setInput] = useState("")
   const [typing, setTyping] = useState(false)
   const [search, setSearch] = useState("")
+  const [connected, setConnected] = useState(false)
+  const [liveConvs, setLiveConvs] = useState<Conversation[] | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const activeConv = MOCK_CONVERSATIONS.find((c) => c.id === activeId) || null
+  const conversations = connected && liveConvs ? liveConvs : MOCK_CONVERSATIONS
+  const activeConv = conversations.find((c) => c.id === activeId) || null
   const activeMessages = activeId ? threads[activeId] || [] : []
   const selectedModel = AGENT_MODELS.find((m) => m.id === model)!
 
-  const filteredConvs = MOCK_CONVERSATIONS.filter((c) =>
+  const filteredConvs = conversations.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) || c.phone.includes(search)
   )
+
+  // Detecta si el Agente IA ya está conectado (UltraMsg + IA) y, en ese caso,
+  // carga las conversaciones reales en vez de las de ejemplo.
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/whatsapp/status")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (cancelled || !d?.connected) return
+        setConnected(true)
+        fetch("/api/whatsapp/conversations")
+          .then((r) => (r.ok ? r.json() : null))
+          .then((data) => {
+            if (cancelled || !data) return
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const convs: Conversation[] = (data.conversations || []).map((c: any) => ({
+              id: c.phone,
+              name: c.name || c.phone,
+              phone: c.phone,
+              lastMessage: c.lastMessage || "",
+              time: c.time ? new Date(c.time).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }) : "",
+              unread: 0,
+              online: false,
+            }))
+            setLiveConvs(convs)
+            setActiveId(convs[0]?.id ?? null)
+          })
+          .catch(() => {})
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
   }, [activeMessages.length, typing, activeId])
 
-  const handleSend = () => {
+  const selectConversation = async (id: string) => {
+    setActiveId(id)
+    if (!connected) return
+    try {
+      const r = await fetch(`/api/whatsapp/conversations?phone=${encodeURIComponent(id)}`)
+      if (!r.ok) return
+      const d = await r.json()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msgs: ChatMessage[] = (d.messages || []).map((m: any) => ({
+        id: m.id,
+        from: m.direction === "in" ? "contact" : "bot",
+        text: m.body,
+        time: new Date(m.created_at).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }),
+      }))
+      setThreads((prev) => ({ ...prev, [id]: msgs }))
+    } catch { /* noop */ }
+  }
+
+  const handleSend = async () => {
     const text = input.trim()
     if (!text || !activeId) return
+
+    // MODO CONECTADO: el operador responde manualmente por WhatsApp real.
+    if (connected) {
+      const outMsg: ChatMessage = { id: `o-${Date.now()}`, from: "bot", text, time: now() }
+      setThreads((prev) => ({ ...prev, [activeId]: [...(prev[activeId] || []), outMsg] }))
+      setInput("")
+      try {
+        await fetch("/api/whatsapp/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone: activeId, message: text }),
+        })
+      } catch { /* noop */ }
+      return
+    }
+
+    // MODO PROTOTIPO: simula al cliente escribiendo y la respuesta del bot.
     const userMsg: ChatMessage = { id: `u-${Date.now()}`, from: "contact", text, time: now() }
     setThreads((prev) => ({ ...prev, [activeId]: [...(prev[activeId] || []), userMsg] }))
     setInput("")
-
     if (!autoReply) return
     setTyping(true)
-    // Simulación de respuesta del bot. Aquí irá la llamada real a la IA seleccionada.
     setTimeout(() => {
       const replyText = simulateBotReply(text)
       const botMsg: ChatMessage = { id: `b-${Date.now()}`, from: "bot", text: replyText, time: now() }
@@ -160,21 +228,34 @@ export function AiAgentView() {
         icon={Bot}
       >
         <Badge className="bg-white/10 text-white border border-white/15 gap-1.5 h-7 px-3 rounded-full">
-          <Circle className="h-2 w-2 fill-amber-400 text-amber-400" /> Prototipo
+          <Circle className={`h-2 w-2 ${connected ? "fill-green-400 text-green-400" : "fill-amber-400 text-amber-400"}`} />
+          {connected ? "Conectado" : "Prototipo"}
         </Badge>
-        <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
-          <Plug className="h-4 w-4 mr-2" /> Conectar WhatsApp
-        </Button>
+        {!connected && (
+          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+            <Plug className="h-4 w-4 mr-2" /> Conectar WhatsApp
+          </Button>
+        )}
       </PageHeader>
 
-      {/* Aviso de prototipo */}
-      <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
-        <Sparkles className="h-5 w-5 shrink-0 mt-0.5 text-amber-500" />
-        <p className="text-sm">
-          <span className="font-semibold">Modo prototipo.</span> Las conversaciones son de ejemplo y el bot responde con respuestas simuladas
-          basadas en el contexto del negocio. Cuando quieras, conectamos tu WhatsApp (UltraMsg) y la IA real que elijas abajo.
-        </p>
-      </div>
+      {/* Aviso de estado */}
+      {connected ? (
+        <div className="flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800">
+          <Circle className="h-5 w-5 shrink-0 mt-0.5 fill-green-500 text-green-500" />
+          <p className="text-sm">
+            <span className="font-semibold">WhatsApp conectado.</span> Las conversaciones y respuestas son reales. El bot responde
+            automáticamente a los mensajes entrantes con el contexto de tu clínica.
+          </p>
+        </div>
+      ) : (
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+          <Sparkles className="h-5 w-5 shrink-0 mt-0.5 text-amber-500" />
+          <p className="text-sm">
+            <span className="font-semibold">Modo prototipo.</span> Las conversaciones son de ejemplo y el bot responde con respuestas simuladas
+            basadas en el contexto del negocio. Cuando quieras, conectamos tu WhatsApp (UltraMsg) y la IA real que elijas abajo.
+          </p>
+        </div>
+      )}
 
       {/* Barra de parámetros del agente */}
       <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 md:p-5">
@@ -289,7 +370,7 @@ export function AiAgentView() {
               return (
                 <button
                   key={c.id}
-                  onClick={() => setActiveId(c.id)}
+                  onClick={() => selectConversation(c.id)}
                   className={`w-full text-left flex items-center gap-3 px-3 py-3 border-b border-border/50 transition-colors ${
                     active ? "bg-brand-soft/60" : "hover:bg-muted/50"
                   }`}
