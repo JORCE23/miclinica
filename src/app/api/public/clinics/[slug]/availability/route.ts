@@ -17,7 +17,7 @@ const availabilitySchema = z.object({
 
 export async function POST(request: Request, { params }: { params: { slug: string } }) {
   const ip = getIp(request)
-  const { success } = checkRateLimit(ip, { limit: 60, windowMs: 60 * 1000 })
+  const { success } = await checkRateLimit(ip, { limit: 60, windowMs: 60 * 1000 })
   if (!success) {
     return NextResponse.json({ error: "Demasiadas solicitudes" }, { status: 429 })
   }

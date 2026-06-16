@@ -30,7 +30,7 @@ const bookingSchema = z.object({
 export async function POST(request: Request, { params }: { params: { slug: string } }) {
   // Rate limiting: 5 reservas por IP cada 5 minutos
   const ip = getIp(request)
-  const { success } = checkRateLimit(ip, { limit: 5, windowMs: 5 * 60 * 1000 })
+  const { success } = await checkRateLimit(ip, { limit: 5, windowMs: 5 * 60 * 1000 })
   if (!success) {
     return NextResponse.json(
       { error: "Demasiadas solicitudes. Por favor espera unos minutos antes de intentar de nuevo." },

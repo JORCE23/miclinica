@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     // 1. Rate Limiting
     const ip = getIp(request)
-    const { success, limit, remaining } = checkRateLimit(ip)
+    const { success, limit, remaining } = await checkRateLimit(ip)
     if (!success) {
       return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429, headers: { 'X-RateLimit-Limit': limit.toString(), 'X-RateLimit-Remaining': remaining.toString() } })
     }
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   try {
     // 1. Rate Limiting
     const ip = getIp(request)
-    const { success, limit, remaining } = checkRateLimit(ip)
+    const { success, limit, remaining } = await checkRateLimit(ip)
     if (!success) {
       return NextResponse.json({ error: "Demasiadas peticiones" }, { status: 429, headers: { 'X-RateLimit-Limit': limit.toString(), 'X-RateLimit-Remaining': remaining.toString() } })
     }
