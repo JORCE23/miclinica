@@ -105,11 +105,14 @@ export async function POST(request: Request) {
 
     const adminAuthClient = createAdminClient()
 
-    // 3.5. Verificar duplicados de RUT/correo
+    // 3.5. Verificar duplicados de RUT/correo dentro de la misma clínica
+    // Scope intencional a clinic_id: RUT y email son únicos por clínica, no globales.
+    // Buscar cross-clinic sin este filtro filtraría existencia de pacientes en otras clínicas.
     const orQuery = rut ? `email.eq.${email},rut.eq.${rut}` : `email.eq.${email}`
     const { data: existingProfiles } = await adminAuthClient
       .from("profiles")
       .select("email, rut")
+      .eq("clinic_id", context!.clinicId)
       .or(orQuery)
 
     if (existingProfiles && existingProfiles.length > 0) {
