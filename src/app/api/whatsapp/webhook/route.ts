@@ -59,6 +59,37 @@ export async function POST(request: Request) {
       body: inbound.body,
     })
 
+    // Traspaso a humano: ¿este contacto tiene el bot pausado?
+    const { data: contactCfg } = await admin
+      .from("whatsapp_contacts")
+      .select("bot_paused")
+      .eq("clinic_id", clinic.id)
+      .eq("phone", phone)
+      .maybeSingle()
+    if (contactCfg?.bot_paused) {
+      // El equipo atiende manualmente: no respondemos con la IA.
+      return NextResponse.json({ ok: true, paused: true })
+    }
+
+    // Si el cliente pide hablar con una persona, derivamos y pausamos el bot.
+    if (/\b(humano|persona|asesor|ejecutiv|operador|agente humano|hablar con alguien)\b/i.test(inbound.body)) {
+      await admin.from("whatsapp_contacts").upsert(
+        { clinic_id: clinic.id, phone, bot_paused: true, updated_at: new Date().toISOString() },
+        { onConflict: "clinic_id,phone" }
+      )
+      const handoffMsg = "¡Claro! 🙌 En seguida te contacta una persona de nuestro equipo. Gracias por tu paciencia."
+      await sendWhatsappMessage(phone, handoffMsg)
+      await admin.from("whatsapp_messages").insert({
+        clinic_id: clinic.id,
+        contact_phone: phone,
+        contact_name: inbound.pushname || null,
+        direction: "out",
+        body: handoffMsg,
+        ai_model: "handoff",
+      })
+      return NextResponse.json({ ok: true, handoff: true })
+    }
+
     // Reconstruir historial reciente (últimos 12 mensajes) para contexto
     const { data: prev } = await admin
       .from("whatsapp_messages")

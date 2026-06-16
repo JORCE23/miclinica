@@ -7,7 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import {
   Bot, Send, Search, Phone, CheckCheck, Plug, Sparkles, Cpu,
   SlidersHorizontal, MessageCircle, ChevronLeft, Circle, Zap, RefreshCw,
+  Users, CalendarCheck, Percent, Headset, Pause, Play,
 } from "lucide-react"
+
+// Respuestas rápidas (plantillas) para responder con un toque
+const QUICK_REPLIES = [
+  { label: "Precios", text: "Te comparto nuestros precios 💅: Limpieza facial $25.000, Bioestimulación $80.000, Ácido hialurónico (labios) $180.000." },
+  { label: "Horario", text: "Nuestro horario es Lun a Vie de 09:00 a 19:00 y Sáb de 10:00 a 14:00. 🕘" },
+  { label: "Ubicación", text: "Estamos en Av. Providencia 1234, Santiago 📍. ¡Te esperamos!" },
+  { label: "Agendar", text: "¿Para qué servicio y qué día te gustaría agendar? Reviso disponibilidad y te confirmo. 📅" },
+  { label: "Gracias", text: "¡Gracias por escribirnos! 😊 Cualquier cosa quedamos atentos. ✨" },
+]
 
 // =============================================================================
 //  PROTOTIPO — Agente IA + Bandeja de WhatsApp (UltraMsg)
@@ -122,7 +132,11 @@ export function AiAgentView() {
   const [search, setSearch] = useState("")
   const [connected, setConnected] = useState(false)
   const [liveConvs, setLiveConvs] = useState<Conversation[] | null>(null)
+  const [metrics, setMetrics] = useState<{ contacts: number; messages: number; bookingsByAI: number; responseRate: number } | null>(null)
+  const [pausedMap, setPausedMap] = useState<Record<string, boolean>>({})
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const activePaused = activeId ? !!pausedMap[activeId] : false
 
   const conversations = connected && liveConvs ? liveConvs : MOCK_CONVERSATIONS
   const activeConv = conversations.find((c) => c.id === activeId) || null
@@ -137,6 +151,10 @@ export function AiAgentView() {
   // carga las conversaciones reales en vez de las de ejemplo.
   useEffect(() => {
     let cancelled = false
+    fetch("/api/whatsapp/metrics")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (!cancelled && d) setMetrics(d) })
+      .catch(() => {})
     fetch("/api/whatsapp/status")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
@@ -184,6 +202,20 @@ export function AiAgentView() {
         time: new Date(m.created_at).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }),
       }))
       setThreads((prev) => ({ ...prev, [id]: msgs }))
+    } catch { /* noop */ }
+  }
+
+  const toggleHandoff = async () => {
+    if (!activeId) return
+    const next = !activePaused
+    setPausedMap((prev) => ({ ...prev, [activeId]: next }))
+    if (!connected) return
+    try {
+      await fetch("/api/whatsapp/handoff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: activeId, paused: next }),
+      })
     } catch { /* noop */ }
   }
 
@@ -256,6 +288,30 @@ export function AiAgentView() {
           </p>
         </div>
       )}
+
+      {/* Métricas del bot */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {(() => {
+          const m = metrics || { contacts: 5, messages: 128, bookingsByAI: 12, responseRate: 96 }
+          const cards = [
+            { label: "Contactos", value: m.contacts, icon: Users, grad: "from-[#0D9488] to-[#2DD4BF]" },
+            { label: "Mensajes (30d)", value: m.messages, icon: MessageCircle, grad: "from-[#2563EB] to-[#60A5FA]" },
+            { label: "Citas por IA", value: m.bookingsByAI, icon: CalendarCheck, grad: "from-[#7C3AED] to-[#A78BFA]" },
+            { label: "Tasa respuesta", value: `${m.responseRate}%`, icon: Percent, grad: "from-[#059669] to-[#34D399]" },
+          ]
+          return cards.map((c, i) => (
+            <div key={i} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 flex items-center gap-3">
+              <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${c.grad} flex items-center justify-center text-white shadow-soft shrink-0`}>
+                <c.icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold truncate">{c.label}</p>
+                <p className="text-xl font-bold text-slate-800">{c.value}</p>
+              </div>
+            </div>
+          ))
+        })()}
+      </div>
 
       {/* Barra de parámetros del agente */}
       <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 md:p-5">
@@ -420,9 +476,24 @@ export function AiAgentView() {
                     {activeConv.online && <span className="text-green-600">· en línea</span>}
                   </p>
                 </div>
-                <Badge variant="secondary" className="bg-brand-soft text-brand-dark gap-1">
-                  <Bot className="h-3 w-3" /> {selectedModel.name}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={toggleHandoff}
+                    title={activePaused ? "Reactivar el bot en este chat" : "Pasar a atención humana"}
+                    className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium border transition-all ${
+                      activePaused
+                        ? "bg-amber-50 border-amber-200 text-amber-700"
+                        : "bg-card border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {activePaused ? <Play className="h-3.5 w-3.5" /> : <Headset className="h-3.5 w-3.5" />}
+                    {activePaused ? "Reactivar bot" : "Atender yo"}
+                  </button>
+                  <Badge variant="secondary" className={activePaused ? "bg-amber-100 text-amber-700 gap-1" : "bg-brand-soft text-brand-dark gap-1"}>
+                    {activePaused ? <Pause className="h-3 w-3" /> : <Bot className="h-3 w-3" />}
+                    {activePaused ? "Humano" : selectedModel.name}
+                  </Badge>
+                </div>
               </div>
 
               {/* Mensajes */}
@@ -459,6 +530,17 @@ export function AiAgentView() {
 
               {/* Entrada */}
               <div className="p-3 border-t border-border/70 bg-card">
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {QUICK_REPLIES.map((q) => (
+                    <button
+                      key={q.label}
+                      onClick={() => setInput(q.text)}
+                      className="text-xs px-2.5 py-1 rounded-full border border-border bg-muted/40 hover:bg-brand-soft hover:border-brand/30 hover:text-brand-dark transition-colors"
+                    >
+                      {q.label}
+                    </button>
+                  ))}
+                </div>
                 <div className="flex items-end gap-2">
                   <input
                     value={input}
