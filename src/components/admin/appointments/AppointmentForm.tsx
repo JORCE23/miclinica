@@ -3,6 +3,7 @@
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { appointmentSchema, type AppointmentFormValues } from "@/lib/validations/appointment"
+import { validateRut, formatRut } from "@/lib/validations/rut"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -109,8 +110,23 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
   const onSubmitWrapper = async (e: React.FormEvent) => {
     e.preventDefault()
     if (patientMode === "new" && !defaultPatientId) {
-      if (!np.full_name.trim() || !np.email.trim()) {
-        toast.error("Nombre y correo del paciente nuevo son obligatorios")
+      // Validaciones del paciente nuevo
+      const name = np.full_name.trim()
+      const email = np.email.trim()
+      if (name.length < 2 || !/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s.'-]+$/.test(name)) {
+        toast.error("El nombre solo puede contener letras")
+        return
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        toast.error("El correo electrónico no es válido")
+        return
+      }
+      if (np.rut.trim() && !validateRut(np.rut)) {
+        toast.error("El RUT no es válido")
+        return
+      }
+      if (np.phone.trim() && !/\d/.test(np.phone)) {
+        toast.error("El teléfono debe contener números")
         return
       }
       setCreatingPatient(true)
@@ -202,19 +218,44 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl border border-border/70 bg-muted/20">
             <div className="sm:col-span-2 space-y-1.5">
               <Label className="text-xs">Nombre completo *</Label>
-              <Input value={np.full_name} onChange={(e) => setNp({ ...np, full_name: e.target.value })} placeholder="Ej. Camila Rojas" />
+              <Input
+                value={np.full_name}
+                onChange={(e) => setNp({ ...np, full_name: e.target.value.replace(/[0-9]/g, "") })}
+                placeholder="Ej. Camila Rojas"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">RUT</Label>
-              <Input value={np.rut} onChange={(e) => setNp({ ...np, rut: e.target.value })} placeholder="12.345.678-9" />
+              <Input
+                value={np.rut}
+                onChange={(e) => setNp({ ...np, rut: formatRut(e.target.value) })}
+                placeholder="12.345.678-9"
+                inputMode="text"
+              />
+              {np.rut.trim() && !validateRut(np.rut) && (
+                <p className="text-[11px] text-red-500">RUT inválido</p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Teléfono</Label>
-              <Input value={np.phone} onChange={(e) => setNp({ ...np, phone: e.target.value })} placeholder="+56 9 ..." />
+              <Input
+                value={np.phone}
+                onChange={(e) => setNp({ ...np, phone: e.target.value.replace(/[^0-9+\s()-]/g, "") })}
+                placeholder="+56 9 ..."
+                inputMode="tel"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Correo electrónico *</Label>
-              <Input type="email" value={np.email} onChange={(e) => setNp({ ...np, email: e.target.value })} placeholder="correo@ejemplo.com" />
+              <Input
+                type="email"
+                value={np.email}
+                onChange={(e) => setNp({ ...np, email: e.target.value })}
+                placeholder="correo@ejemplo.com"
+              />
+              {np.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(np.email) && (
+                <p className="text-[11px] text-red-500">Correo inválido</p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Fecha de nacimiento</Label>
