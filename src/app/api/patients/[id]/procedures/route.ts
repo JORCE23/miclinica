@@ -7,6 +7,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
+    const { data: profile } = await supabase.from("profiles").select("role, clinic_id").eq("id", user.id).single()
+    if (!profile) return NextResponse.json({ error: "Perfil no encontrado" }, { status: 403 })
+
+    if (profile.role !== "clinic_admin" && user.id !== params.id) {
+      return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
+    }
+
     const { data, error } = await supabase
       .from("aesthetic_procedures_history")
       .select("*")
@@ -27,8 +34,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-    const { data: profile } = await supabase.from("profiles").select("clinic_id").eq("id", user.id).single()
-    if (!profile) return NextResponse.json({ error: "Perfil no encontrado" }, { status: 403 })
+    const { data: profile } = await supabase.from("profiles").select("clinic_id, role").eq("id", user.id).single()
+    if (!profile || profile.role !== "clinic_admin") {
+      return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
+    }
 
     const body = await request.json()
     const { procedure_name, performed_at, performed_by, notes, before_image_url, after_image_url, facial_diagram_data } = body
