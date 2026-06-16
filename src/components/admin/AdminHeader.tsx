@@ -28,20 +28,20 @@ export function AdminHeader({ profile }: { profile?: any }) {
   }
 
   return (
-    <header className="hidden md:flex h-16 bg-white border-b border-[#D8E2ED] items-center justify-between px-6 gap-4 sticky top-0 z-30">
+    <header className="hidden md:flex h-16 bg-white/80 backdrop-blur-md border-b border-[#D8E2ED]/70 items-center justify-between px-6 gap-4 sticky top-0 z-30">
       <form onSubmit={handleSearch} className="flex-1 max-w-xl relative hidden md:block">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7E94]" />
-        <Input 
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7E94] pointer-events-none" />
+        <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-[#F0F3F7] border-transparent text-[#162439] placeholder:text-[#6B7E94] focus-visible:ring-primary/20 rounded-lg pl-10 h-10" 
-          placeholder="Buscar pacientes... (Presiona Enter)" 
+          className="w-full bg-[#F0F3F7] border-transparent text-[#162439] placeholder:text-[#6B7E94] focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:bg-white focus-visible:border-[#D8E2ED] rounded-xl pl-10 h-10 transition-all"
+          placeholder="Buscar pacientes... (Presiona Enter)"
         />
       </form>
 
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-3 ml-auto">
         <Link href="/admin/appointments/new" className="hidden sm:flex">
-          <Button className="bg-[#162439] hover:bg-[#1E304D] text-white">
+          <Button className="bg-[#162439] hover:bg-[#1E304D] text-white rounded-xl shadow-soft transition-all hover:shadow-md">
             <Plus className="w-4 h-4 mr-2" /> Nueva Cita
           </Button>
         </Link>
@@ -61,7 +61,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 hover:bg-[#F0F3F7] p-1.5 pr-3 rounded-full transition-colors focus:outline-none">
+          <DropdownMenuTrigger className="flex items-center gap-2 hover:bg-[#F0F3F7] p-1.5 pr-3 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
             ) : (
