@@ -7,7 +7,7 @@ import { format, isToday, isTomorrow } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
 
 // Removed mockRevenueData to use real data from the API
 
@@ -31,6 +31,14 @@ export function DashboardStats() {
 
   const stats = data.stats
   const upcomingAppointments = data.upcomingAppointments
+
+  // Datos para el gráfico de evolución de ingresos
+  const revenueData = data.revenueData || []
+  const clpFmt = (n: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(n || 0)
+  const revenueTotal = revenueData.reduce((a: number, d: any) => a + (d.ingresos || 0), 0)
+  const revFirst = revenueData.find((d: any) => (d.ingresos || 0) > 0)?.ingresos || 0
+  const revLast = [...revenueData].reverse().find((d: any) => (d.ingresos || 0) > 0)?.ingresos || 0
+  const revenueTrend = revFirst > 0 ? Math.round(((revLast - revFirst) / revFirst) * 100) : null
 
   const formatAppointmentDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -153,32 +161,57 @@ export function DashboardStats() {
               </div>
 
               <div className="mt-8 mb-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="h-7 w-7 rounded-lg bg-brand-soft flex items-center justify-center">
-                    <TrendingUp className="h-4 w-4 text-brand-dark" />
+                <div className="bg-card border border-border/70 rounded-2xl p-5 shadow-soft">
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-white shadow-soft">
+                        <TrendingUp className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-semibold text-slate-800">Evolución de ingresos</h2>
+                        <p className="text-xs text-muted-foreground">Estimado de la semana</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-slate-800 leading-tight">{clpFmt(revenueTotal)}</p>
+                      {revenueTrend !== null && (
+                        <span className={`inline-flex items-center gap-1 text-xs font-semibold ${revenueTrend >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                          <ArrowUpRight className={`h-3.5 w-3.5 ${revenueTrend < 0 ? "rotate-90" : ""}`} />
+                          {revenueTrend >= 0 ? "+" : ""}{revenueTrend}% en la semana
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <h2 className="text-sm font-semibold text-slate-800">Ingresos de la Semana (Estimado)</h2>
-                </div>
-                <div className="h-72 bg-card border border-border/70 rounded-2xl p-4 shadow-soft">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data.revenueData || []}>
-                      <defs>
-                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#0D9488" stopOpacity={0.95} />
-                          <stop offset="100%" stopColor="#2DD4BF" stopOpacity={0.55} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dx={-10} tickFormatter={(value) => `$${value/1000}k`} />
-                      <RechartsTooltip
-                        cursor={{fill: 'rgb(13 148 136 / 0.06)'}}
-                        contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)'}}
-                        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Ingresos']}
-                      />
-                      <Bar dataKey="ingresos" fill="url(#barGradient)" radius={[6, 6, 0, 0]} barSize={36} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={revenueData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#0D9488" stopOpacity={0.28} />
+                            <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF2F6" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} dy={8} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} width={48} tickFormatter={(v) => `$${v / 1000}k`} />
+                        <RechartsTooltip
+                          cursor={{ stroke: "#0D9488", strokeWidth: 1, strokeDasharray: "4 4" }}
+                          contentStyle={{ borderRadius: "12px", border: "1px solid #E2E8F0", boxShadow: "0 8px 24px -8px rgb(16 36 57 / 0.14)", fontSize: "13px" }}
+                          labelStyle={{ fontWeight: 600, color: "#162439" }}
+                          formatter={(value: any) => [clpFmt(Number(value)), "Ingresos"]}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="ingresos"
+                          stroke="#0D9488"
+                          strokeWidth={2.5}
+                          fill="url(#revFill)"
+                          dot={false}
+                          activeDot={{ r: 5, fill: "#0D9488", stroke: "#fff", strokeWidth: 2 }}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
             </div>
