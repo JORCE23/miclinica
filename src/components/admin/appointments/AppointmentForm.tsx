@@ -40,6 +40,16 @@ const durLabel = (m: number) => {
   return mm ? `${h} h ${mm} min` : `${h} h`
 }
 
+// Opciones de hora cada 15 minutos, de 08:00 a 22:00
+const TIME_OPTIONS: string[] = (() => {
+  const out: string[] = []
+  for (let h = 8; h <= 21; h++) {
+    for (const m of [0, 15, 30, 45]) out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`)
+  }
+  out.push("22:00")
+  return out
+})()
+
 export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId }: AppointmentFormProps) {
   const { data: patients } = usePatients()
   const { data: services } = useServices(true) // Solo servicios activos
@@ -81,6 +91,16 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
   const [patientMode, setPatientMode] = useState<"existing" | "new">("existing")
   const [creatingPatient, setCreatingPatient] = useState(false)
   const [np, setNp] = useState({ full_name: "", rut: "", phone: "", email: "", birth_date: "" })
+
+  // Fecha y hora por separado; la hora se elige en bloques de 15 minutos
+  const initDT = initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : ""
+  const [apptDate, setApptDate] = useState(initDT ? initDT.slice(0, 10) : "")
+  const [apptTime, setApptTime] = useState(initDT ? initDT.slice(11, 16) : "")
+  const updateDateTime = (d: string, t: string) => {
+    setApptDate(d)
+    setApptTime(t)
+    setValue("scheduled_at", d && t ? `${d}T${t}` : "", { shouldValidate: true })
+  }
 
   // Auto-completar duración y precio cuando cambia el servicio
   useEffect(() => {
@@ -360,13 +380,28 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="scheduled_at">Fecha y Hora *</Label>
-        <Input
-          id="scheduled_at"
-          type="datetime-local"
-          step={900}
-          {...register("scheduled_at")}
-        />
+        <Label>Fecha y Hora *</Label>
+        <div className="grid grid-cols-2 gap-3">
+          <Input
+            type="date"
+            value={apptDate}
+            onChange={(e) => updateDateTime(e.target.value, apptTime)}
+            aria-label="Fecha"
+          />
+          <select
+            value={apptTime}
+            onChange={(e) => updateDateTime(apptDate, e.target.value)}
+            aria-label="Hora"
+            className="w-full h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none transition-all focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/15"
+          >
+            <option value="">Seleccionar hora</option>
+            {apptTime && !TIME_OPTIONS.includes(apptTime) && <option value={apptTime}>{apptTime}</option>}
+            {TIME_OPTIONS.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+        <p className="text-[11px] text-muted-foreground">Horario de 08:00 a 22:00, en bloques de 15 minutos.</p>
         {errors.scheduled_at && <p className="text-sm text-red-500">{errors.scheduled_at.message}</p>}
       </div>
 
