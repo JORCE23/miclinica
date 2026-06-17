@@ -156,7 +156,7 @@ export function InventoryView() {
   }
 
   const metricCards = [
-    { label: "Productos", value: products.length, icon: Boxes, grad: "from-[#0D9488] to-[#2DD4BF]" },
+    { label: "Productos", value: products.length, icon: Boxes, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
     { label: "Stock bajo", value: lowCount, icon: TrendingDown, grad: "from-[#D97706] to-[#FbBf24]" },
     { label: "Agotados", value: outCount, icon: PackageX, grad: "from-[#DC2626] to-[#F87171]" },
     { label: "Por vencer", value: batchAlerts?.expiringCount ?? 0, icon: CalendarClock, grad: "from-[#EA580C] to-[#FB923C]" },

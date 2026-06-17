@@ -71,7 +71,7 @@ export function CashRegisterView() {
   const cards = [
     { label: "Ingresos del día", value: clp(ingresos), icon: ArrowDownCircle, grad: "from-[#059669] to-[#34D399]" },
     { label: "Egresos", value: clp(egresos), icon: ArrowUpCircle, grad: "from-[#DC2626] to-[#F87171]" },
-    { label: "Balance", value: clp(balance), icon: Scale, grad: "from-[#0D9488] to-[#2DD4BF]" },
+    { label: "Balance", value: clp(balance), icon: Scale, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
     { label: "Atenciones cobradas", value: appts.length, icon: CalendarCheck, grad: "from-[#2563EB] to-[#60A5FA]" },
   ]
 

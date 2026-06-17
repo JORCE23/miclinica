@@ -294,7 +294,7 @@ export function AiAgentView() {
         {(() => {
           const m = metrics || { contacts: 5, messages: 128, bookingsByAI: 12, responseRate: 96 }
           const cards = [
-            { label: "Contactos", value: m.contacts, icon: Users, grad: "from-[#0D9488] to-[#2DD4BF]" },
+            { label: "Contactos", value: m.contacts, icon: Users, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
             { label: "Mensajes (30d)", value: m.messages, icon: MessageCircle, grad: "from-[#2563EB] to-[#60A5FA]" },
             { label: "Citas por IA", value: m.bookingsByAI, icon: CalendarCheck, grad: "from-[#7C3AED] to-[#A78BFA]" },
             { label: "Tasa respuesta", value: `${m.responseRate}%`, icon: Percent, grad: "from-[#059669] to-[#34D399]" },
@@ -432,7 +432,7 @@ export function AiAgentView() {
                   }`}
                 >
                   <div className="relative shrink-0">
-                    <div className="h-11 w-11 rounded-full bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-white font-semibold">
+                    <div className="h-11 w-11 rounded-full bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-white font-semibold">
                       {c.name.charAt(0)}
                     </div>
                     {c.online && <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-card" />}
@@ -466,7 +466,7 @@ export function AiAgentView() {
                 <button onClick={() => setActiveId(null)} className="md:hidden text-muted-foreground hover:text-foreground">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-white font-semibold shrink-0">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-white font-semibold shrink-0">
                   {activeConv.name.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">

@@ -116,7 +116,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="Avatar" className="w-9 h-9 rounded-xl object-cover ring-2 ring-white shadow-soft" />
             ) : (
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-sm font-bold text-white ring-2 ring-white shadow-soft">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-sm font-bold text-white ring-2 ring-white shadow-soft">
                 {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
@@ -131,7 +131,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-10 h-10 rounded-xl object-cover" />
               ) : (
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-sm font-bold text-white">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-sm font-bold text-white">
                   {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}

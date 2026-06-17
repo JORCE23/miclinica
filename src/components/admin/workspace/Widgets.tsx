@@ -84,7 +84,7 @@ export function PacientesWidget() {
     <div className="space-y-2">
       {list.slice(0, 6).map((p) => (
         <Link key={p.id} href={`/admin/patients/${p.id}`} className="flex items-center gap-3 rounded-xl border border-border/70 bg-background p-2.5 hover:border-brand/40 transition-colors">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] text-white flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] text-white flex items-center justify-center text-xs font-bold shrink-0">
             {(p.full_name || "?").charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
@@ -162,7 +162,7 @@ export function CajaWidget() {
 // ---- Accesos rápidos ----
 export function AccesosWidget() {
   const links = [
-    { label: "Nuevo paciente", href: "/admin/patients/new", icon: UserPlus, grad: "from-[#0D9488] to-[#2DD4BF]" },
+    { label: "Nuevo paciente", href: "/admin/patients/new", icon: UserPlus, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
     { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, grad: "from-[#2563EB] to-[#60A5FA]" },
     { label: "Inventario", href: "/admin/inventory", icon: Package, grad: "from-[#7C3AED] to-[#A78BFA]" },
     { label: "Caja", href: "/admin/cash", icon: Wallet, grad: "from-[#059669] to-[#34D399]" },

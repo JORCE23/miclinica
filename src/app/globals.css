@@ -117,13 +117,13 @@
   .bg-app {
     background-color: #F0F3F7;
     background-image:
-      radial-gradient(at 100% 0%, rgb(13 148 136 / 0.06) 0px, transparent 45%),
+      radial-gradient(at 100% 0%, rgb(46 127 176 / 0.06) 0px, transparent 45%),
       radial-gradient(at 0% 0%, rgb(22 36 57 / 0.05) 0px, transparent 40%);
   }
   .dark .bg-app {
     background-color: hsl(222.2 84% 4.9%);
     background-image:
-      radial-gradient(at 100% 0%, rgb(13 148 136 / 0.10) 0px, transparent 45%),
+      radial-gradient(at 100% 0%, rgb(46 127 176 / 0.10) 0px, transparent 45%),
       radial-gradient(at 0% 0%, rgb(123 154 181 / 0.08) 0px, transparent 40%);
   }
 
@@ -131,14 +131,19 @@
   .bg-brand-panel {
     background-color: #162439;
     background-image:
-      radial-gradient(at 80% 10%, rgb(45 212 191 / 0.18) 0px, transparent 50%),
+      radial-gradient(at 80% 10%, rgb(91 163 206 / 0.18) 0px, transparent 50%),
       radial-gradient(at 10% 90%, rgb(30 48 77 / 0.9) 0px, transparent 55%),
       linear-gradient(160deg, #1E304D 0%, #162439 55%, #0F1A2A 100%);
   }
 
+  /* Iconos algo más finos (estilo del prototipo) */
+  .lucide {
+    stroke-width: 1.75;
+  }
+
   /* Realce de texto con el acento de marca */
   .text-gradient-brand {
-    background: linear-gradient(135deg, #0D9488 0%, #2DD4BF 100%);
+    background: linear-gradient(135deg, #2E7FB0 0%, #5BA3CE 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -265,7 +270,7 @@
   transition: background-color 0.12s ease;
 }
 .calendar-container .rbc-day-slot .rbc-time-slot:hover {
-  background-color: rgb(106 130 150 / 0.12);
+  background-color: rgb(31 138 91 / 0.10);
   cursor: copy;
 }
 .calendar-container .rbc-day-slot .rbc-time-slot:hover::after {
@@ -278,7 +283,7 @@
   font-size: 15px;
   font-weight: 700;
   line-height: 1;
-  color: #6A8296;
+  color: #1F8A5B;
   pointer-events: none;
 }
 

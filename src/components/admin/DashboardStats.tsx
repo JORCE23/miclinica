@@ -54,7 +54,7 @@ export function DashboardStats() {
       icon: Users,
       color: "text-primary",
       bgLight: "bg-primary/10",
-      gradient: "from-[#0D9488] to-[#2DD4BF]",
+      gradient: "from-[#2E7FB0] to-[#5BA3CE]",
       description: "Pacientes activos",
     },
     {
@@ -164,7 +164,7 @@ export function DashboardStats() {
                 <div className="bg-card border border-border/70 rounded-2xl p-5 shadow-soft">
                   <div className="flex items-start justify-between gap-4 mb-5">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-white shadow-soft">
+                      <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-white shadow-soft">
                         <TrendingUp className="h-4 w-4" />
                       </div>
                       <div>
@@ -187,15 +187,15 @@ export function DashboardStats() {
                       <AreaChart data={revenueData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                         <defs>
                           <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0D9488" stopOpacity={0.28} />
-                            <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
+                            <stop offset="0%" stopColor="#2E7FB0" stopOpacity={0.28} />
+                            <stop offset="100%" stopColor="#2E7FB0" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="hsl(var(--border))" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} dy={8} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} width={48} tickFormatter={(v) => `$${v / 1000}k`} />
                         <RechartsTooltip
-                          cursor={{ stroke: "#0D9488", strokeWidth: 1, strokeDasharray: "4 4" }}
+                          cursor={{ stroke: "#2E7FB0", strokeWidth: 1, strokeDasharray: "4 4" }}
                           contentStyle={{ borderRadius: "12px", border: "1px solid #E2E8F0", boxShadow: "0 8px 24px -8px rgb(16 36 57 / 0.14)", fontSize: "13px" }}
                           labelStyle={{ fontWeight: 600, color: "#162439" }}
                           formatter={(value: any) => [clpFmt(Number(value)), "Ingresos"]}
@@ -203,11 +203,11 @@ export function DashboardStats() {
                         <Area
                           type="monotone"
                           dataKey="ingresos"
-                          stroke="#0D9488"
+                          stroke="#2E7FB0"
                           strokeWidth={2.5}
                           fill="url(#revFill)"
                           dot={false}
-                          activeDot={{ r: 5, fill: "#0D9488", stroke: "#fff", strokeWidth: 2 }}
+                          activeDot={{ r: 5, fill: "#2E7FB0", stroke: "#fff", strokeWidth: 2 }}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -258,7 +258,7 @@ export function DashboardStats() {
                 <h2 className="text-sm font-semibold text-foreground mb-4">Accesos Rápidos</h2>
                 <div className="space-y-3">
                   <Link href="/admin/patients/new" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-white shadow-soft">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-white shadow-soft">
                       <UserPlus className="h-4 w-4" />
                     </div>
                     <div>

@@ -98,20 +98,20 @@ export function ReportsView() {
               <AreaChart data={monthlyRevenue} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                 <defs>
                   <linearGradient id="repRevFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0D9488" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#2E7FB0" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="#2E7FB0" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF2F6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={8} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} width={48} tickFormatter={(value) => `$${value/1000}k`} />
                 <RechartsTooltip
-                  cursor={{stroke: '#0D9488', strokeWidth: 1, strokeDasharray: '4 4'}}
+                  cursor={{stroke: '#2E7FB0', strokeWidth: 1, strokeDasharray: '4 4'}}
                   contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)', fontSize: '13px'}}
                   labelStyle={{fontWeight: 600, color: '#162439'}}
                   formatter={(value: any) => [clpFmt(Number(value)), 'Ingresos']}
                 />
-                <Area type="monotone" dataKey="ingresos" stroke="#0D9488" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#0D9488', stroke: '#fff', strokeWidth: 2}} />
+                <Area type="monotone" dataKey="ingresos" stroke="#2E7FB0" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#2E7FB0', stroke: '#fff', strokeWidth: 2}} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -124,8 +124,8 @@ export function ReportsView() {
               <BarChart data={servicesData} layout="vertical" margin={{ left: 20 }}>
                 <defs>
                   <linearGradient id="repBar" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#0D9488" />
-                    <stop offset="100%" stopColor="#2DD4BF" />
+                    <stop offset="0%" stopColor="#2E7FB0" />
+                    <stop offset="100%" stopColor="#5BA3CE" />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" horizontal={false} stroke="#EEF2F6" />
