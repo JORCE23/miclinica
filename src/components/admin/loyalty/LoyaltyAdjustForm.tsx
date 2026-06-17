@@ -69,7 +69,7 @@ export function LoyaltyAdjustForm({ open, onOpenChange, patientId, patientName }
         <DialogHeader>
           <DialogTitle>Ajustar Puntos</DialogTitle>
           <DialogDescription>
-            Paciente: <span className="font-semibold text-slate-900 dark:text-white">{patientName}</span>
+            Paciente: <span className="font-semibold text-foreground dark:text-white">{patientName}</span>
           </DialogDescription>
         </DialogHeader>
         

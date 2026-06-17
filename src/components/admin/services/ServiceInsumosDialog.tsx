@@ -59,7 +59,7 @@ export function ServiceInsumosDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-1">
-          <h3 className="font-display text-xl font-semibold text-slate-800 flex items-center gap-2">
+          <h3 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
             <Package className="h-5 w-5 text-brand" /> Insumos del servicio
           </h3>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
@@ -79,7 +79,7 @@ export function ServiceInsumosDialog({
               {recipe.map((r) => (
                 <div key={r.id} className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/70 bg-background">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{r.product?.name || "Producto eliminado"}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{r.product?.name || "Producto eliminado"}</p>
                     <p className="text-xs text-muted-foreground">Stock actual: {r.product?.stock ?? "—"} {r.product?.unit}</p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">

@@ -75,7 +75,7 @@ export function ProfessionalList() {
             )}
             {professionals?.map((professional) => (
               <TableRow key={professional.id}>
-                <TableCell className="font-medium text-[#162439]">{professional.full_name}</TableCell>
+                <TableCell className="font-medium text-foreground">{professional.full_name}</TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.specialty || '-'}</TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.email || '-'}</TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.phone || '-'}</TableCell>
@@ -89,7 +89,7 @@ export function ProfessionalList() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Link href={`/admin/professionals/${professional.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-[#162439]">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-foreground">
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>

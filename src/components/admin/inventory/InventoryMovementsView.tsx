@@ -30,7 +30,7 @@ export function InventoryMovementsView() {
   return (
     <div className="space-y-5">
       <PageHeader title="Historial de movimientos" description="Cada entrada, salida y ajuste de tu inventario, en orden cronológico." icon={History}>
-        <Button render={<Link href="/admin/inventory" />} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl">
+        <Button variant="outline" render={<Link href="/admin/inventory" />} className="rounded-xl">
           <ChevronLeft className="h-4 w-4 mr-2" /> Volver al inventario
         </Button>
       </PageHeader>
@@ -61,13 +61,13 @@ export function InventoryMovementsView() {
                   return (
                     <tr key={m.id} className="border-b border-border/50 hover:bg-muted/40 transition-colors">
                       <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{format(new Date(m.created_at), "dd MMM, HH:mm", { locale: es })}</td>
-                      <td className="px-4 py-3 font-medium text-slate-800">{m.product?.name || "—"}</td>
+                      <td className="px-4 py-3 font-medium text-foreground">{m.product?.name || "—"}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${meta.cls}`}>
                           <meta.icon className="h-3.5 w-3.5" /> {meta.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-center font-semibold text-slate-800">
+                      <td className="px-4 py-3 text-center font-semibold text-foreground">
                         {m.type === "salida" ? "−" : m.type === "entrada" ? "+" : ""}{m.quantity} {m.product?.unit || ""}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{m.reason || "—"}</td>

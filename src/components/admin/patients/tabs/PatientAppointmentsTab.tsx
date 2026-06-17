@@ -63,7 +63,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border/70 rounded-2xl bg-white shadow-soft hover:shadow-card transition-shadow mb-3 relative overflow-hidden group">
         {/* Date Box */}
         <div className="bg-slate-100/80 dark:bg-slate-800 rounded-lg p-3 text-center w-full sm:w-auto sm:min-w-[120px] flex flex-row sm:flex-col justify-between sm:justify-center items-center sm:h-full border border-slate-200 dark:border-slate-700 shrink-0">
-          <div className="font-bold text-slate-800 dark:text-slate-200">{format(dateObj, "dd MMM yyyy", { locale: es })}</div>
+          <div className="font-bold text-foreground dark:text-slate-200">{format(dateObj, "dd MMM yyyy", { locale: es })}</div>
           <div className="text-sm font-medium text-slate-500">{format(dateObj, "HH:mm")} hrs.</div>
         </div>
 
@@ -72,7 +72,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
           <div className="flex items-center justify-between gap-2 mb-1">
             <div className="flex items-center gap-2 min-w-0">
               <List className="h-5 w-5 text-slate-400 shrink-0" />
-              <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">{appointment.service?.name || "Consulta general"}</h4>
+              <h4 className="text-lg font-bold text-foreground dark:text-slate-100 leading-tight truncate">{appointment.service?.name || "Consulta general"}</h4>
             </div>
             {/* Status Icon Mobile */}
             <div className="sm:hidden shrink-0 scale-75 origin-right">

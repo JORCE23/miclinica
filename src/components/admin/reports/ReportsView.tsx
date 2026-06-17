@@ -21,7 +21,7 @@ export function ReportsView() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-[#162439]" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       </div>
     )
   }
@@ -73,7 +73,7 @@ export function ReportsView() {
         <div className="flex items-center gap-2">
           <CalendarIcon className="h-5 w-5 text-[#6B7E94]" />
           <select 
-            className="bg-transparent border-none text-[#162439] font-medium focus:ring-0 cursor-pointer"
+            className="bg-transparent border-none text-foreground font-medium focus:ring-0 cursor-pointer"
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
           >
@@ -92,40 +92,40 @@ export function ReportsView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
-          <h2 className="text-lg font-semibold text-[#162439] mb-6">Evolución de Ingresos</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">Evolución de Ingresos</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={monthlyRevenue} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                 <defs>
                   <linearGradient id="repRevFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0D9488" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#2E7FB0" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="#2E7FB0" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF2F6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={8} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} width={48} tickFormatter={(value) => `$${value/1000}k`} />
                 <RechartsTooltip
-                  cursor={{stroke: '#0D9488', strokeWidth: 1, strokeDasharray: '4 4'}}
+                  cursor={{stroke: '#2E7FB0', strokeWidth: 1, strokeDasharray: '4 4'}}
                   contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)', fontSize: '13px'}}
                   labelStyle={{fontWeight: 600, color: '#162439'}}
                   formatter={(value: any) => [clpFmt(Number(value)), 'Ingresos']}
                 />
-                <Area type="monotone" dataKey="ingresos" stroke="#0D9488" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#0D9488', stroke: '#fff', strokeWidth: 2}} />
+                <Area type="monotone" dataKey="ingresos" stroke="#2E7FB0" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#2E7FB0', stroke: '#fff', strokeWidth: 2}} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
-          <h2 className="text-lg font-semibold text-[#162439] mb-6">Servicios más populares</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">Servicios más populares</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={servicesData} layout="vertical" margin={{ left: 20 }}>
                 <defs>
                   <linearGradient id="repBar" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#0D9488" />
-                    <stop offset="100%" stopColor="#2DD4BF" />
+                    <stop offset="0%" stopColor="#2E7FB0" />
+                    <stop offset="100%" stopColor="#5BA3CE" />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" horizontal={false} stroke="#EEF2F6" />
@@ -144,17 +144,17 @@ export function ReportsView() {
       </div>
 
       <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
-        <h2 className="text-lg font-semibold text-[#162439] mb-4">Métricas Clave</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Métricas Clave</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Ticket Promedio</p>
-            <p className="text-2xl font-bold text-[#162439]">
+            <p className="text-2xl font-bold text-foreground">
               {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(keyMetrics.ticketPromedio || 0)}
             </p>
           </div>
           <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Retención Pacientes</p>
-            <p className="text-2xl font-bold text-[#162439]">{keyMetrics.retencionPacientes || 0}%</p>
+            <p className="text-2xl font-bold text-foreground">{keyMetrics.retencionPacientes || 0}%</p>
           </div>
           <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">No-Show Rate</p>

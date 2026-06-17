@@ -66,7 +66,7 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
         </div>
       </div>
 
-      <h2 className="font-display text-xl font-semibold text-slate-800 tracking-tight flex items-center gap-2">
+      <h2 className="font-display text-xl font-semibold text-foreground tracking-tight flex items-center gap-2">
         <CalendarIcon className="w-5 h-5 text-brand" />
         {label()}
       </h2>
@@ -79,7 +79,7 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
             className={`px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               toolbar.view === view
                 ? "bg-card text-brand-dark shadow-soft"
-                : "text-slate-500 hover:text-slate-800"
+                : "text-slate-500 hover:text-foreground"
             }`}
           >
             {view === 'month' ? 'Mes' : view === 'week' ? 'Semana' : view === 'day' ? 'Día' : 'Agenda'}
@@ -93,9 +93,15 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
 export function AppointmentCalendar() {
   const router = useRouter()
   const { data: appointments, isLoading } = useAppointments()
-  
+
   const [view, setView] = useState<View>(Views.WEEK)
   const [date, setDate] = useState(new Date())
+
+  // Clic en un horario libre del calendario → crear cita con fecha/hora precargadas
+  const handleSelectSlot = (slotInfo: { start: Date }) => {
+    const dt = format(slotInfo.start, "yyyy-MM-dd'T'HH:mm")
+    router.push(`/admin/appointments/new?scheduled_at=${encodeURIComponent(dt)}`)
+  }
 
   if (isLoading) {
     return <div className="p-12 text-center text-muted-foreground animate-pulse">Cargando calendario interactivo...</div>
@@ -176,6 +182,8 @@ export function AppointmentCalendar() {
         max={maxTime}
         step={30}
         timeslots={2}
+        selectable
+        onSelectSlot={handleSelectSlot}
         components={{
           event: CustomEvent,
           toolbar: CustomToolbar,

@@ -73,6 +73,18 @@
 .admin-table tbody tr:hover {
   @apply bg-[#6E8CA6]/10;
 }
+.dark .admin-table thead tr th {
+  @apply bg-muted text-foreground;
+}
+.dark .admin-table tbody tr {
+  @apply bg-card text-card-foreground;
+}
+.dark .admin-table tbody tr:nth-child(even) {
+  @apply bg-muted/40;
+}
+.dark .admin-table tbody tr:hover {
+  @apply bg-muted/70;
+}
 
 @layer base {
   * {
@@ -105,22 +117,33 @@
   .bg-app {
     background-color: #F0F3F7;
     background-image:
-      radial-gradient(at 100% 0%, rgb(13 148 136 / 0.06) 0px, transparent 45%),
+      radial-gradient(at 100% 0%, rgb(46 127 176 / 0.06) 0px, transparent 45%),
       radial-gradient(at 0% 0%, rgb(22 36 57 / 0.05) 0px, transparent 40%);
+  }
+  .dark .bg-app {
+    background-color: hsl(222.2 84% 4.9%);
+    background-image:
+      radial-gradient(at 100% 0%, rgb(46 127 176 / 0.10) 0px, transparent 45%),
+      radial-gradient(at 0% 0%, rgb(123 154 181 / 0.08) 0px, transparent 40%);
   }
 
   /* Panel de marca con gradiente navy (login, headers destacados) */
   .bg-brand-panel {
     background-color: #162439;
     background-image:
-      radial-gradient(at 80% 10%, rgb(45 212 191 / 0.18) 0px, transparent 50%),
+      radial-gradient(at 80% 10%, rgb(91 163 206 / 0.18) 0px, transparent 50%),
       radial-gradient(at 10% 90%, rgb(30 48 77 / 0.9) 0px, transparent 55%),
       linear-gradient(160deg, #1E304D 0%, #162439 55%, #0F1A2A 100%);
   }
 
+  /* Iconos algo más finos (estilo del prototipo) */
+  .lucide {
+    stroke-width: 1.75;
+  }
+
   /* Realce de texto con el acento de marca */
   .text-gradient-brand {
-    background: linear-gradient(135deg, #0D9488 0%, #2DD4BF 100%);
+    background: linear-gradient(135deg, #2E7FB0 0%, #5BA3CE 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -167,25 +190,17 @@
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-12px); }
+}
 
-  /* Scrollbar fino para el sidebar y áreas con scroll */
-  .sidebar-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(255 255 255 / 0.15) transparent;
-  }
-  .sidebar-scroll::-webkit-scrollbar {
-    width: 6px;
-  }
-  .sidebar-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .sidebar-scroll::-webkit-scrollbar-thumb {
-    background-color: rgb(255 255 255 / 0.12);
-    border-radius: 9999px;
-  }
-  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(255 255 255 / 0.22);
-  }
+/* Scroll del sidebar SIN barra visible (se puede seguir desplazando con la rueda/touch) */
+.sidebar-scroll {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge antiguo */
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;                /* Chrome/Safari/Brave */
 }
 
 /* React Big Calendar Modern Overrides */
@@ -247,4 +262,96 @@
 }
 .calendar-container .rbc-today {
   @apply bg-primary/[0.03];
+}
+
+/* (+) para agendar directo: aparece al pasar el mouse sobre un horario libre */
+.calendar-container .rbc-day-slot .rbc-time-slot {
+  position: relative;
+  transition: background-color 0.12s ease;
+}
+.calendar-container .rbc-day-slot .rbc-time-slot:hover {
+  background-color: rgb(31 138 91 / 0.10);
+  cursor: copy;
+}
+.calendar-container .rbc-day-slot .rbc-time-slot:hover::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1F8A5B;
+  pointer-events: none;
+}
+
+/* React Big Calendar — variantes para modo oscuro */
+.dark .calendar-container .rbc-header {
+  @apply text-slate-200 border-border bg-muted/40;
+}
+.dark .calendar-container .rbc-header + .rbc-header {
+  @apply border-border;
+}
+.dark .calendar-container .rbc-time-view {
+  @apply bg-card ring-border;
+}
+.dark .calendar-container .rbc-day-bg,
+.dark .calendar-container .rbc-day-bg + .rbc-day-bg,
+.dark .calendar-container .rbc-time-content,
+.dark .calendar-container .rbc-time-content > * + * > *,
+.dark .calendar-container .rbc-timeslot-group {
+  @apply border-border;
+}
+.dark .calendar-container .rbc-time-gutter .rbc-timeslot-group {
+  @apply bg-muted/30 text-muted-foreground border-border;
+}
+.dark .calendar-container .rbc-today {
+  @apply bg-primary/[0.10];
+}
+.dark .calendar-container .rbc-time-header-content,
+.dark .calendar-container .rbc-time-header.rbc-overflowing {
+  @apply border-border;
+}
+
+/* ============================================================
+   Estilos de impresión (ficha clínica / consentimientos)
+   Se oculta el armazón y se imprime solo el contenedor .print-area
+   ============================================================ */
+@media print {
+  /* Al imprimir, fondo blanco y texto negro */
+  html, body {
+    background: #ffffff !important;
+  }
+  /* Cuando se activa la impresión de un área concreta, se oculta todo
+     y solo se muestra el contenedor .print-area (patrón visibility). */
+  body.printing-active * {
+    visibility: hidden !important;
+  }
+  body.printing-active .print-area,
+  body.printing-active .print-area * {
+    visibility: visible !important;
+  }
+  body.printing-active .print-area {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 8mm;
+    background: #ffffff !important;
+  }
+  body.printing-active .print-area,
+  body.printing-active .print-area * {
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+  /* Conserva imágenes (firmas) con sus colores */
+  body.printing-active .print-area img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page {
+    margin: 14mm;
+  }
 }

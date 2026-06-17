@@ -19,6 +19,7 @@ import { LoyaltyTab } from "@/components/admin/patients/tabs/LoyaltyTab"
 import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
 import { ClinicalRecordTab } from "@/components/admin/patients/tabs/ClinicalRecordTab"
 import { SimulationTab } from "@/components/admin/patients/tabs/SimulationTab"
+import { WhatsappButton } from "@/components/admin/WhatsappButton"
 
 const TABS = [
   { value: "ficha", label: "Ficha Clínica", icon: ClipboardList },
@@ -87,31 +88,34 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     <div className="pb-10 space-y-5">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full block space-y-5">
         {/* 1. ENCABEZADO full-width */}
-        <div className="relative overflow-hidden rounded-2xl bg-brand-panel text-white shadow-elevated">
-          <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none" />
-          <div className="absolute -right-10 -top-12 h-44 w-44 rounded-full bg-brand/20 blur-3xl" />
-          <div className="relative z-10 px-5 md:px-8 pt-5 md:pt-7">
+        <div className="rounded-2xl bg-card border border-border/70 shadow-soft">
+          <div className="px-5 md:px-8 pt-5 md:pt-7">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex items-center gap-4 min-w-0">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/15 rounded-full h-9 w-9 shrink-0">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-full h-9 w-9 shrink-0">
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
-                <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-gradient-to-br from-white to-slate-200 text-[#162439] flex items-center justify-center text-2xl md:text-3xl font-bold shadow-md shrink-0">
+                <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl md:text-3xl font-bold shrink-0">
                   {patient.full_name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight truncate">{patient.full_name}</h1>
-                  <div className="flex flex-wrap items-center gap-2 mt-1.5 text-sm text-white/70">
-                    <span className="inline-flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-lg"><IdCard className="h-3.5 w-3.5" /> {patient.rut || "Sin RUT"}</span>
-                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg ${patient.is_active ? "bg-emerald-400/20 text-emerald-200" : "bg-white/10 text-white/60"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${patient.is_active ? "bg-emerald-400" : "bg-white/40"}`} /> {patient.is_active ? "Activo" : "Inactivo"}
+                  <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight truncate text-foreground">{patient.full_name}</h1>
+                  <div className="flex flex-wrap items-center gap-2 mt-1.5 text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5 bg-muted px-2 py-0.5 rounded-lg"><IdCard className="h-3.5 w-3.5" /> {patient.rut || "Sin RUT"}</span>
+                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg ${patient.is_active ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${patient.is_active ? "bg-emerald-500" : "bg-muted-foreground/40"}`} /> {patient.is_active ? "Activo" : "Inactivo"}
                     </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2 shrink-0">
-                <Button onClick={() => setActiveTab("administrative")} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl backdrop-blur-sm">
+                <WhatsappButton
+                  phone={patient.phone}
+                  message={`Hola ${patient.full_name.split(" ")[0]}, te saludamos de la clínica 👋`}
+                  size="default"
+                />
+                <Button variant="outline" onClick={() => setActiveTab("administrative")} className="rounded-xl">
                   <Pencil className="h-4 w-4 mr-2" /> Editar datos
                 </Button>
                 <Button render={<Link href="/admin/appointments/new" />} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
@@ -123,23 +127,23 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
             {/* Chips de datos rápidos */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mt-5">
               {stats.map((s, i) => (
-                <div key={i} className="flex items-center gap-2.5 rounded-xl glass-panel px-3 py-2">
-                  <s.icon className="h-4 w-4 text-brand-light shrink-0" />
+                <div key={i} className="flex items-center gap-2.5 rounded-xl border border-border/70 bg-muted/30 px-3 py-2">
+                  <s.icon className="h-4 w-4 text-brand shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wide text-white/45 font-semibold">{s.label}</p>
-                    <p className="text-sm text-white/90 truncate">{s.value}</p>
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">{s.label}</p>
+                    <p className="text-sm text-foreground truncate">{s.value}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Navegación por secciones */}
-            <TabsList className="bg-transparent h-auto p-0 gap-1 flex w-full max-w-full justify-start border-none overflow-x-auto mt-5 [&>button]:shrink-0">
+            <TabsList className="bg-transparent h-auto p-0 gap-1 flex w-full max-w-full justify-start border-none overflow-x-auto mt-5 border-t border-border/60 [&>button]:shrink-0">
               {TABS.map((t) => (
                 <TabsTrigger
                   key={t.value}
                   value={t.value}
-                  className="group/tab flex items-center gap-2 text-white/60 hover:text-white data-[state=active]:text-white data-[state=active]:bg-white/[0.07] data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-brand-light rounded-t-lg rounded-b-none px-4 py-2.5 font-medium text-sm transition-all whitespace-nowrap"
+                  className="group/tab flex items-center gap-2 text-muted-foreground hover:text-foreground data-[state=active]:text-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-brand rounded-none -mb-px px-4 py-2.5 font-medium text-sm transition-all whitespace-nowrap"
                 >
                   <t.icon className="h-4 w-4" /> {t.label}
                 </TabsTrigger>
@@ -151,38 +155,38 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         {/* 2. RESUMEN CLÍNICO (full-width, en orden) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Notas internas */}
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-            <div className="flex items-center gap-2 text-amber-800 mb-2">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30 p-4">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 mb-2">
               <Bell className="h-4 w-4" />
               <h3 className="font-semibold text-sm">Notas internas</h3>
             </div>
-            <p className="text-sm text-amber-900/80 leading-relaxed">
+            <p className="text-sm text-amber-900/80 dark:text-amber-200/80 leading-relaxed">
               {patient.notes || "Sin notas internas registradas."}
             </p>
           </div>
 
           {/* Alergias (alerta de seguridad) */}
-          <div className={`rounded-2xl border p-4 ${allergies.length ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50"}`}>
-            <div className={`flex items-center gap-2 mb-2 ${allergies.length ? "text-red-700" : "text-emerald-700"}`}>
+          <div className={`rounded-2xl border p-4 ${allergies.length ? "border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30" : "border-emerald-200 bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/30"}`}>
+            <div className={`flex items-center gap-2 mb-2 ${allergies.length ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
               {allergies.length ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
               <h3 className="font-semibold text-sm">Alergias {allergies.length ? `(${allergies.length})` : ""}</h3>
             </div>
             {allergies.length ? (
               <div className="flex flex-wrap gap-1.5">
                 {allergies.slice(0, 6).map((a, i) => (
-                  <span key={i} className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                  <span key={i} className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
                     {a.allergen}{a.severity ? ` · ${a.severity}` : ""}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-emerald-800/80">Sin alergias registradas.</p>
+              <p className="text-sm text-emerald-800/80 dark:text-emerald-300/80">Sin alergias registradas.</p>
             )}
           </div>
 
           {/* Antecedentes médicos */}
           <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-soft">
-            <div className="flex items-center gap-2 text-slate-700 mb-2">
+            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200 mb-2">
               <HeartPulse className="h-4 w-4 text-brand" />
               <h3 className="font-semibold text-sm">Antecedentes {medicalHistory.length ? `(${medicalHistory.length})` : ""}</h3>
             </div>
@@ -202,24 +206,24 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         </div>
 
         {/* 3. CONTENIDO DE LA SECCIÓN (full-width) */}
-        <div className="rounded-2xl border border-border/70 bg-card p-5 md:p-7 shadow-soft text-slate-800 dark:text-slate-200">
+        <div className="rounded-2xl border border-border/70 bg-card p-5 md:p-7 shadow-soft text-foreground dark:text-slate-200">
           <TabsContent value="administrative" className="mt-0 outline-none">
             <PersonalTab patient={patient} />
           </TabsContent>
 
           <TabsContent value="medical" className="mt-0 outline-none space-y-8">
             <div>
-              <h2 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200 border-b border-border pb-2">Antecedentes Mórbidos</h2>
+              <h2 className="text-lg font-bold mb-4 text-foreground dark:text-slate-200 border-b border-border pb-2">Antecedentes Mórbidos</h2>
               <MedicalHistoryTab patientId={patient.id} />
             </div>
             <div>
-              <h2 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200 border-b border-border pb-2">Alergias Conocidas</h2>
+              <h2 className="text-lg font-bold mb-4 text-foreground dark:text-slate-200 border-b border-border pb-2">Alergias Conocidas</h2>
               <AllergiesTab patientId={patient.id} />
             </div>
           </TabsContent>
 
           <TabsContent value="ficha" className="mt-0 outline-none">
-            <ClinicalRecordTab patientId={patient.id} />
+            <ClinicalRecordTab patientId={patient.id} patientName={patient.full_name} />
           </TabsContent>
 
           <TabsContent value="clinical" className="mt-0 outline-none">

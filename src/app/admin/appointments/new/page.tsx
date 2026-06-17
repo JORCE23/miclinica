@@ -16,6 +16,7 @@ function NewAppointmentForm() {
   const createAppointment = useCreateAppointment()
   
   const defaultPatientId = searchParams.get("patientId") || undefined
+  const defaultScheduledAt = searchParams.get("scheduled_at") || undefined
 
   const handleSubmit = async (data: any) => {
     try {
@@ -34,7 +35,7 @@ function NewAppointmentForm() {
         description="Agenda una nueva reserva para un paciente."
         icon={Calendar}
       >
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-white hover:bg-white/10 hover:text-white">
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-muted-foreground hover:bg-muted hover:text-foreground">
           <ChevronLeft className="h-5 w-5" />
         </Button>
       </PageHeader>
@@ -47,10 +48,11 @@ function NewAppointmentForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AppointmentForm 
+          <AppointmentForm
             onSubmit={handleSubmit}
             isSubmitting={createAppointment.isPending}
             defaultPatientId={defaultPatientId}
+            defaultScheduledAt={defaultScheduledAt}
           />
         </CardContent>
       </Card>

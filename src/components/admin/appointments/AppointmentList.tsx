@@ -12,8 +12,18 @@ import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { AppointmentStatusActions } from "./AppointmentStatusActions"
+import { WhatsappButton } from "@/components/admin/WhatsappButton"
 import { motion } from "framer-motion"
 import { Calendar as CalendarIcon, Clock, Sparkles, Receipt } from "lucide-react"
+
+// Mensaje de recordatorio prellenado para WhatsApp
+function reminderMessage(apt: { scheduled_at: string; patient?: { full_name?: string }; service?: { name?: string } }) {
+  const first = apt.patient?.full_name?.split(" ")[0] || ""
+  const fecha = format(new Date(apt.scheduled_at), "EEEE d 'de' MMMM", { locale: es })
+  const hora = format(new Date(apt.scheduled_at), "HH:mm")
+  const servicio = apt.service?.name ? ` para ${apt.service.name}` : ""
+  return `Hola ${first}, te recordamos tu cita el ${fecha} a las ${hora}${servicio}. ¡Te esperamos! 😊`
+}
 
 const container = {
   hidden: { opacity: 0 },
@@ -108,11 +118,12 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
                   </span>
                 )}
               </div>
-              <div>
-                <AppointmentStatusActions 
-                  appointmentId={apt.id} 
+              <div className="flex items-center gap-1.5">
+                <WhatsappButton phone={apt.patient?.phone} message={reminderMessage(apt)} iconOnly />
+                <AppointmentStatusActions
+                  appointmentId={apt.id}
                   currentStatus={apt.status}
-                  loyaltyPoints={apt.service?.loyalty_points_earned} 
+                  loyaltyPoints={apt.service?.loyalty_points_earned}
                 />
               </div>
             </div>
@@ -186,11 +197,14 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
                 </TableCell>
 
                 <TableCell className="text-right">
-                  <AppointmentStatusActions 
-                    appointmentId={apt.id} 
-                    currentStatus={apt.status}
-                    loyaltyPoints={apt.service?.loyalty_points_earned} 
-                  />
+                  <div className="flex items-center justify-end gap-1.5">
+                    <WhatsappButton phone={apt.patient?.phone} message={reminderMessage(apt)} iconOnly />
+                    <AppointmentStatusActions
+                      appointmentId={apt.id}
+                      currentStatus={apt.status}
+                      loyaltyPoints={apt.service?.loyalty_points_earned}
+                    />
+                  </div>
                 </TableCell>
               </motion.tr>
             ))}

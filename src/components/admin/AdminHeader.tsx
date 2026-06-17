@@ -5,6 +5,7 @@ import { Search, Bell, Plus, LogOut, Package, CalendarClock, Calendar, Cake, Ale
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -48,13 +49,13 @@ export function AdminHeader({ profile }: { profile?: any }) {
   }
 
   return (
-    <header className="hidden md:flex h-16 bg-white/75 backdrop-blur-xl border-b border-[#E2E8F0] items-center justify-between px-5 gap-4 sticky top-0 z-30">
+    <header className="hidden md:flex h-16 bg-background/75 backdrop-blur-xl border-b border-border items-center justify-between px-5 gap-4 sticky top-0 z-30">
       <form onSubmit={handleSearch} className="flex-1 max-w-md relative hidden md:block">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8] pointer-events-none" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-[#F1F5F9] border-transparent text-[#162439] placeholder:text-[#94a3b8] focus-visible:ring-2 focus-visible:ring-brand/15 focus-visible:bg-white focus-visible:border-brand/30 rounded-xl pl-10 h-10 transition-all"
+          className="w-full bg-muted border-transparent text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-brand/15 focus-visible:bg-background focus-visible:border-brand/30 rounded-xl pl-10 h-10 transition-all"
           placeholder="Buscar pacientes..."
         />
       </form>
@@ -66,23 +67,25 @@ export function AdminHeader({ profile }: { profile?: any }) {
           </Button>
         </Link>
 
+        <ThemeToggle />
+
         <DropdownMenu>
-          <DropdownMenuTrigger className="relative h-9 w-9 flex items-center justify-center text-[#64748b] hover:text-[#162439] hover:bg-[#F1F5F9] rounded-xl transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
+          <DropdownMenuTrigger className="relative h-9 w-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
             <Bell className="h-[18px] w-[18px]" />
             {notifItems.length > 0 && (
-              <span className="absolute top-1 right-1 min-w-[17px] h-[17px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white flex items-center justify-center">
+              <span className="absolute top-1 right-1 min-w-[17px] h-[17px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-background flex items-center justify-center">
                 {notifItems.length}
               </span>
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 p-0 overflow-hidden">
             <div className="px-4 py-3 border-b border-border bg-muted/30">
-              <p className="text-sm font-semibold text-[#162439]">Notificaciones</p>
+              <p className="text-sm font-semibold text-foreground">Notificaciones</p>
             </div>
             {notifItems.length === 0 ? (
               <div className="flex flex-col text-center items-center py-8 px-2">
                 <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
-                <p className="text-sm font-medium text-[#162439]">Todo al día</p>
+                <p className="text-sm font-medium text-foreground">Todo al día</p>
                 <p className="text-xs text-muted-foreground mt-1">No hay novedades por ahora.</p>
               </div>
             ) : (
@@ -95,7 +98,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
                         <Icon className="h-4 w-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-[#162439] leading-snug">{n.title}</p>
+                        <p className="text-sm font-medium text-foreground leading-snug">{n.title}</p>
                         <p className="text-xs text-muted-foreground truncate">{n.description}</p>
                       </div>
                     </Link>
@@ -106,34 +109,34 @@ export function AdminHeader({ profile }: { profile?: any }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="h-7 w-px bg-[#E2E8F0] mx-1" />
+        <div className="h-7 w-px bg-border mx-1" />
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="group/profile flex items-center gap-2.5 hover:bg-[#F1F5F9] py-1 pl-1 pr-2.5 rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
+          <DropdownMenuTrigger className="group/profile flex items-center gap-2.5 hover:bg-muted py-1 pl-1 pr-2.5 rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="Avatar" className="w-9 h-9 rounded-xl object-cover ring-2 ring-white shadow-soft" />
             ) : (
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-sm font-bold text-white ring-2 ring-white shadow-soft">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-sm font-bold text-white ring-2 ring-white shadow-soft">
                 {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
             <div className="hidden md:flex flex-col text-left leading-tight">
-              <span className="text-sm font-semibold text-[#162439] leading-none">{profile?.full_name?.split(" ")[0] || "Admin"}</span>
-              <span className="text-[11px] text-[#94a3b8] mt-0.5">Mi Perfil</span>
+              <span className="text-sm font-semibold text-foreground leading-none">{profile?.full_name?.split(" ")[0] || "Admin"}</span>
+              <span className="text-[11px] text-muted-foreground mt-0.5">Mi Perfil</span>
             </div>
-            <ChevronDown className="h-4 w-4 text-[#94a3b8] transition-transform group-data-[state=open]/profile:rotate-180" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]/profile:rotate-180" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-60 p-0 overflow-hidden">
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-muted/30">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-10 h-10 rounded-xl object-cover" />
               ) : (
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-sm font-bold text-white">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-sm font-bold text-white">
                   {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#162439] truncate">{profile?.full_name || "Admin"}</p>
+                <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || "Admin"}</p>
                 <p className="text-xs text-muted-foreground">Administrador</p>
               </div>
             </div>

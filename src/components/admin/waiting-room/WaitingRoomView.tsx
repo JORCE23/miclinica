@@ -72,7 +72,7 @@ export function WaitingRoomView() {
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border/70">
                   <div className="flex items-center gap-2">
                     <col.icon className={`h-4 w-4 ${col.color}`} />
-                    <h2 className="font-semibold text-sm text-slate-800">{col.label}</h2>
+                    <h2 className="font-semibold text-sm text-foreground">{col.label}</h2>
                   </div>
                   <span className="h-6 min-w-6 px-1.5 rounded-full bg-muted text-xs font-bold text-muted-foreground flex items-center justify-center">{items.length}</span>
                 </div>
@@ -81,7 +81,7 @@ export function WaitingRoomView() {
                   {items.map((a) => (
                     <div key={a.id} className="rounded-xl border border-border/70 bg-background p-3 hover-lift hover:shadow-soft">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-semibold text-slate-800 truncate">{a.patient?.full_name || "Paciente"}</p>
+                        <p className="text-sm font-semibold text-foreground truncate">{a.patient?.full_name || "Paciente"}</p>
                         <span className="text-xs font-medium text-brand-dark shrink-0">{format(new Date(a.scheduled_at), "HH:mm")}</span>
                       </div>
                       <p className="text-xs text-muted-foreground truncate mt-0.5">{a.service?.name || "Servicio"}</p>

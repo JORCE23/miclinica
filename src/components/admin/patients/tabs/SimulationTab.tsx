@@ -79,7 +79,7 @@ export function SimulationTab({ patientId }: { patientId: string }) {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><Wand2 className="h-5 w-5 text-brand" /> Simulación de tratamiento</h3>
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><Wand2 className="h-5 w-5 text-brand" /> Simulación de tratamiento</h3>
           <p className="text-sm text-muted-foreground">Compara fotos antes/después y registra el plan por zona.</p>
         </div>
         {!showForm && (
@@ -92,7 +92,7 @@ export function SimulationTab({ patientId }: { patientId: string }) {
       {showForm && (
         <div className="rounded-2xl border border-border/70 bg-muted/20 p-5 mb-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-slate-800">Nueva simulación</h4>
+            <h4 className="font-semibold text-foreground">Nueva simulación</h4>
             <button onClick={reset} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
           </div>
           <div className="space-y-1.5">
@@ -129,7 +129,7 @@ export function SimulationTab({ patientId }: { patientId: string }) {
             <div key={s.id} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4">
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div>
-                  <p className="font-semibold text-slate-800">{s.title}</p>
+                  <p className="font-semibold text-foreground">{s.title}</p>
                   <p className="text-xs text-muted-foreground">{format(new Date(s.created_at), "dd 'de' MMM yyyy", { locale: es })}</p>
                 </div>
                 <button onClick={() => remove(s.id)} className="h-8 w-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 shrink-0">

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AppointmentList } from "@/components/admin/appointments/AppointmentList"
-import { AppointmentCalendar } from "@/components/admin/appointments/AppointmentCalendar"
+import { WeekAgendaGrid } from "@/components/admin/appointments/WeekAgendaGrid"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Plus, Calendar as CalendarIcon, List as ListIcon } from "lucide-react"
@@ -19,12 +19,12 @@ export default function AppointmentsPage() {
         icon={CalendarIcon}
       >
         {/* Toggle entre vista lista y calendario */}
-        <div className="flex items-center gap-1 rounded-full border border-white/15 bg-white/10 p-1 mr-1">
+        <div className="flex items-center gap-1 rounded-full border border-border bg-muted p-1 mr-1">
           <button
             onClick={() => setView("list")}
             title="Vista de lista"
             className={`h-8 w-8 flex items-center justify-center rounded-full transition-colors ${
-              view === "list" ? "bg-white text-[#162439] shadow-soft" : "text-white/70 hover:text-white hover:bg-white/15"
+              view === "list" ? "bg-brand text-white shadow-soft" : "text-muted-foreground hover:text-foreground hover:bg-background"
             }`}
           >
             <ListIcon className="h-4 w-4" />
@@ -33,7 +33,7 @@ export default function AppointmentsPage() {
             onClick={() => setView("calendar")}
             title="Vista de calendario"
             className={`h-8 w-8 flex items-center justify-center rounded-full transition-colors ${
-              view === "calendar" ? "bg-white text-[#162439] shadow-soft" : "text-white/70 hover:text-white hover:bg-white/15"
+              view === "calendar" ? "bg-brand text-white shadow-soft" : "text-muted-foreground hover:text-foreground hover:bg-background"
             }`}
           >
             <CalendarIcon className="h-4 w-4" />
@@ -51,7 +51,7 @@ export default function AppointmentsPage() {
       {view === "list" ? (
         <AppointmentList />
       ) : (
-        <AppointmentCalendar />
+        <WeekAgendaGrid />
       )}
     </div>
   )
