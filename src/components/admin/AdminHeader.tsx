@@ -85,7 +85,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
             {notifItems.length === 0 ? (
               <div className="flex flex-col text-center items-center py-8 px-2">
                 <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
-                <p className="text-sm font-medium text-[#162439]">Todo al día</p>
+                <p className="text-sm font-medium text-foreground">Todo al día</p>
                 <p className="text-xs text-muted-foreground mt-1">No hay novedades por ahora.</p>
               </div>
             ) : (

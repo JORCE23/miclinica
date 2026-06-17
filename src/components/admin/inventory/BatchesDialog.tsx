@@ -67,7 +67,7 @@ export function BatchesDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-1">
-          <h3 className="font-display text-xl font-semibold text-slate-800 flex items-center gap-2">
+          <h3 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
             <CalendarClock className="h-5 w-5 text-brand" /> Lotes y vencimientos
           </h3>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
@@ -88,7 +88,7 @@ export function BatchesDialog({
               return (
                 <div key={b.id} className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/70 bg-background">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{b.batch_code || "Lote sin código"} · {b.quantity} u.</p>
+                    <p className="text-sm font-medium text-foreground truncate">{b.batch_code || "Lote sin código"} · {b.quantity} u.</p>
                     <p className="text-xs text-muted-foreground">{b.expiry_date ? new Date(b.expiry_date + "T00:00:00").toLocaleDateString("es-CL") : "Sin fecha"}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">

@@ -267,6 +267,34 @@
   @apply bg-primary/[0.03];
 }
 
+/* React Big Calendar — variantes para modo oscuro */
+.dark .calendar-container .rbc-header {
+  @apply text-slate-200 border-border bg-muted/40;
+}
+.dark .calendar-container .rbc-header + .rbc-header {
+  @apply border-border;
+}
+.dark .calendar-container .rbc-time-view {
+  @apply bg-card ring-border;
+}
+.dark .calendar-container .rbc-day-bg,
+.dark .calendar-container .rbc-day-bg + .rbc-day-bg,
+.dark .calendar-container .rbc-time-content,
+.dark .calendar-container .rbc-time-content > * + * > *,
+.dark .calendar-container .rbc-timeslot-group {
+  @apply border-border;
+}
+.dark .calendar-container .rbc-time-gutter .rbc-timeslot-group {
+  @apply bg-muted/30 text-muted-foreground border-border;
+}
+.dark .calendar-container .rbc-today {
+  @apply bg-primary/[0.10];
+}
+.dark .calendar-container .rbc-time-header-content,
+.dark .calendar-container .rbc-time-header.rbc-overflowing {
+  @apply border-border;
+}
+
 /* ============================================================
    Estilos de impresión (ficha clínica / consentimientos)
    Se oculta el armazón y se imprime solo el contenedor .print-area

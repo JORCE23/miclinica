@@ -213,7 +213,7 @@ export function InventoryView() {
             </div>
             <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold truncate">{c.label}</p>
-              <p className="text-xl font-bold text-slate-800 truncate">{c.value}</p>
+              <p className="text-xl font-bold text-foreground truncate">{c.value}</p>
             </div>
           </div>
         ))}
@@ -254,7 +254,7 @@ export function InventoryView() {
             <div className="h-16 w-16 rounded-2xl bg-brand-soft flex items-center justify-center mx-auto mb-4">
               <Package className="h-8 w-8 text-brand" />
             </div>
-            <h3 className="font-semibold text-slate-800">Tu inventario está vacío</h3>
+            <h3 className="font-semibold text-foreground">Tu inventario está vacío</h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-5">
               Crea tu primer producto o carga un set de ejemplo con stock para ver el módulo en acción.
             </p>
@@ -286,7 +286,7 @@ export function InventoryView() {
                   return (
                     <tr key={p.id} className="border-b border-border/50 hover:bg-muted/40 transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-slate-800">{p.name}</p>
+                        <p className="font-semibold text-foreground">{p.name}</p>
                         {p.sku && <p className="text-xs text-muted-foreground">SKU: {p.sku}</p>}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
@@ -340,7 +340,7 @@ export function InventoryView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowForm(false)}>
           <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-display text-xl font-semibold text-slate-800">{editing ? "Editar producto" : "Nuevo producto"}</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground">{editing ? "Editar producto" : "Nuevo producto"}</h3>
               <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -386,7 +386,7 @@ export function InventoryView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setAdjustFor(null)}>
           <div className="w-full max-w-md bg-card rounded-2xl shadow-elevated border border-border/70 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="font-display text-xl font-semibold text-slate-800">Ajustar stock</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground">Ajustar stock</h3>
               <button onClick={() => setAdjustFor(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
             </div>
             <p className="text-sm text-muted-foreground mb-5">{adjustFor.name} · stock actual: <span className="font-semibold text-foreground">{adjustFor.stock} {adjustFor.unit}</span></p>

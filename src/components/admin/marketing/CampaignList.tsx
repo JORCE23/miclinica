@@ -92,7 +92,7 @@ export function CampaignList() {
             )}
             {campaigns?.map((campaign) => (
               <TableRow key={campaign.id}>
-                <TableCell className="font-medium text-[#162439]">{campaign.name}</TableCell>
+                <TableCell className="font-medium text-foreground">{campaign.name}</TableCell>
                 <TableCell className="text-[#6B7E94]">
                   <span className="flex items-center capitalize">
                     {getTypeIcon(campaign.type)} {campaign.type}
@@ -102,13 +102,13 @@ export function CampaignList() {
                 <TableCell className="text-[#6B7E94]">
                   <div className="text-xs space-y-1">
                     <div>Alcance: <span className="font-medium">{campaign.reach || 0}</span></div>
-                    <div>Conv.: <span className="font-medium text-[#162439]">{campaign.conversions || 0}</span></div>
+                    <div>Conv.: <span className="font-medium text-foreground">{campaign.conversions || 0}</span></div>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Link href={`/admin/marketing/${campaign.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-[#162439]">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-foreground">
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>

@@ -209,18 +209,18 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         </div>
 
         {/* 3. CONTENIDO DE LA SECCIÓN (full-width) */}
-        <div className="rounded-2xl border border-border/70 bg-card p-5 md:p-7 shadow-soft text-slate-800 dark:text-slate-200">
+        <div className="rounded-2xl border border-border/70 bg-card p-5 md:p-7 shadow-soft text-foreground dark:text-slate-200">
           <TabsContent value="administrative" className="mt-0 outline-none">
             <PersonalTab patient={patient} />
           </TabsContent>
 
           <TabsContent value="medical" className="mt-0 outline-none space-y-8">
             <div>
-              <h2 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200 border-b border-border pb-2">Antecedentes Mórbidos</h2>
+              <h2 className="text-lg font-bold mb-4 text-foreground dark:text-slate-200 border-b border-border pb-2">Antecedentes Mórbidos</h2>
               <MedicalHistoryTab patientId={patient.id} />
             </div>
             <div>
-              <h2 className="text-lg font-bold mb-4 text-slate-800 dark:text-slate-200 border-b border-border pb-2">Alergias Conocidas</h2>
+              <h2 className="text-lg font-bold mb-4 text-foreground dark:text-slate-200 border-b border-border pb-2">Alergias Conocidas</h2>
               <AllergiesTab patientId={patient.id} />
             </div>
           </TabsContent>

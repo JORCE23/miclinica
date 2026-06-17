@@ -38,7 +38,7 @@ export function ResumenWidget() {
         <div key={i} className="rounded-xl border border-border/70 bg-background p-3">
           <it.icon className={`h-4 w-4 ${it.c} mb-1`} />
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{it.label}</p>
-          <p className="text-lg font-bold text-slate-800 truncate">{it.value}</p>
+          <p className="text-lg font-bold text-foreground truncate">{it.value}</p>
         </div>
       ))}
     </div>
@@ -61,7 +61,7 @@ export function AgendaWidget() {
             <Clock className="h-4 w-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-slate-800 truncate">{a.patient?.full_name || "Paciente"}</p>
+            <p className="text-sm font-medium text-foreground truncate">{a.patient?.full_name || "Paciente"}</p>
             <p className="text-xs text-muted-foreground truncate">{a.service?.name || "Servicio"}</p>
           </div>
           <span className="text-xs font-semibold text-brand-dark shrink-0">{format(new Date(a.scheduled_at), "HH:mm")}</span>
@@ -88,7 +88,7 @@ export function PacientesWidget() {
             {(p.full_name || "?").charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-slate-800 truncate">{p.full_name}</p>
+            <p className="text-sm font-medium text-foreground truncate">{p.full_name}</p>
             <p className="text-xs text-muted-foreground truncate">{p.rut || p.phone || p.email || "—"}</p>
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -153,7 +153,7 @@ export function CajaWidget() {
       </div>
       <div className="rounded-xl border border-border/70 bg-background p-3 flex items-center justify-between">
         <span className="text-sm text-muted-foreground flex items-center gap-2"><Scale className="h-4 w-4" /> Balance</span>
-        <span className="text-lg font-bold text-slate-800">{clp(ingresos - egresos)}</span>
+        <span className="text-lg font-bold text-foreground">{clp(ingresos - egresos)}</span>
       </div>
     </div>
   )
@@ -174,7 +174,7 @@ export function AccesosWidget() {
           <div className={`h-9 w-9 rounded-lg bg-gradient-to-br ${l.grad} text-white flex items-center justify-center shrink-0`}>
             <l.icon className="h-4 w-4" />
           </div>
-          <span className="text-sm font-medium text-slate-800">{l.label}</span>
+          <span className="text-sm font-medium text-foreground">{l.label}</span>
         </Link>
       ))}
     </div>

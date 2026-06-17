@@ -66,7 +66,7 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
         </div>
       </div>
 
-      <h2 className="font-display text-xl font-semibold text-slate-800 tracking-tight flex items-center gap-2">
+      <h2 className="font-display text-xl font-semibold text-foreground tracking-tight flex items-center gap-2">
         <CalendarIcon className="w-5 h-5 text-brand" />
         {label()}
       </h2>
@@ -79,7 +79,7 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
             className={`px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               toolbar.view === view
                 ? "bg-card text-brand-dark shadow-soft"
-                : "text-slate-500 hover:text-slate-800"
+                : "text-slate-500 hover:text-foreground"
             }`}
           >
             {view === 'month' ? 'Mes' : view === 'week' ? 'Semana' : view === 'day' ? 'Día' : 'Agenda'}

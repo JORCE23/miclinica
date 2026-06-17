@@ -68,7 +68,7 @@ export function ConsentsTab({ patientId, patientName }: { patientId: string; pat
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Consentimientos firmados</h3>
+        <h3 className="text-lg font-bold text-foreground dark:text-slate-100">Consentimientos firmados</h3>
         <Button onClick={openForm} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
           <Plus className="h-4 w-4 mr-2" /> Nuevo consentimiento
         </Button>
@@ -87,7 +87,7 @@ export function ConsentsTab({ patientId, patientName }: { patientId: string; pat
             <div key={c.id} className="rounded-2xl border border-border/70 bg-background p-4 hover:shadow-soft transition-all">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-800 dark:text-slate-100 truncate">{c.title}</p>
+                  <p className="font-semibold text-foreground dark:text-slate-100 truncate">{c.title}</p>
                   <p className="text-xs text-muted-foreground">{format(new Date(c.created_at), "dd 'de' MMM yyyy, HH:mm", { locale: es })}</p>
                 </div>
                 <button onClick={() => remove(c.id)} className="h-8 w-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 shrink-0">
@@ -115,7 +115,7 @@ export function ConsentsTab({ patientId, patientName }: { patientId: string; pat
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowForm(false)}>
           <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-display text-xl font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2"><FileSignature className="h-5 w-5 text-brand" /> Nuevo consentimiento</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground dark:text-slate-100 flex items-center gap-2"><FileSignature className="h-5 w-5 text-brand" /> Nuevo consentimiento</h3>
               <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
             </div>
             <div className="space-y-3">
@@ -153,7 +153,7 @@ export function ConsentsTab({ patientId, patientName }: { patientId: string; pat
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setViewing(null)}>
           <div className="print-area w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto print:max-h-none print:overflow-visible print:border-0 print:shadow-none" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3 print:hidden">
-              <h3 className="font-display text-xl font-semibold text-slate-800 dark:text-slate-100">{viewing.title}</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground dark:text-slate-100">{viewing.title}</h3>
               <div className="flex items-center gap-1">
                 <button onClick={printArea} title="Imprimir" className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted">
                   <Printer className="h-4 w-4" />

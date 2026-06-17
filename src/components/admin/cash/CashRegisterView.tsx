@@ -94,7 +94,7 @@ export function CashRegisterView() {
             </div>
             <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold truncate">{c.label}</p>
-              <p className="text-xl font-bold text-slate-800 truncate">{c.value}</p>
+              <p className="text-xl font-bold text-foreground truncate">{c.value}</p>
             </div>
           </div>
         ))}
@@ -103,7 +103,7 @@ export function CashRegisterView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Atenciones cobradas hoy */}
         <div className="lg:col-span-2 rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-border/70"><h2 className="font-semibold text-slate-800 text-sm">Atenciones cobradas hoy</h2></div>
+          <div className="px-5 py-3.5 border-b border-border/70"><h2 className="font-semibold text-foreground text-sm">Atenciones cobradas hoy</h2></div>
           {isLoading ? (
             <div className="p-8 text-center text-muted-foreground text-sm">Cargando...</div>
           ) : appts.length === 0 ? (
@@ -113,7 +113,7 @@ export function CashRegisterView() {
               {appts.map((a) => (
                 <div key={a.id} className="flex items-center justify-between gap-3 px-5 py-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{a.patient?.full_name || "Paciente"}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{a.patient?.full_name || "Paciente"}</p>
                     <p className="text-xs text-muted-foreground truncate">{a.service?.name || "Servicio"} · {a.payment_method || "Sin método"}</p>
                   </div>
                   <span className="text-sm font-bold text-emerald-600 shrink-0">{clp(a.price || 0)}</span>
@@ -123,7 +123,7 @@ export function CashRegisterView() {
           )}
 
           {/* Movimientos manuales */}
-          <div className="px-5 py-3.5 border-y border-border/70 bg-muted/30"><h2 className="font-semibold text-slate-800 text-sm">Movimientos manuales</h2></div>
+          <div className="px-5 py-3.5 border-y border-border/70 bg-muted/30"><h2 className="font-semibold text-foreground text-sm">Movimientos manuales</h2></div>
           {movements.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground text-sm">Sin movimientos manuales hoy.</div>
           ) : (
@@ -135,7 +135,7 @@ export function CashRegisterView() {
                       ? <ArrowDownCircle className="h-5 w-5 text-emerald-500 shrink-0" />
                       : <ArrowUpCircle className="h-5 w-5 text-red-500 shrink-0" />}
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-800 truncate">{m.concept || (m.type === "ingreso" ? "Ingreso" : "Egreso")}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{m.concept || (m.type === "ingreso" ? "Ingreso" : "Egreso")}</p>
                       <p className="text-xs text-muted-foreground">{m.method || "—"} · {format(new Date(m.created_at), "HH:mm")}</p>
                     </div>
                   </div>
@@ -155,18 +155,18 @@ export function CashRegisterView() {
 
         {/* Desglose por método */}
         <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-5 h-fit">
-          <h2 className="font-semibold text-slate-800 text-sm mb-4">Ingresos por método</h2>
+          <h2 className="font-semibold text-foreground text-sm mb-4">Ingresos por método</h2>
           <div className="space-y-3">
             {Object.keys(byMethod).length === 0 && <p className="text-sm text-muted-foreground">Sin ingresos aún.</p>}
             {Object.entries(byMethod).map(([k, v]) => (
               <div key={k} className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{k}</span>
-                <span className="text-sm font-semibold text-slate-800">{clp(v)}</span>
+                <span className="text-sm font-semibold text-foreground">{clp(v)}</span>
               </div>
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-800">Total ingresos</span>
+            <span className="text-sm font-semibold text-foreground">Total ingresos</span>
             <span className="text-base font-bold text-brand-dark">{clp(ingresos)}</span>
           </div>
         </div>
@@ -177,7 +177,7 @@ export function CashRegisterView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdd(false)}>
           <div className="w-full max-w-md bg-card rounded-2xl shadow-elevated border border-border/70 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-display text-xl font-semibold text-slate-800">Nuevo movimiento</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground">Nuevo movimiento</h3>
               <button onClick={() => setShowAdd(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-4">
@@ -218,17 +218,17 @@ export function CashRegisterView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowClose(false)}>
           <div className="w-full max-w-sm bg-card rounded-2xl shadow-elevated border border-border/70 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="font-display text-xl font-semibold text-slate-800">Cierre del día</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground">Cierre del día</h3>
               <button onClick={() => setShowClose(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
             </div>
             <p className="text-sm text-muted-foreground mb-5">{format(new Date(), "EEEE d 'de' MMMM, yyyy", { locale: es })}</p>
             <div className="space-y-2.5">
               {Object.entries(byMethod).map(([k, v]) => (
-                <div key={k} className="flex justify-between text-sm"><span className="text-muted-foreground">{k}</span><span className="font-medium text-slate-800">{clp(v)}</span></div>
+                <div key={k} className="flex justify-between text-sm"><span className="text-muted-foreground">{k}</span><span className="font-medium text-foreground">{clp(v)}</span></div>
               ))}
               <div className="flex justify-between text-sm pt-2 border-t border-border"><span className="text-emerald-700">Ingresos</span><span className="font-semibold text-emerald-700">{clp(ingresos)}</span></div>
               <div className="flex justify-between text-sm"><span className="text-red-700">Egresos</span><span className="font-semibold text-red-700">− {clp(egresos)}</span></div>
-              <div className="flex justify-between text-base pt-2 border-t border-border"><span className="font-bold text-slate-800">Balance final</span><span className="font-bold text-brand-dark">{clp(balance)}</span></div>
+              <div className="flex justify-between text-base pt-2 border-t border-border"><span className="font-bold text-foreground">Balance final</span><span className="font-bold text-brand-dark">{clp(balance)}</span></div>
             </div>
             <Button onClick={() => setShowClose(false)} className="w-full mt-6 bg-brand text-white hover:bg-brand-dark rounded-xl">Cerrar</Button>
           </div>

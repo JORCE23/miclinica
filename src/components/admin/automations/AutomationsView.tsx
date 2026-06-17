@@ -96,7 +96,7 @@ export function AutomationsView() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#162439]" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       </div>
     )
   }
@@ -119,8 +119,8 @@ export function AutomationsView() {
                     <Icon className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#162439]">{meta.title}</h3>
-                    <Badge variant="secondary" className="mt-1 font-normal text-xs bg-slate-100">
+                    <h3 className="font-semibold text-foreground">{meta.title}</h3>
+                    <Badge variant="secondary" className="mt-1 font-normal text-xs bg-muted text-muted-foreground">
                       {meta.channel}
                     </Badge>
                   </div>
@@ -136,13 +136,13 @@ export function AutomationsView() {
               </p>
               
               {automation.is_active && (
-                <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
                   <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
                     • Activo y funcionando
                   </span>
                   <button 
                     onClick={() => handleEditClick(automation)}
-                    className="text-xs font-medium text-[#7B9AB5] hover:text-[#162439] underline"
+                    className="text-xs font-medium text-[#7B9AB5] hover:text-foreground underline"
                   >
                     Editar mensaje
                   </button>

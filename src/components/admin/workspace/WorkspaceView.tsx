@@ -152,7 +152,7 @@ export function WorkspaceView() {
                 <div className="flex items-center gap-2 min-w-0">
                   <GripVertical className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                   <w.icon className="h-4 w-4 text-brand shrink-0" />
-                  <h3 className="font-semibold text-sm text-slate-800 truncate">{w.title}</h3>
+                  <h3 className="font-semibold text-sm text-foreground truncate">{w.title}</h3>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button onClick={() => toggleSize(item.id)} className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted" title={item.size === "lg" ? "Achicar" : "Agrandar"}>

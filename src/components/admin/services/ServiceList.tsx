@@ -114,7 +114,7 @@ export function ServiceList() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center text-sm font-medium text-[#162439] dark:text-rose-400">
+                  <div className="flex items-center text-sm font-medium text-foreground dark:text-rose-400">
                     <Star className="mr-1 h-3 w-3 fill-current" />
                     {service.loyalty_points_earned} pts
                   </div>

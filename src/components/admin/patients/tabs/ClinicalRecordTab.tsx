@@ -110,7 +110,7 @@ export function ClinicalRecordTab({ patientId, patientName }: { patientId: strin
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Ficha Clínica</h3>
+        <h3 className="text-lg font-bold text-foreground dark:text-slate-100">Ficha Clínica</h3>
         <div className="flex items-center gap-2">
           <Button onClick={printArea} variant="outline" className="rounded-xl">
             <Printer className="h-4 w-4 mr-2" /> Imprimir
@@ -135,7 +135,7 @@ export function ClinicalRecordTab({ patientId, patientName }: { patientId: strin
             <div className="h-8 w-8 rounded-lg bg-brand-soft flex items-center justify-center">
               <section.icon className="h-4 w-4 text-brand-dark" />
             </div>
-            <h4 className="font-semibold text-sm text-slate-800 dark:text-slate-100">{section.title}</h4>
+            <h4 className="font-semibold text-sm text-foreground dark:text-slate-100">{section.title}</h4>
           </div>
           <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
             {section.fields.map((f) => (

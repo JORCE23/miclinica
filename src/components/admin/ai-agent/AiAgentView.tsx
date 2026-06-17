@@ -306,7 +306,7 @@ export function AiAgentView() {
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold truncate">{c.label}</p>
-                <p className="text-xl font-bold text-slate-800">{c.value}</p>
+                <p className="text-xl font-bold text-foreground">{c.value}</p>
               </div>
             </div>
           ))

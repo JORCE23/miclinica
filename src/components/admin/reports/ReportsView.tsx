@@ -21,7 +21,7 @@ export function ReportsView() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-[#162439]" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       </div>
     )
   }
@@ -73,7 +73,7 @@ export function ReportsView() {
         <div className="flex items-center gap-2">
           <CalendarIcon className="h-5 w-5 text-[#6B7E94]" />
           <select 
-            className="bg-transparent border-none text-[#162439] font-medium focus:ring-0 cursor-pointer"
+            className="bg-transparent border-none text-foreground font-medium focus:ring-0 cursor-pointer"
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
           >
@@ -92,7 +92,7 @@ export function ReportsView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
-          <h2 className="text-lg font-semibold text-[#162439] mb-6">Evolución de Ingresos</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">Evolución de Ingresos</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={monthlyRevenue} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
@@ -118,7 +118,7 @@ export function ReportsView() {
         </div>
 
         <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
-          <h2 className="text-lg font-semibold text-[#162439] mb-6">Servicios más populares</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">Servicios más populares</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={servicesData} layout="vertical" margin={{ left: 20 }}>
@@ -144,17 +144,17 @@ export function ReportsView() {
       </div>
 
       <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
-        <h2 className="text-lg font-semibold text-[#162439] mb-4">Métricas Clave</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Métricas Clave</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Ticket Promedio</p>
-            <p className="text-2xl font-bold text-[#162439]">
+            <p className="text-2xl font-bold text-foreground">
               {new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(keyMetrics.ticketPromedio || 0)}
             </p>
           </div>
           <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">Retención Pacientes</p>
-            <p className="text-2xl font-bold text-[#162439]">{keyMetrics.retencionPacientes || 0}%</p>
+            <p className="text-2xl font-bold text-foreground">{keyMetrics.retencionPacientes || 0}%</p>
           </div>
           <div className="p-4 rounded-xl border border-border/70 bg-card">
             <p className="text-sm text-[#6B7E94] mb-1">No-Show Rate</p>
