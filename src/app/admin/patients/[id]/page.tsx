@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -45,6 +45,15 @@ function calculateAge(birthDate?: string) {
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("ficha")
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // Cambia de sección y baja automáticamente al contenido (útil en móvil).
+  const goToTab = (value: string) => {
+    setActiveTab(value)
+    requestAnimationFrame(() => {
+      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    })
+  }
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ["patient", params.id],
@@ -86,7 +95,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
 
   return (
     <div className="pb-10 space-y-5">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full block space-y-5">
+      <Tabs value={activeTab} onValueChange={goToTab} className="w-full block space-y-5">
         {/* 1. ENCABEZADO full-width */}
         <div className="rounded-2xl bg-card border border-border/70 shadow-soft">
           <div className="px-5 md:px-8 pt-5 md:pt-7">
@@ -115,7 +124,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                   message={`Hola ${patient.full_name.split(" ")[0]}, te saludamos de la clínica 👋`}
                   size="default"
                 />
-                <Button variant="outline" onClick={() => setActiveTab("administrative")} className="rounded-xl">
+                <Button variant="outline" onClick={() => goToTab("administrative")} className="rounded-xl">
                   <Pencil className="h-4 w-4 mr-2" /> Editar datos
                 </Button>
                 <Button render={<Link href="/admin/appointments/new" />} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
@@ -196,7 +205,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                   <li key={i} className="truncate">• {m.condition}</li>
                 ))}
                 {medicalHistory.length > 3 && (
-                  <li><button onClick={() => setActiveTab("medical")} className="text-brand text-xs font-medium hover:underline">Ver todos →</button></li>
+                  <li><button onClick={() => goToTab("medical")} className="text-brand text-xs font-medium hover:underline">Ver todos →</button></li>
                 )}
               </ul>
             ) : (
@@ -206,7 +215,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         </div>
 
         {/* 3. CONTENIDO DE LA SECCIÓN (full-width) */}
-        <div className="rounded-2xl border border-border/70 bg-card p-5 md:p-7 shadow-soft text-foreground dark:text-slate-200">
+        <div ref={contentRef} className="scroll-mt-20 rounded-2xl border border-border/70 bg-card p-5 md:p-7 shadow-soft text-foreground dark:text-slate-200">
           <TabsContent value="administrative" className="mt-0 outline-none">
             <PersonalTab patient={patient} />
           </TabsContent>
