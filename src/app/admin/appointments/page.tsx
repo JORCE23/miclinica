@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AppointmentList } from "@/components/admin/appointments/AppointmentList"
-import { AppointmentCalendar } from "@/components/admin/appointments/AppointmentCalendar"
+import { WeekAgendaGrid } from "@/components/admin/appointments/WeekAgendaGrid"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Plus, Calendar as CalendarIcon, List as ListIcon } from "lucide-react"
@@ -51,7 +51,7 @@ export default function AppointmentsPage() {
       {view === "list" ? (
         <AppointmentList />
       ) : (
-        <AppointmentCalendar />
+        <WeekAgendaGrid />
       )}
     </div>
   )
