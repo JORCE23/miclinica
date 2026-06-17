@@ -140,7 +140,7 @@ export function DashboardStats() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
             {/* KPIs */}
             <div>
-              <h2 className="text-sm font-semibold text-slate-800 mb-4">Indicadores Principales</h2>
+              <h2 className="text-sm font-semibold text-foreground mb-4">Indicadores Principales</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, i) => (
                   <div
@@ -154,7 +154,7 @@ export function DashboardStats() {
                       <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-brand transition-colors" />
                     </div>
                     <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{stat.title}</p>
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-800 leading-tight mt-0.5">{stat.value}</h3>
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mt-0.5">{stat.value}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
                   </div>
                 ))}
@@ -168,12 +168,12 @@ export function DashboardStats() {
                         <TrendingUp className="h-4 w-4" />
                       </div>
                       <div>
-                        <h2 className="text-sm font-semibold text-slate-800">Evolución de ingresos</h2>
+                        <h2 className="text-sm font-semibold text-foreground">Evolución de ingresos</h2>
                         <p className="text-xs text-muted-foreground">Estimado de la semana</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-slate-800 leading-tight">{clpFmt(revenueTotal)}</p>
+                      <p className="text-2xl font-bold text-foreground leading-tight">{clpFmt(revenueTotal)}</p>
                       {revenueTrend !== null && (
                         <span className={`inline-flex items-center gap-1 text-xs font-semibold ${revenueTrend >= 0 ? "text-emerald-600" : "text-red-500"}`}>
                           <ArrowUpRight className={`h-3.5 w-3.5 ${revenueTrend < 0 ? "rotate-90" : ""}`} />
@@ -191,7 +191,7 @@ export function DashboardStats() {
                             <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF2F6" />
+                        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="hsl(var(--border))" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} dy={8} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} width={48} tickFormatter={(v) => `$${v / 1000}k`} />
                         <RechartsTooltip
@@ -219,7 +219,7 @@ export function DashboardStats() {
             {/* Citas y Accesos */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <h2 className="text-sm font-semibold text-slate-800 mb-4">Próximas 5 Citas</h2>
+                <h2 className="text-sm font-semibold text-foreground mb-4">Próximas 5 Citas</h2>
                 <div className="space-y-3">
                   {upcomingAppointments.length === 0 ? (
                     <div className="p-8 text-center border border-dashed border-border rounded-2xl bg-muted/30">
@@ -233,13 +233,13 @@ export function DashboardStats() {
                             {apt.patient.full_name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-800 text-sm">{apt.patient.full_name}</p>
+                            <p className="font-semibold text-foreground text-sm">{apt.patient.full_name}</p>
                             <p className="text-xs text-muted-foreground">{apt.service?.name}</p>
                           </div>
                         </div>
                         <div className="mt-2 sm:mt-0 flex items-center gap-4">
                           <div className="text-right">
-                            <p className="text-sm font-bold text-slate-800">
+                            <p className="text-sm font-bold text-foreground">
                               {formatAppointmentDate(apt.scheduled_at)}
                             </p>
                             <p className="text-xs text-muted-foreground">{apt.duration_minutes} min</p>
@@ -255,14 +255,14 @@ export function DashboardStats() {
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold text-slate-800 mb-4">Accesos Rápidos</h2>
+                <h2 className="text-sm font-semibold text-foreground mb-4">Accesos Rápidos</h2>
                 <div className="space-y-3">
                   <Link href="/admin/patients/new" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#0D9488] to-[#2DD4BF] flex items-center justify-center text-white shadow-soft">
                       <UserPlus className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-brand-dark transition-colors">Crear Paciente</p>
+                      <p className="text-sm font-semibold text-foreground group-hover:text-brand-dark transition-colors">Crear Paciente</p>
                       <p className="text-xs text-muted-foreground">Añadir nueva ficha médica</p>
                     </div>
                   </Link>
@@ -272,7 +272,7 @@ export function DashboardStats() {
                       <Star className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-brand-dark transition-colors">Otorgar Puntos</p>
+                      <p className="text-sm font-semibold text-foreground group-hover:text-brand-dark transition-colors">Otorgar Puntos</p>
                       <p className="text-xs text-muted-foreground">Programa de fidelidad</p>
                     </div>
                   </Link>
@@ -282,7 +282,7 @@ export function DashboardStats() {
                       <Settings className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-brand-dark transition-colors">Configuración</p>
+                      <p className="text-sm font-semibold text-foreground group-hover:text-brand-dark transition-colors">Configuración</p>
                       <p className="text-xs text-muted-foreground">Ajustes de la clínica</p>
                     </div>
                   </Link>
@@ -295,7 +295,7 @@ export function DashboardStats() {
         {activeTab === "appointments" && (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-slate-800">Próximas Citas</h2>
+              <h2 className="text-sm font-semibold text-foreground">Próximas Citas</h2>
               <Button variant="outline" size="sm" render={<Link href="/admin/appointments" />}>Ver Calendario Completo</Button>
             </div>
             <div className="space-y-3">
@@ -312,13 +312,13 @@ export function DashboardStats() {
                         {apt.patient.full_name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-800 text-sm">{apt.patient.full_name}</p>
+                        <p className="font-semibold text-foreground text-sm">{apt.patient.full_name}</p>
                         <p className="text-xs text-muted-foreground">{apt.service?.name} • {apt.duration_minutes} minutos</p>
                       </div>
                     </div>
                     <div className="mt-2 sm:mt-0 flex items-center gap-4">
                       <div className="text-right">
-                        <p className="text-sm font-bold text-slate-800">
+                        <p className="text-sm font-bold text-foreground">
                           {formatAppointmentDate(apt.scheduled_at)}
                         </p>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-brand-soft text-brand-dark">
@@ -342,7 +342,7 @@ export function DashboardStats() {
               <div className="h-14 w-14 bg-card rounded-2xl flex items-center justify-center shadow-soft border border-border/70 mx-auto mb-4">
                 <Star className="h-6 w-6 text-brand" />
               </div>
-              <h3 className="text-slate-800 font-semibold mb-1">Sin notificaciones nuevas</h3>
+              <h3 className="text-foreground font-semibold mb-1">Sin notificaciones nuevas</h3>
               <p className="text-muted-foreground text-sm max-w-sm mx-auto">
                 Todo está al día. Aquí aparecerán alertas sobre cancelaciones, stock o actualizaciones del sistema.
               </p>
