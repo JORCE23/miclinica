@@ -105,7 +105,7 @@ export function DashboardStats() {
       {/* Tarjeta principal de contenido */}
       <div className="bg-card rounded-2xl shadow-soft border border-border/70 p-5 md:p-7 min-h-[500px]">
         {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-muted/60 rounded-xl w-fit mb-7 overflow-x-auto">
+        <div className="flex gap-1 p-1 bg-muted/60 rounded-xl w-fit max-w-full mb-7 overflow-x-auto sidebar-scroll">
           {[
             { id: "overview", label: "Visión General" },
             { id: "appointments", label: "Próximas Citas" },
