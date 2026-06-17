@@ -94,7 +94,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={cn(
-          "bg-brand-panel text-white flex-col hidden md:flex sticky top-0 h-screen shrink-0 border-r border-white/[0.06] transition-[width] duration-300 ease-in-out sidebar-scroll overflow-y-auto overflow-x-hidden",
+          "bg-brand-panel text-white flex-col hidden md:flex sticky top-0 h-screen shrink-0 rounded-r-[28px] border-r border-white/[0.06] transition-[width] duration-300 ease-in-out sidebar-scroll overflow-y-auto overflow-x-hidden",
           expanded ? "w-60 shadow-xl shadow-black/20" : "w-[76px]"
         )}
       >
