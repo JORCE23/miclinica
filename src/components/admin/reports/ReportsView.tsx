@@ -91,7 +91,7 @@ export function ReportsView() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
+        <div className="p-4 md:p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
           <h2 className="text-lg font-semibold text-foreground mb-6">Evolución de Ingresos</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -117,7 +117,7 @@ export function ReportsView() {
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
+        <div className="p-4 md:p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
           <h2 className="text-lg font-semibold text-foreground mb-6">Servicios más populares</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -143,7 +143,7 @@ export function ReportsView() {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
+      <div className="p-4 md:p-6 rounded-2xl border border-border/70 bg-card shadow-soft">
         <h2 className="text-lg font-semibold text-foreground mb-4">Métricas Clave</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl border border-border/70 bg-card">

@@ -111,7 +111,7 @@ export function AutomationsView() {
           return (
             <div
               key={automation.type}
-              className={`p-6 rounded-2xl border bg-card transition-all hover-lift hover:shadow-card ${automation.is_active ? 'border-brand/30 shadow-card' : 'border-border/70 shadow-soft hover:border-brand/30'}`}
+              className={`p-4 md:p-6 rounded-2xl border bg-card transition-all hover-lift hover:shadow-card ${automation.is_active ? 'border-brand/30 shadow-card' : 'border-border/70 shadow-soft hover:border-brand/30'}`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">

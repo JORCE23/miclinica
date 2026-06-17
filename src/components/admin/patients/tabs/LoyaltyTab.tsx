@@ -83,8 +83,8 @@ export function LoyaltyTab({ patientId }: { patientId: string }) {
             No hay transacciones de puntos registradas.
           </div>
         ) : (
-          <div className="rounded-2xl border border-border/70 bg-card">
-            <Table>
+          <div className="rounded-2xl border border-border/70 bg-card overflow-x-auto">
+            <Table className="min-w-[640px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Fecha</TableHead>

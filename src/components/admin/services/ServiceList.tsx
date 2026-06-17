@@ -71,7 +71,7 @@ export function ServiceList() {
 
   return (
     <>
-      <div className="relative w-full overflow-x-auto rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
+      <div className="relative w-full overflow-x-auto rounded-2xl border border-border/70 bg-card shadow-soft">
         <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow>
@@ -160,7 +160,7 @@ export function ServiceList() {
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Editar Servicio</DialogTitle>
           </DialogHeader>

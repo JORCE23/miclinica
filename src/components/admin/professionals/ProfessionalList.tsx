@@ -53,8 +53,8 @@ export function ProfessionalList() {
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
-        <Table className="admin-table">
+      <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-x-auto">
+        <Table className="admin-table min-w-[700px]">
           <TableHeader>
             <TableRow>
               <TableHead>Nombre</TableHead>

@@ -156,11 +156,11 @@ export function InventoryView() {
   }
 
   const metricCards = [
-    { label: "Productos", value: products.length, icon: Boxes, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
-    { label: "Stock bajo", value: lowCount, icon: TrendingDown, grad: "from-[#D97706] to-[#FbBf24]" },
-    { label: "Agotados", value: outCount, icon: PackageX, grad: "from-[#DC2626] to-[#F87171]" },
-    { label: "Por vencer", value: batchAlerts?.expiringCount ?? 0, icon: CalendarClock, grad: "from-[#EA580C] to-[#FB923C]" },
-    { label: "Valor inventario", value: clp(totalValue), icon: Layers, grad: "from-[#2563EB] to-[#60A5FA]" },
+    { label: "Productos", value: products.length, icon: Boxes, tint: "bg-brand/10 text-brand" },
+    { label: "Stock bajo", value: lowCount, icon: TrendingDown, tint: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400" },
+    { label: "Agotados", value: outCount, icon: PackageX, tint: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400" },
+    { label: "Por vencer", value: batchAlerts?.expiringCount ?? 0, icon: CalendarClock, tint: "bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400" },
+    { label: "Valor inventario", value: clp(totalValue), icon: Layers, tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" },
   ]
 
   return (
@@ -208,7 +208,7 @@ export function InventoryView() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {metricCards.map((c, i) => (
           <div key={i} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 flex items-center gap-3">
-            <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${c.grad} flex items-center justify-center text-white shadow-soft shrink-0`}>
+            <div className={`h-11 w-11 rounded-xl ${c.tint} flex items-center justify-center shrink-0`}>
               <c.icon className="h-5 w-5" />
             </div>
             <div className="min-w-0">
@@ -338,7 +338,7 @@ export function InventoryView() {
       {/* Modal: crear / editar producto */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowForm(false)}>
-          <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-4 sm:p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-display text-xl font-semibold text-foreground">{editing ? "Editar producto" : "Nuevo producto"}</h3>
               <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
@@ -384,7 +384,7 @@ export function InventoryView() {
       {/* Modal: ajustar stock */}
       {adjustFor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setAdjustFor(null)}>
-          <div className="w-full max-w-md bg-card rounded-2xl shadow-elevated border border-border/70 p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md bg-card rounded-2xl shadow-elevated border border-border/70 p-4 sm:p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-1">
               <h3 className="font-display text-xl font-semibold text-foreground">Ajustar stock</h3>
               <button onClick={() => setAdjustFor(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>

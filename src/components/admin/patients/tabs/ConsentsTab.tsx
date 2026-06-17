@@ -113,7 +113,7 @@ export function ConsentsTab({ patientId, patientName }: { patientId: string; pat
       {/* Modal: nuevo consentimiento */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowForm(false)}>
-          <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-4 sm:p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-display text-xl font-semibold text-foreground dark:text-slate-100 flex items-center gap-2"><FileSignature className="h-5 w-5 text-brand" /> Nuevo consentimiento</h3>
               <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
@@ -151,7 +151,7 @@ export function ConsentsTab({ patientId, patientName }: { patientId: string; pat
       {/* Modal: ver consentimiento */}
       {viewing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setViewing(null)}>
-          <div className="print-area w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-6 max-h-[90vh] overflow-y-auto print:max-h-none print:overflow-visible print:border-0 print:shadow-none" onClick={(e) => e.stopPropagation()}>
+          <div className="print-area w-full max-w-lg bg-card rounded-2xl shadow-elevated border border-border/70 p-4 sm:p-6 max-h-[90vh] overflow-y-auto print:max-h-none print:overflow-visible print:border-0 print:shadow-none" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3 print:hidden">
               <h3 className="font-display text-xl font-semibold text-foreground dark:text-slate-100">{viewing.title}</h3>
               <div className="flex items-center gap-1">

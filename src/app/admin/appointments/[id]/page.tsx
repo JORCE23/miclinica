@@ -79,7 +79,7 @@ export default function EditAppointmentPage({ params }: { params: { id: string }
         </Button>
       </PageHeader>
 
-      <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-6 md:p-7">
+      <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 md:p-7">
         <AppointmentForm 
           initialData={appointment}
           onSubmit={(data) => updateMutation.mutate(data)} 
