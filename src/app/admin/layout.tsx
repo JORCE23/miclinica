@@ -1,5 +1,6 @@
 import { AdminHeader } from "@/components/admin/AdminHeader"
 import { AdminSidebar } from "@/components/admin/AdminSidebar"
+import { Copilot } from "@/components/admin/Copilot"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 
@@ -37,6 +38,7 @@ export default async function AdminLayout({
           {children}
         </main>
       </div>
+      <Copilot />
     </div>
   )
 }
