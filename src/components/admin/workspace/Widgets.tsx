@@ -162,16 +162,16 @@ export function CajaWidget() {
 // ---- Accesos rápidos ----
 export function AccesosWidget() {
   const links = [
-    { label: "Nuevo paciente", href: "/admin/patients/new", icon: UserPlus, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
-    { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, grad: "from-[#2563EB] to-[#60A5FA]" },
-    { label: "Inventario", href: "/admin/inventory", icon: Package, grad: "from-[#7C3AED] to-[#A78BFA]" },
-    { label: "Caja", href: "/admin/cash", icon: Wallet, grad: "from-[#059669] to-[#34D399]" },
+    { label: "Nuevo paciente", href: "/admin/patients/new", icon: UserPlus, tint: "bg-brand/10 text-brand" },
+    { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" },
+    { label: "Inventario", href: "/admin/inventory", icon: Package, tint: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400" },
+    { label: "Caja", href: "/admin/cash", icon: Wallet, tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" },
   ]
   return (
     <div className="grid grid-cols-2 gap-3">
       {links.map((l, i) => (
         <Link key={i} href={l.href} className="flex items-center gap-2.5 rounded-xl border border-border/70 bg-background p-3 hover:border-brand/40 hover:shadow-soft transition-all">
-          <div className={`h-9 w-9 rounded-lg bg-gradient-to-br ${l.grad} text-white flex items-center justify-center shrink-0`}>
+          <div className={`h-9 w-9 rounded-lg ${l.tint} flex items-center justify-center shrink-0`}>
             <l.icon className="h-4 w-4" />
           </div>
           <span className="text-sm font-medium text-foreground">{l.label}</span>

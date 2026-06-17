@@ -79,7 +79,7 @@ export function WorkspaceView() {
         description="Arma tu pantalla: arrastra (o toca) los widgets que necesites y verás todo en un solo lugar."
         icon={LayoutGrid}
       >
-        <Button onClick={() => setLayout(DEFAULT_LAYOUT)} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl">
+        <Button variant="outline" onClick={() => setLayout(DEFAULT_LAYOUT)} className="rounded-xl">
           <RotateCcw className="h-4 w-4 mr-2" /> Restablecer
         </Button>
       </PageHeader>

@@ -52,64 +52,53 @@ export function DashboardStats() {
       title: "Pacientes Totales",
       value: stats.activePatients,
       icon: Users,
-      color: "text-primary",
-      bgLight: "bg-primary/10",
-      gradient: "from-[#2E7FB0] to-[#5BA3CE]",
+      tint: "bg-brand/10 text-brand",
       description: "Pacientes activos",
     },
     {
       title: "Citas Hoy",
       value: stats.todayAppointments,
       icon: Calendar,
-      color: "text-blue-500",
-      bgLight: "bg-blue-500/10",
-      gradient: "from-[#2563EB] to-[#60A5FA]",
+      tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
       description: "Agendadas para hoy",
     },
     {
       title: "Nuevos Pacientes",
       value: stats.newPatientsThisMonth,
       icon: UserPlus,
-      color: "text-purple-500",
-      bgLight: "bg-purple-500/10",
-      gradient: "from-[#7C3AED] to-[#A78BFA]",
+      tint: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400",
       description: "Añadidos este mes",
     },
     {
       title: "Ingresos Hoy",
       value: new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(stats.revenueToday || 0),
       icon: DollarSign,
-      color: "text-green-600",
-      bgLight: "bg-green-100",
-      gradient: "from-[#059669] to-[#34D399]",
+      tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400",
       description: "Generado hoy",
     }
   ]
 
   return (
     <div className="space-y-6">
-      {/* Encabezado destacado */}
-      <div className="relative overflow-hidden rounded-2xl bg-brand-panel text-white shadow-elevated px-6 py-7 md:px-8 md:py-8">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-brand/20 blur-3xl" />
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-brand-light/90 mb-2">Panel de control</p>
-            <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">Resumen de Clínica</h1>
-            <p className="text-white/60 text-sm mt-2 max-w-md">
-              Aquí está el resumen de tu clínica para hoy, {format(new Date(), "d 'de' MMMM", { locale: es })}.
-            </p>
-          </div>
+      {/* Encabezado minimalista */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand mb-1.5">Panel de control</p>
+          <h1 className="font-display text-3xl md:text-[34px] font-semibold tracking-tight text-foreground leading-tight">Resumen de Clínica</h1>
+          <p className="text-muted-foreground text-sm mt-1 max-w-md">
+            Aquí está el resumen de tu clínica para hoy, {format(new Date(), "d 'de' MMMM", { locale: es })}.
+          </p>
+        </div>
 
-          <div className="flex flex-wrap gap-2.5">
-            <Button render={<Link href="/admin/patients/new" />} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 hover:shadow-none backdrop-blur-sm rounded-xl">
-              <Plus className="h-4 w-4 mr-2" />
-              Crear Paciente
-            </Button>
-            <Button render={<Link href="/admin/appointments/new" />} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
-              <Calendar className="h-4 w-4 mr-2" />
-              Nueva Cita
-            </Button>
-          </div>
+        <div className="flex flex-wrap gap-2.5">
+          <Button variant="outline" render={<Link href="/admin/patients/new" />} className="rounded-xl">
+            <Plus className="h-4 w-4 mr-2" />
+            Crear Paciente
+          </Button>
+          <Button render={<Link href="/admin/appointments/new" />} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+            <Calendar className="h-4 w-4 mr-2" />
+            Nueva Cita
+          </Button>
         </div>
       </div>
 
@@ -148,8 +137,8 @@ export function DashboardStats() {
                     className="group relative overflow-hidden rounded-2xl p-5 border border-border/70 bg-card hover-lift hover:shadow-card hover:border-brand/30"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`h-11 w-11 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.gradient} shadow-soft`}>
-                        <stat.icon className="h-5 w-5 text-white" />
+                      <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${stat.tint}`}>
+                        <stat.icon className="h-5 w-5" />
                       </div>
                       <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-brand transition-colors" />
                     </div>
@@ -164,7 +153,7 @@ export function DashboardStats() {
                 <div className="bg-card border border-border/70 rounded-2xl p-5 shadow-soft">
                   <div className="flex items-start justify-between gap-4 mb-5">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-white shadow-soft">
+                      <div className="h-9 w-9 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
                         <TrendingUp className="h-4 w-4" />
                       </div>
                       <div>
@@ -258,7 +247,7 @@ export function DashboardStats() {
                 <h2 className="text-sm font-semibold text-foreground mb-4">Accesos Rápidos</h2>
                 <div className="space-y-3">
                   <Link href="/admin/patients/new" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] flex items-center justify-center text-white shadow-soft">
+                    <div className="h-10 w-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
                       <UserPlus className="h-4 w-4" />
                     </div>
                     <div>
@@ -268,7 +257,7 @@ export function DashboardStats() {
                   </Link>
 
                   <Link href="/admin/loyalty" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#A78BFA] flex items-center justify-center text-white shadow-soft">
+                    <div className="h-10 w-10 rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400 flex items-center justify-center">
                       <Star className="h-4 w-4" />
                     </div>
                     <div>
@@ -278,7 +267,7 @@ export function DashboardStats() {
                   </Link>
 
                   <Link href="/admin/settings" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-400 flex items-center justify-center text-white shadow-soft">
+                    <div className="h-10 w-10 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
                       <Settings className="h-4 w-4" />
                     </div>
                     <div>

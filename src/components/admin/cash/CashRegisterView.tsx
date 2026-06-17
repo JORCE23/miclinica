@@ -69,16 +69,16 @@ export function CashRegisterView() {
   }
 
   const cards = [
-    { label: "Ingresos del día", value: clp(ingresos), icon: ArrowDownCircle, grad: "from-[#059669] to-[#34D399]" },
-    { label: "Egresos", value: clp(egresos), icon: ArrowUpCircle, grad: "from-[#DC2626] to-[#F87171]" },
-    { label: "Balance", value: clp(balance), icon: Scale, grad: "from-[#2E7FB0] to-[#5BA3CE]" },
-    { label: "Atenciones cobradas", value: appts.length, icon: CalendarCheck, grad: "from-[#2563EB] to-[#60A5FA]" },
+    { label: "Ingresos del día", value: clp(ingresos), icon: ArrowDownCircle, tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" },
+    { label: "Egresos", value: clp(egresos), icon: ArrowUpCircle, tint: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400" },
+    { label: "Balance", value: clp(balance), icon: Scale, tint: "bg-brand/10 text-brand" },
+    { label: "Atenciones cobradas", value: appts.length, icon: CalendarCheck, tint: "bg-muted text-muted-foreground" },
   ]
 
   return (
     <div className="space-y-5">
       <PageHeader title="Caja" description={`Resumen de caja de hoy, ${format(new Date(), "d 'de' MMMM", { locale: es })}.`} icon={Wallet}>
-        <Button variant="outline" onClick={() => setShowClose(true)} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl">
+        <Button variant="outline" onClick={() => setShowClose(true)} className="rounded-xl">
           <Receipt className="h-4 w-4 mr-2" /> Cierre del día
         </Button>
         <Button onClick={() => { setForm({ ...form, type: "ingreso" }); setShowAdd(true) }} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
@@ -89,7 +89,7 @@ export function CashRegisterView() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c, i) => (
           <div key={i} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 flex items-center gap-3">
-            <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${c.grad} flex items-center justify-center text-white shadow-soft shrink-0`}>
+            <div className={`h-11 w-11 rounded-xl ${c.tint} flex items-center justify-center shrink-0`}>
               <c.icon className="h-5 w-5" />
             </div>
             <div className="min-w-0">

@@ -170,7 +170,7 @@ export function InventoryView() {
         description="Controla el stock de tus productos e insumos y recibe alertas cuando se agoten."
         icon={Package}
       >
-        <Button render={<Link href="/admin/inventory/movements" />} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl">
+        <Button variant="outline" render={<Link href="/admin/inventory/movements" />} className="rounded-xl">
           <History className="h-4 w-4 mr-2" /> Historial
         </Button>
         <Button onClick={openCreate} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">

@@ -30,7 +30,7 @@ export function InventoryMovementsView() {
   return (
     <div className="space-y-5">
       <PageHeader title="Historial de movimientos" description="Cada entrada, salida y ajuste de tu inventario, en orden cronológico." icon={History}>
-        <Button render={<Link href="/admin/inventory" />} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl">
+        <Button variant="outline" render={<Link href="/admin/inventory" />} className="rounded-xl">
           <ChevronLeft className="h-4 w-4 mr-2" /> Volver al inventario
         </Button>
       </PageHeader>

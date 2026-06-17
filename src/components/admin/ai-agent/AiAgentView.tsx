@@ -259,7 +259,7 @@ export function AiAgentView() {
         description="Bandeja de WhatsApp con un asistente inteligente que responde con el contexto de tu clínica."
         icon={Bot}
       >
-        <Badge className="bg-white/10 text-white border border-white/15 gap-1.5 h-7 px-3 rounded-full">
+        <Badge variant="secondary" className="bg-muted text-muted-foreground border border-border gap-1.5 h-7 px-3 rounded-full">
           <Circle className={`h-2 w-2 ${connected ? "fill-green-400 text-green-400" : "fill-amber-400 text-amber-400"}`} />
           {connected ? "Conectado" : "Prototipo"}
         </Badge>
