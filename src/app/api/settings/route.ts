@@ -14,7 +14,7 @@ export async function GET() {
 
     const { data: clinic, error } = await supabase
       .from("clinics")
-      .select("id, name, address, phone, email")
+      .select("id, name, slug, address, phone, email")
       .eq("id", profile.clinic_id)
       .single()
 

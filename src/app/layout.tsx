@@ -3,6 +3,7 @@ import { Jost, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { QueryProvider } from "@/components/providers/QueryProvider"
+import { ThemeProvider } from "@/components/providers/ThemeProvider"
 
 const jost = Jost({
   subsets: ['latin'],
@@ -34,12 +35,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${jost.variable} ${cormorant.variable}`}>
+    <html lang="es" className={`${jost.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <body className="font-sans">
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

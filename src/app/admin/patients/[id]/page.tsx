@@ -19,6 +19,7 @@ import { LoyaltyTab } from "@/components/admin/patients/tabs/LoyaltyTab"
 import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
 import { ClinicalRecordTab } from "@/components/admin/patients/tabs/ClinicalRecordTab"
 import { SimulationTab } from "@/components/admin/patients/tabs/SimulationTab"
+import { WhatsappButton } from "@/components/admin/WhatsappButton"
 
 const TABS = [
   { value: "ficha", label: "Ficha Clínica", icon: ClipboardList },
@@ -111,6 +112,12 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
               </div>
 
               <div className="flex flex-wrap gap-2 shrink-0">
+                <WhatsappButton
+                  phone={patient.phone}
+                  message={`Hola ${patient.full_name.split(" ")[0]}, te saludamos de la clínica 👋`}
+                  size="default"
+                  className="bg-emerald-500/20 text-emerald-100 border border-emerald-300/30 hover:bg-emerald-500/30 hover:text-white rounded-xl backdrop-blur-sm"
+                />
                 <Button onClick={() => setActiveTab("administrative")} className="bg-white/10 text-white border border-white/15 hover:bg-white/15 rounded-xl backdrop-blur-sm">
                   <Pencil className="h-4 w-4 mr-2" /> Editar datos
                 </Button>
@@ -151,38 +158,38 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
         {/* 2. RESUMEN CLÍNICO (full-width, en orden) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Notas internas */}
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-            <div className="flex items-center gap-2 text-amber-800 mb-2">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30 p-4">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 mb-2">
               <Bell className="h-4 w-4" />
               <h3 className="font-semibold text-sm">Notas internas</h3>
             </div>
-            <p className="text-sm text-amber-900/80 leading-relaxed">
+            <p className="text-sm text-amber-900/80 dark:text-amber-200/80 leading-relaxed">
               {patient.notes || "Sin notas internas registradas."}
             </p>
           </div>
 
           {/* Alergias (alerta de seguridad) */}
-          <div className={`rounded-2xl border p-4 ${allergies.length ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50"}`}>
-            <div className={`flex items-center gap-2 mb-2 ${allergies.length ? "text-red-700" : "text-emerald-700"}`}>
+          <div className={`rounded-2xl border p-4 ${allergies.length ? "border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30" : "border-emerald-200 bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/30"}`}>
+            <div className={`flex items-center gap-2 mb-2 ${allergies.length ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
               {allergies.length ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
               <h3 className="font-semibold text-sm">Alergias {allergies.length ? `(${allergies.length})` : ""}</h3>
             </div>
             {allergies.length ? (
               <div className="flex flex-wrap gap-1.5">
                 {allergies.slice(0, 6).map((a, i) => (
-                  <span key={i} className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                  <span key={i} className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
                     {a.allergen}{a.severity ? ` · ${a.severity}` : ""}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-emerald-800/80">Sin alergias registradas.</p>
+              <p className="text-sm text-emerald-800/80 dark:text-emerald-300/80">Sin alergias registradas.</p>
             )}
           </div>
 
           {/* Antecedentes médicos */}
           <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-soft">
-            <div className="flex items-center gap-2 text-slate-700 mb-2">
+            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200 mb-2">
               <HeartPulse className="h-4 w-4 text-brand" />
               <h3 className="font-semibold text-sm">Antecedentes {medicalHistory.length ? `(${medicalHistory.length})` : ""}</h3>
             </div>
@@ -219,7 +226,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           </TabsContent>
 
           <TabsContent value="ficha" className="mt-0 outline-none">
-            <ClinicalRecordTab patientId={patient.id} />
+            <ClinicalRecordTab patientId={patient.id} patientName={patient.full_name} />
           </TabsContent>
 
           <TabsContent value="clinical" className="mt-0 outline-none">

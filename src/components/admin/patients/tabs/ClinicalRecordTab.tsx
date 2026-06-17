@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { HeartPulse, ShieldAlert, Activity, FileText, Save } from "lucide-react"
+import { HeartPulse, ShieldAlert, Activity, FileText, Save, Printer } from "lucide-react"
+import { printArea } from "@/lib/print"
 
 type Field = { k: string; label: string; big?: boolean }
 
@@ -60,7 +61,7 @@ const SECTIONS: { title: string; icon: typeof HeartPulse; fields: Field[] }[] = 
 const ALL_KEYS = SECTIONS.flatMap((s) => s.fields.map((f) => f.k))
 const emptyForm = () => Object.fromEntries(ALL_KEYS.map((k) => [k, ""])) as Record<string, string>
 
-export function ClinicalRecordTab({ patientId }: { patientId: string }) {
+export function ClinicalRecordTab({ patientId, patientName }: { patientId: string; patientName?: string }) {
   const qc = useQueryClient()
   const [form, setForm] = useState<Record<string, string>>(emptyForm())
   const [saving, setSaving] = useState(false)
@@ -108,11 +109,24 @@ export function ClinicalRecordTab({ patientId }: { patientId: string }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-800">Ficha Clínica</h3>
-        <Button onClick={save} disabled={saving} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
-          <Save className="h-4 w-4 mr-2" /> {saving ? "Guardando..." : "Guardar ficha"}
-        </Button>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Ficha Clínica</h3>
+        <div className="flex items-center gap-2">
+          <Button onClick={printArea} variant="outline" className="rounded-xl">
+            <Printer className="h-4 w-4 mr-2" /> Imprimir
+          </Button>
+          <Button onClick={save} disabled={saving} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+            <Save className="h-4 w-4 mr-2" /> {saving ? "Guardando..." : "Guardar ficha"}
+          </Button>
+        </div>
+      </div>
+
+      <div className="print-area space-y-5">
+      {/* Encabezado solo visible al imprimir */}
+      <div className="hidden print:block mb-4 border-b border-black pb-3">
+        <h1 className="text-xl font-bold">Ficha Clínica</h1>
+        {patientName && <p className="text-sm">Paciente: {patientName}</p>}
+        <p className="text-sm">Fecha de impresión: {new Date().toLocaleDateString("es-CL")}</p>
       </div>
 
       {SECTIONS.map((section) => (
@@ -121,7 +135,7 @@ export function ClinicalRecordTab({ patientId }: { patientId: string }) {
             <div className="h-8 w-8 rounded-lg bg-brand-soft flex items-center justify-center">
               <section.icon className="h-4 w-4 text-brand-dark" />
             </div>
-            <h4 className="font-semibold text-sm text-slate-800">{section.title}</h4>
+            <h4 className="font-semibold text-sm text-slate-800 dark:text-slate-100">{section.title}</h4>
           </div>
           <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
             {section.fields.map((f) => (
@@ -139,8 +153,9 @@ export function ClinicalRecordTab({ patientId }: { patientId: string }) {
           </div>
         </div>
       ))}
+      </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end print:hidden">
         <Button onClick={save} disabled={saving} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
           <Save className="h-4 w-4 mr-2" /> {saving ? "Guardando..." : "Guardar ficha"}
         </Button>

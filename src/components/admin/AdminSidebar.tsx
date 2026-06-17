@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, Bot, Package, Wallet, DoorOpen, LayoutGrid } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { useState } from "react"
 
 const routes = [
@@ -129,6 +130,8 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
         <Link href="/admin/dashboard" className="flex items-center w-[60%] max-w-[140px]">
           <img src="/logo3.png" alt="Medique Logo" className="h-auto w-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]" />
         </Link>
+        <div className="flex items-center gap-1">
+          <ThemeToggle className="text-white/80 hover:text-white hover:bg-white/10" />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger render={<Button variant="ghost" size="icon" className="text-white hover:bg-white/10" />}>
             <Menu className="h-6 w-6" />
@@ -153,6 +156,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
             </div>
           </SheetContent>
         </Sheet>
+        </div>
       </div>
     </>
   )

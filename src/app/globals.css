@@ -73,6 +73,18 @@
 .admin-table tbody tr:hover {
   @apply bg-[#6E8CA6]/10;
 }
+.dark .admin-table thead tr th {
+  @apply bg-muted text-foreground;
+}
+.dark .admin-table tbody tr {
+  @apply bg-card text-card-foreground;
+}
+.dark .admin-table tbody tr:nth-child(even) {
+  @apply bg-muted/40;
+}
+.dark .admin-table tbody tr:hover {
+  @apply bg-muted/70;
+}
 
 @layer base {
   * {
@@ -107,6 +119,12 @@
     background-image:
       radial-gradient(at 100% 0%, rgb(13 148 136 / 0.06) 0px, transparent 45%),
       radial-gradient(at 0% 0%, rgb(22 36 57 / 0.05) 0px, transparent 40%);
+  }
+  .dark .bg-app {
+    background-color: hsl(222.2 84% 4.9%);
+    background-image:
+      radial-gradient(at 100% 0%, rgb(13 148 136 / 0.10) 0px, transparent 45%),
+      radial-gradient(at 0% 0%, rgb(123 154 181 / 0.08) 0px, transparent 40%);
   }
 
   /* Panel de marca con gradiente navy (login, headers destacados) */
@@ -247,4 +265,45 @@
 }
 .calendar-container .rbc-today {
   @apply bg-primary/[0.03];
+}
+
+/* ============================================================
+   Estilos de impresión (ficha clínica / consentimientos)
+   Se oculta el armazón y se imprime solo el contenedor .print-area
+   ============================================================ */
+@media print {
+  /* Al imprimir, fondo blanco y texto negro */
+  html, body {
+    background: #ffffff !important;
+  }
+  /* Cuando se activa la impresión de un área concreta, se oculta todo
+     y solo se muestra el contenedor .print-area (patrón visibility). */
+  body.printing-active * {
+    visibility: hidden !important;
+  }
+  body.printing-active .print-area,
+  body.printing-active .print-area * {
+    visibility: visible !important;
+  }
+  body.printing-active .print-area {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 8mm;
+    background: #ffffff !important;
+  }
+  body.printing-active .print-area,
+  body.printing-active .print-area * {
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+  /* Conserva imágenes (firmas) con sus colores */
+  body.printing-active .print-area img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page {
+    margin: 14mm;
+  }
 }
