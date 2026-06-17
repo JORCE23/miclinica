@@ -77,7 +77,7 @@ export function CampaignForm({ initialData }: CampaignFormProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-6 md:p-7 max-w-3xl">
+    <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 md:p-7 max-w-3xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">

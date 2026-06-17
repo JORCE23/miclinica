@@ -57,7 +57,7 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceForm
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="duration_minutes">Duración (minutos) *</Label>
           <Input 

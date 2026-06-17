@@ -151,7 +151,7 @@ export function DashboardStats() {
 
               <div className="mt-8 mb-2">
                 <div className="bg-card border border-border/70 rounded-2xl p-5 shadow-soft">
-                  <div className="flex items-start justify-between gap-4 mb-5">
+                  <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
                     <div className="flex items-center gap-2.5">
                       <div className="h-9 w-9 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
                         <TrendingUp className="h-4 w-4" />

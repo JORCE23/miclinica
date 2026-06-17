@@ -100,11 +100,9 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
       >
         <div className={cn("flex justify-center items-center transition-all", expanded ? "px-5 pt-7 pb-5" : "px-2 pt-6 pb-4")}>
           <Link href="/admin/dashboard" className="flex items-center w-full justify-center">
-            {expanded ? (
-              <img src="/logo.png" alt="Medique Logo" className="w-[185px] h-auto object-contain" />
-            ) : (
-              <img src="/logo-medique-simbolo.png" alt="Medique" className="w-9 h-9 object-contain" />
-            )}
+            <span className="font-display font-semibold text-foreground tracking-tight whitespace-nowrap" style={{ fontSize: expanded ? 26 : 22 }}>
+              {expanded ? "Medique" : "M"}
+            </span>
           </Link>
         </div>
 
@@ -125,22 +123,16 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
         </div>
       </aside>
 
-      {/* Mobile Header/Trigger (Only visible on small screens) */}
-      <div className="md:hidden flex items-center justify-between p-3 bg-card text-foreground border-b border-border sticky top-0 z-50 shadow-sm">
-        <Link href="/admin/dashboard" className="flex items-center w-[60%] max-w-[150px]">
-          <img src="/logo.png" alt="Medique Logo" className="h-auto w-full object-contain" />
-        </Link>
+      {/* Header móvil — menú a la izquierda, "Medique" a la derecha */}
+      <div className="md:hidden flex items-center justify-between gap-2 p-3 bg-card text-foreground border-b border-border sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-1">
-          <ThemeToggle className="text-muted-foreground hover:text-foreground hover:bg-muted" />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger render={<Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" />}>
               <Menu className="h-6 w-6" />
             </SheetTrigger>
             <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-card text-foreground border-r-border p-0 flex flex-col sidebar-scroll">
-              <SheetHeader className="p-5 border-b border-border flex justify-center items-center">
-                <SheetTitle className="flex items-center justify-center w-full">
-                  <img src="/logo.png" alt="Medique Logo" className="w-[70%] max-w-[200px] h-auto object-contain" />
-                </SheetTitle>
+              <SheetHeader className="p-5 border-b border-border">
+                <SheetTitle className="font-display text-2xl font-semibold text-foreground tracking-tight text-left">Medique</SheetTitle>
               </SheetHeader>
               <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
                 <SidebarLinks isMobile />
@@ -156,7 +148,12 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
               </div>
             </SheetContent>
           </Sheet>
+          <ThemeToggle className="text-muted-foreground hover:text-foreground hover:bg-muted" />
         </div>
+
+        <Link href="/admin/dashboard" className="font-display text-xl font-semibold text-foreground tracking-tight pr-1">
+          Medique
+        </Link>
       </div>
     </>
   )
