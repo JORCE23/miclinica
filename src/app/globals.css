@@ -267,6 +267,29 @@
   @apply bg-primary/[0.03];
 }
 
+/* (+) para agendar directo: aparece al pasar el mouse sobre un horario libre */
+.calendar-container .rbc-day-slot .rbc-time-slot {
+  position: relative;
+  transition: background-color 0.12s ease;
+}
+.calendar-container .rbc-day-slot .rbc-time-slot:hover {
+  background-color: rgb(106 130 150 / 0.12);
+  cursor: copy;
+}
+.calendar-container .rbc-day-slot .rbc-time-slot:hover::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  color: #6A8296;
+  pointer-events: none;
+}
+
 /* React Big Calendar — variantes para modo oscuro */
 .dark .calendar-container .rbc-header {
   @apply text-slate-200 border-border bg-muted/40;

@@ -28,6 +28,8 @@ interface AppointmentFormProps {
   onSubmit: (data: AppointmentFormValues) => void
   isSubmitting?: boolean
   defaultPatientId?: string
+  /** Fecha/hora precargada (formato "yyyy-MM-dd'T'HH:mm"), p. ej. al hacer clic en un horario del calendario */
+  defaultScheduledAt?: string
 }
 
 import { format } from "date-fns"
@@ -50,7 +52,7 @@ const TIME_OPTIONS: string[] = (() => {
   return out
 })()
 
-export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId }: AppointmentFormProps) {
+export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId, defaultScheduledAt }: AppointmentFormProps) {
   const { data: patients } = usePatients()
   const { data: services } = useServices(true) // Solo servicios activos
   
@@ -77,7 +79,7 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
       service_id: initialData?.service_id || "",
       professional_id: initialData?.professional_id || "",
       campaign_id: initialData?.campaign_id || "",
-      scheduled_at: initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : "",
+      scheduled_at: initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : (defaultScheduledAt || ""),
       duration_minutes: initialData?.duration_minutes || 60,
       price: initialData?.price || 0,
       notes: initialData?.notes || "",
@@ -93,7 +95,7 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
   const [np, setNp] = useState({ full_name: "", rut: "", phone: "", email: "", birth_date: "" })
 
   // Fecha y hora por separado; la hora se elige en bloques de 15 minutos
-  const initDT = initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : ""
+  const initDT = initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : (defaultScheduledAt || "")
   const [apptDate, setApptDate] = useState(initDT ? initDT.slice(0, 10) : "")
   const [apptTime, setApptTime] = useState(initDT ? initDT.slice(11, 16) : "")
   const updateDateTime = (d: string, t: string) => {

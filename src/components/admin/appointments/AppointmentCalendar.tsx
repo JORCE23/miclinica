@@ -93,9 +93,15 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
 export function AppointmentCalendar() {
   const router = useRouter()
   const { data: appointments, isLoading } = useAppointments()
-  
+
   const [view, setView] = useState<View>(Views.WEEK)
   const [date, setDate] = useState(new Date())
+
+  // Clic en un horario libre del calendario → crear cita con fecha/hora precargadas
+  const handleSelectSlot = (slotInfo: { start: Date }) => {
+    const dt = format(slotInfo.start, "yyyy-MM-dd'T'HH:mm")
+    router.push(`/admin/appointments/new?scheduled_at=${encodeURIComponent(dt)}`)
+  }
 
   if (isLoading) {
     return <div className="p-12 text-center text-muted-foreground animate-pulse">Cargando calendario interactivo...</div>
@@ -176,6 +182,8 @@ export function AppointmentCalendar() {
         max={maxTime}
         step={30}
         timeslots={2}
+        selectable
+        onSelectSlot={handleSelectSlot}
         components={{
           event: CustomEvent,
           toolbar: CustomToolbar,

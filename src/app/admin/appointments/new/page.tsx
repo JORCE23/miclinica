@@ -16,6 +16,7 @@ function NewAppointmentForm() {
   const createAppointment = useCreateAppointment()
   
   const defaultPatientId = searchParams.get("patientId") || undefined
+  const defaultScheduledAt = searchParams.get("scheduled_at") || undefined
 
   const handleSubmit = async (data: any) => {
     try {
@@ -47,10 +48,11 @@ function NewAppointmentForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AppointmentForm 
+          <AppointmentForm
             onSubmit={handleSubmit}
             isSubmitting={createAppointment.isPending}
             defaultPatientId={defaultPatientId}
+            defaultScheduledAt={defaultScheduledAt}
           />
         </CardContent>
       </Card>
