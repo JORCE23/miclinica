@@ -123,37 +123,37 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
         </div>
       </aside>
 
-      {/* Header móvil — menú a la izquierda, "Medique" a la derecha */}
+      {/* Header móvil — menú a la izquierda, modo oscuro + "Medique" a la derecha */}
       <div className="md:hidden flex items-center justify-between gap-2 p-3 bg-card text-foreground border-b border-border sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-1">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger render={<Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" />}>
-              <Menu className="h-6 w-6" />
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-card text-foreground border-r-border p-0 flex flex-col sidebar-scroll">
-              <SheetHeader className="p-5 border-b border-border">
-                <SheetTitle className="font-display text-2xl font-semibold text-foreground tracking-tight text-left">Medique</SheetTitle>
-              </SheetHeader>
-              <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
-                <SidebarLinks isMobile />
-              </nav>
-              <div className="p-4 border-t border-border">
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-red-600 hover:bg-muted w-full text-left"
-                >
-                  <LogOut className="h-5 w-5" />
-                  Cerrar sesión
-                </button>
-              </div>
-            </SheetContent>
-          </Sheet>
-          <ThemeToggle className="text-muted-foreground hover:text-foreground hover:bg-muted" />
-        </div>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger render={<Button variant="ghost" size="icon" className="text-foreground hover:bg-muted" />}>
+            <Menu className="h-6 w-6" />
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-card text-foreground border-r-border p-0 flex flex-col sidebar-scroll">
+            <SheetHeader className="p-5 border-b border-border">
+              <SheetTitle className="font-display text-2xl font-semibold text-foreground tracking-tight text-left">Medique</SheetTitle>
+            </SheetHeader>
+            <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
+              <SidebarLinks isMobile />
+            </nav>
+            <div className="p-4 border-t border-border">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-red-600 hover:bg-muted w-full text-left"
+              >
+                <LogOut className="h-5 w-5" />
+                Cerrar sesión
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
 
-        <Link href="/admin/dashboard" className="font-display text-xl font-semibold text-foreground tracking-tight pr-1">
-          Medique
-        </Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle className="text-muted-foreground hover:text-foreground hover:bg-muted" />
+          <Link href="/admin/dashboard" className="font-display text-xl font-semibold text-foreground tracking-tight pr-1">
+            Medique
+          </Link>
+        </div>
       </div>
     </>
   )
