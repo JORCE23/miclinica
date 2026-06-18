@@ -65,13 +65,13 @@
 }
 
 .admin-table thead tr th {
-  @apply bg-[#121A26] text-white font-semibold text-xs uppercase tracking-wide py-3 px-4;
+  @apply bg-muted/50 text-muted-foreground font-semibold text-xs uppercase tracking-wide py-3 px-4 border-b border-border;
 }
 .admin-table tbody tr:nth-child(even) {
-  @apply bg-[#ECEEF0];
+  @apply bg-muted/20;
 }
 .admin-table tbody tr:hover {
-  @apply bg-[#6E8CA6]/10;
+  @apply bg-brand/5;
 }
 .dark .admin-table thead tr th {
   @apply bg-muted text-foreground;
