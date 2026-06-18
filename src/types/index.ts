@@ -91,6 +91,7 @@ export interface Service {
   
   // Nuevos campos del Libro Maestro de Procedimientos
   category?: string;
+  section?: string;
   service_code?: string;
   zones?: string[];
   reference_products?: string[];

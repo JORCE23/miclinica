@@ -8,12 +8,12 @@ import { es } from "date-fns/locale"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
 import {
-  Wallet, ArrowDownCircle, ArrowUpCircle, Plus, Trash2, X, Receipt, CalendarCheck, Scale,
+  Wallet, ArrowDownCircle, ArrowUpCircle, Plus, Trash2, X, Receipt, Scale, Boxes,
 } from "lucide-react"
 
 type Movement = { id: string; type: "ingreso" | "egreso"; amount: number; method: string | null; concept: string | null; created_at: string }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ApptIncome = { id: string; price: number | null; payment_method: string | null; scheduled_at: string; patient: any; service: any }
+type ApptIncome = { id: string; price: number | null; payment_method: string | null; scheduled_at: string; patient: any; service: any; insumo_cost?: number; service_category?: string | null }
 
 const clp = (n: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(n || 0)
 const METHODS = ["Efectivo", "Débito", "Crédito", "Transferencia"]
@@ -43,11 +43,18 @@ export function CashRegisterView() {
   const egresos = movements.filter((m) => m.type === "egreso").reduce((a, m) => a + Number(m.amount), 0)
   const ingresos = apptIncome + manualIn
   const balance = ingresos - egresos
+  // El monto de las citas es BRUTO; restamos el costo de insumos para el neto (ganancia)
+  const insumoCost = appts.reduce((acc, a) => acc + (a.insumo_cost || 0), 0)
+  const neto = balance - insumoCost
 
   // Desglose por método de pago (citas + ingresos manuales con método)
   const byMethod: Record<string, number> = {}
   for (const a of appts) { const k = a.payment_method || "Sin especificar"; byMethod[k] = (byMethod[k] || 0) + (a.price || 0) }
   for (const m of movements) if (m.type === "ingreso") { const k = m.method || "Sin especificar"; byMethod[k] = (byMethod[k] || 0) + Number(m.amount) }
+
+  // Desglose por categoría de servicio (citas cobradas)
+  const byCategory: Record<string, number> = {}
+  for (const a of appts) { const k = a.service_category || "Sin categoría"; byCategory[k] = (byCategory[k] || 0) + (a.price || 0) }
 
   const addMovement = async () => {
     const amount = Number(form.amount)
@@ -69,10 +76,10 @@ export function CashRegisterView() {
   }
 
   const cards = [
-    { label: "Ingresos del día", value: clp(ingresos), icon: ArrowDownCircle, tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" },
+    { label: "Ingresos (bruto)", value: clp(ingresos), icon: ArrowDownCircle, tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" },
+    { label: "Costo insumos", value: clp(insumoCost), icon: Boxes, tint: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400" },
     { label: "Egresos", value: clp(egresos), icon: ArrowUpCircle, tint: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400" },
-    { label: "Balance", value: clp(balance), icon: Scale, tint: "bg-brand/10 text-brand" },
-    { label: "Atenciones cobradas", value: appts.length, icon: CalendarCheck, tint: "bg-muted text-muted-foreground" },
+    { label: "Neto (ganancia)", value: clp(neto), icon: Scale, tint: "bg-brand/10 text-brand" },
   ]
 
   return (
@@ -116,7 +123,12 @@ export function CashRegisterView() {
                     <p className="text-sm font-medium text-foreground truncate">{a.patient?.full_name || "Paciente"}</p>
                     <p className="text-xs text-muted-foreground truncate">{a.service?.name || "Servicio"} · {a.payment_method || "Sin método"}</p>
                   </div>
-                  <span className="text-sm font-bold text-emerald-600 shrink-0">{clp(a.price || 0)}</span>
+                  <div className="text-right shrink-0">
+                    <span className="text-sm font-bold text-emerald-600">{clp(a.price || 0)}</span>
+                    {(a.insumo_cost || 0) > 0 && (
+                      <p className="text-[10px] text-amber-600">insumos −{clp(a.insumo_cost || 0)}</p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -169,6 +181,27 @@ export function CashRegisterView() {
             <span className="text-sm font-semibold text-foreground">Total ingresos</span>
             <span className="text-base font-bold text-brand-dark">{clp(ingresos)}</span>
           </div>
+
+          {Object.keys(byCategory).length > 0 && (
+            <>
+              <h2 className="font-semibold text-foreground text-sm mt-6 mb-3">Ingresos por categoría</h2>
+              <div className="space-y-2.5">
+                {Object.entries(byCategory).map(([k, v]) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">{k}</span>
+                    <span className="text-sm font-semibold text-foreground">{clp(v)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {insumoCost > 0 && (
+            <div className="mt-4 pt-4 border-t border-border space-y-1.5">
+              <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Costo insumos</span><span className="font-semibold text-amber-600">−{clp(insumoCost)}</span></div>
+              <div className="flex items-center justify-between"><span className="text-sm font-semibold text-foreground">Neto (ganancia)</span><span className="text-base font-bold text-brand-dark">{clp(neto)}</span></div>
+            </div>
+          )}
         </div>
       </div>
 

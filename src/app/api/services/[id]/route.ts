@@ -36,22 +36,26 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const body = await request.json()
-    const { name, description, duration_minutes, price, loyalty_points_earned, is_active } = body
+    const { name, description, category, section, duration_minutes, price, loyalty_points_earned, is_active } = body
 
     if (!name || !duration_minutes) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
     }
 
+    const updateData: Record<string, unknown> = {
+      name,
+      description: description || null,
+      duration_minutes: Number(duration_minutes),
+      price: price ? Number(price) : null,
+      loyalty_points_earned: Number(loyalty_points_earned) || 0,
+      is_active: is_active,
+    }
+    if (category !== undefined) updateData.category = category || null
+    if (section !== undefined) updateData.section = section || null
+
     const { data, error } = await supabase
       .from("services")
-      .update({
-        name,
-        description: description || null,
-        duration_minutes: Number(duration_minutes),
-        price: price ? Number(price) : null,
-        loyalty_points_earned: Number(loyalty_points_earned) || 0,
-        is_active: is_active,
-      })
+      .update(updateData)
       .eq("id", params.id)
       .select()
       .single()

@@ -16,6 +16,10 @@ interface ServiceFormProps {
   isSubmitting?: boolean
 }
 
+export const SERVICE_CATEGORIES = ["Toxina", "Ácido hialurónico", "Bioestimulación", "Mesoterapia", "Otros procedimientos"]
+export const SERVICE_SECTIONS = ["Facial", "Corporal"]
+const selectCls = "w-full h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none transition-all focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/15"
+
 export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceFormProps) {
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -23,6 +27,7 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceForm
       name: initialData?.name || "",
       description: initialData?.description || "",
       category: initialData?.category || "",
+      section: (initialData as any)?.section || "", // eslint-disable-line @typescript-eslint/no-explicit-any
       duration_minutes: initialData?.duration_minutes || 60,
       price: initialData?.price || 0,
       loyalty_points_earned: initialData?.loyalty_points_earned || 0,
@@ -30,21 +35,35 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting }: ServiceForm
     },
   })
 
+  const currentCategory = initialData?.category || ""
+  const categoryOptions = currentCategory && !SERVICE_CATEGORIES.includes(currentCategory)
+    ? [currentCategory, ...SERVICE_CATEGORIES]
+    : SERVICE_CATEGORIES
+
   const isActive = watch("is_active")
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2 col-span-2 sm:col-span-1">
-          <Label htmlFor="name">Nombre del Servicio *</Label>
-          <Input id="name" placeholder="Ej. Bótox Facial" {...register("name")} />
-          {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-        </div>
-        
-        <div className="space-y-2 col-span-2 sm:col-span-1">
+      <div className="space-y-2">
+        <Label htmlFor="name">Nombre del Servicio *</Label>
+        <Input id="name" placeholder="Ej. Bótox Facial" {...register("name")} />
+        {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label htmlFor="category">Categoría</Label>
-          <Input id="category" placeholder="Ej. Toxina Botulínica" {...register("category")} />
-          {errors.category && <p className="text-sm text-red-500">{errors.category.message}</p>}
+          <select id="category" {...register("category")} className={selectCls}>
+            <option value="">Sin categoría</option>
+            {categoryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="section">Área</Label>
+          <select id="section" {...register("section")} className={selectCls}>
+            <option value="">— Sin área —</option>
+            {SERVICE_SECTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
       </div>
 
