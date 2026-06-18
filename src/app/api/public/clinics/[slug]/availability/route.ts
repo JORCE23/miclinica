@@ -44,6 +44,20 @@ export async function POST(request: Request, { params }: { params: { slug: strin
       .single()
     if (!clinic) return NextResponse.json({ error: "Clínica no encontrada" }, { status: 404 })
 
+    // Horario configurado para ese día de la semana (si está cerrado, no hay slots)
+    const dow = new Date(date).getDay()
+    const { data: sched } = await supabase
+      .from("clinic_schedules")
+      .select("is_open, open_time, close_time")
+      .eq("clinic_id", clinic.id)
+      .eq("day_of_week", dow)
+      .maybeSingle()
+    if (sched && sched.is_open === false) {
+      return NextResponse.json({ slots: [] })
+    }
+    const [openH, openM] = (sched?.open_time || "09:00").split(":").map(Number)
+    const [closeH, closeM] = (sched?.close_time || "18:00").split(":").map(Number)
+
     const targetDate = new Date(date)
 
     // No retornar slots para fechas pasadas
@@ -68,10 +82,10 @@ export async function POST(request: Request, { params }: { params: { slug: strin
 
     const slots: string[] = []
     let currentSlot = new Date(targetDate)
-    currentSlot.setHours(9, 0, 0, 0)
+    currentSlot.setHours(openH, openM || 0, 0, 0)
 
     const endOfDayTime = new Date(targetDate)
-    endOfDayTime.setHours(18, 0, 0, 0)
+    endOfDayTime.setHours(closeH, closeM || 0, 0, 0)
 
     const now = new Date()
 
