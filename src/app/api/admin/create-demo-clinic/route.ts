@@ -47,6 +47,15 @@ async function resetDemo(clinicId: string) {
 }
 
 export async function POST(request: Request) {
+  return run(request)
+}
+
+// También por GET para poder dispararlo abriendo el link en el navegador.
+export async function GET(request: Request) {
+  return run(request)
+}
+
+async function run(request: Request) {
   // Protección por secreto
   const secret = process.env.DEMO_SECRET || process.env.CRON_SECRET
   const provided = request.headers.get("x-demo-secret") || new URL(request.url).searchParams.get("secret")
