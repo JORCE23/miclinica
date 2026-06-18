@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Clock, DollarSign, Star, Package } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -58,6 +59,25 @@ export function ServiceList() {
     }
   }
 
+  const handleToggleActive = async (service: Service) => {
+    try {
+      await updateService.mutateAsync({
+        id: service.id,
+        data: {
+          name: service.name,
+          description: service.description,
+          duration_minutes: service.duration_minutes,
+          price: service.price,
+          loyalty_points_earned: service.loyalty_points_earned,
+          is_active: !service.is_active,
+        },
+      })
+      toast.success(service.is_active ? "Servicio desactivado" : "Servicio activado")
+    } catch (error: any) {
+      toast.error(error.message || "No se pudo actualizar")
+    }
+  }
+
   const handleDeleteConfirm = async () => {
     if (!deletingService) return
     try {
@@ -85,7 +105,7 @@ export function ServiceList() {
           </TableHeader>
           <TableBody>
             {services.map((service) => (
-              <TableRow key={service.id}>
+              <TableRow key={service.id} className={service.is_active ? "" : "opacity-55"}>
                 <TableCell>
                   <div className="font-medium flex items-center gap-2">
                     {service.name}
@@ -120,9 +140,14 @@ export function ServiceList() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={service.is_active ? "default" : "secondary"} className={service.is_active ? "bg-emerald-500 hover:bg-emerald-600" : ""}>
-                    {service.is_active ? "Activo" : "Inactivo"}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={service.is_active}
+                      onCheckedChange={() => handleToggleActive(service)}
+                      title={service.is_active ? "Desactivar servicio" : "Activar servicio"}
+                    />
+                    <span className="text-xs text-muted-foreground">{service.is_active ? "Activo" : "Inactivo"}</span>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">

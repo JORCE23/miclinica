@@ -292,16 +292,16 @@ export function InventoryView() {
                       <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => quickMove(p, "salida")} className="h-6 w-6 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-brand/40" title="Restar 1">
-                            <Minus className="h-3.5 w-3.5" />
+                          <button onClick={() => quickMove(p, "salida")} className="h-8 w-8 rounded-lg border border-red-200 bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400 transition-colors" title="Restar 1">
+                            <Minus className="h-4 w-4" />
                           </button>
-                          <span className={`inline-flex items-center justify-center min-w-12 h-6 px-2 rounded-full text-xs font-bold ${
+                          <span className={`inline-flex items-center justify-center min-w-[52px] h-7 px-2 rounded-full text-sm font-bold ${
                             out ? "bg-red-100 text-red-700" : low ? "bg-amber-100 text-amber-700" : "bg-brand-soft text-brand-dark"
                           }`}>
                             {p.stock} {p.unit}
                           </span>
-                          <button onClick={() => quickMove(p, "entrada")} className="h-6 w-6 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-brand/40" title="Sumar 1">
-                            <Plus className="h-3.5 w-3.5" />
+                          <button onClick={() => quickMove(p, "entrada")} className="h-8 w-8 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400 transition-colors" title="Sumar 1">
+                            <Plus className="h-4 w-4" />
                           </button>
                         </div>
                       </td>

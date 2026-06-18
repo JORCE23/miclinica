@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { filterAdminRoutes, isRouteActive } from "@/components/admin/adminNav"
+import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
@@ -23,6 +25,8 @@ const SEV_CLS: Record<string, string> = {
 export function AdminHeader({ profile }: { profile?: any }) {
   const supabase = createClient()
   const router = useRouter()
+  const pathname = usePathname()
+  const routes = filterAdminRoutes(profile, null)
 
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -49,7 +53,8 @@ export function AdminHeader({ profile }: { profile?: any }) {
   }
 
   return (
-    <header className="hidden md:flex h-16 bg-background/75 backdrop-blur-xl border-b border-border items-center justify-between px-5 gap-4 sticky top-0 z-30">
+    <header className="hidden md:block bg-background/75 backdrop-blur-xl border-b border-border sticky top-0 z-30">
+      <div className="flex h-16 items-center justify-between px-5 gap-4">
       <form onSubmit={handleSearch} className="flex-1 max-w-md relative hidden md:block">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
@@ -151,6 +156,30 @@ export function AdminHeader({ profile }: { profile?: any }) {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      </div>
+
+      {/* Barra de pestañas (navegación rápida tipo prototipo) */}
+      <div className="flex items-center gap-2 px-5 pb-2.5">
+        <div className="flex-1 flex gap-1.5 overflow-x-auto sidebar-scroll">
+          {routes.map((r) => {
+            const active = isRouteActive(pathname, r.href)
+            return (
+              <Link
+                key={r.href}
+                href={r.href}
+                className={cn(
+                  "shrink-0 px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap border transition-colors",
+                  active
+                    ? "bg-brand text-white border-brand"
+                    : "text-muted-foreground border-border hover:text-foreground hover:border-brand/40"
+                )}
+              >
+                {r.label}
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </header>
   )

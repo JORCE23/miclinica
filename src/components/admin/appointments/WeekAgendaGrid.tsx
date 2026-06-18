@@ -26,12 +26,27 @@ export function WeekAgendaGrid() {
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
-  // Cita que cae en (día, hora) — se ubica por la hora redondeada hacia abajo.
-  const apptAt = (day: Date, hour: string) => {
+  // Altura de cada fila de hora (px) — el bloque de la cita crece con la duración.
+  const ROW_H = 54
+  const spanOf = (a: any) => Math.max(1, Math.round((a.duration_minutes || 60) / 60)) // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  // Cita que EMPIEZA en (día, hora).
+  const apptStartingAt = (day: Date, hour: string) => {
     const h = parseInt(hour, 10)
     return (appointments || []).find((a) => {
       const d = new Date(a.scheduled_at)
       return isSameDay(d, day) && d.getHours() === h
+    })
+  }
+
+  // ¿La celda (día, hora) está cubierta por una cita que empezó antes y dura varias horas?
+  const coveredAt = (day: Date, hour: string) => {
+    const h = parseInt(hour, 10)
+    return (appointments || []).some((a) => {
+      const d = new Date(a.scheduled_at)
+      if (!isSameDay(d, day)) return false
+      const sh = d.getHours()
+      return sh < h && sh + spanOf(a) > h
     })
   }
 
@@ -94,25 +109,29 @@ export function WeekAgendaGrid() {
             {/* Filas de horas */}
             {HOURS.map((hour) => (
               <div key={hour} className="grid border-b border-border/50 last:border-b-0" style={{ gridTemplateColumns: cols }}>
-                <div className="flex items-start justify-end pr-2 pt-1.5 text-[11px] text-muted-foreground">{hour}</div>
+                <div className="flex items-start justify-end pr-2 pt-1.5 text-[11px] text-muted-foreground" style={{ height: ROW_H }}>{hour}</div>
                 {days.map((day, di) => {
-                  const a = apptAt(day, hour)
+                  const a = apptStartingAt(day, hour)
+                  const covered = !a && coveredAt(day, hour)
                   const today = isSameDay(day, new Date())
+                  const dur = a?.duration_minutes || 60
                   return (
-                    <div key={di} className={cn("relative min-h-[42px] border-l border-border/50 p-1", today && "bg-brand/[0.03]")}>
+                    <div key={di} className={cn("relative border-l border-border/50 p-1", today && "bg-brand/[0.03]")} style={{ height: ROW_H }}>
                       {a ? (
                         <button
                           onClick={() => router.push(`/admin/appointments/${a.id}`)}
-                          className="w-full h-full text-left rounded-lg bg-brand/10 border-l-[3px] border-brand px-2 py-1 hover:bg-brand/15 transition-colors overflow-hidden"
-                          title={`${a.patient?.full_name || "Paciente"} · ${a.service?.name || ""}`}
+                          style={{ position: "absolute", top: 3, left: 3, right: 3, height: spanOf(a) * ROW_H - 6, zIndex: 10 }}
+                          className="text-left rounded-lg bg-brand/10 border-l-[3px] border-brand px-2 py-1 hover:bg-brand/15 transition-colors overflow-hidden shadow-sm"
+                          title={`${a.patient?.full_name || "Paciente"} · ${a.service?.name || ""} · ${dur} min`}
                         >
                           <div className="flex items-center gap-1">
                             <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", STATUS_DOT[a.status] || "bg-muted-foreground")} />
                             <span className="text-[11px] font-medium text-foreground truncate">{a.patient?.full_name || "Paciente"}</span>
                           </div>
                           <div className="text-[10px] text-muted-foreground truncate">{format(new Date(a.scheduled_at), "HH:mm")} · {a.service?.name || "Servicio"}</div>
+                          <div className="text-[9.5px] font-semibold text-brand mt-0.5">{dur} min</div>
                         </button>
-                      ) : (
+                      ) : covered ? null : (
                         <button
                           onClick={() => goCreate(day, hour)}
                           title="Agendar"
