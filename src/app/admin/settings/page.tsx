@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { BookingShareCard } from "@/components/admin/BookingShareCard"
+import { ScheduleEditor } from "@/components/admin/settings/ScheduleEditor"
 import { Settings, Building2, MapPin, Phone, Mail } from "lucide-react"
 import { toast } from "sonner"
 
@@ -74,6 +75,8 @@ export default function SettingsPage() {
       />
 
       <BookingShareCard slug={clinic?.slug} />
+
+      <ScheduleEditor />
 
       <Card className="rounded-2xl border border-border/70 bg-card shadow-soft">
         <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-6">
