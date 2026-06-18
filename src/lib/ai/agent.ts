@@ -74,6 +74,18 @@ async function findOrCreatePatient(admin: Admin, clinicId: string, phone: string
 async function checkAvailability(admin: Admin, clinicId: string, dateStr: string, duration = 60) {
   const targetDate = new Date(dateStr + "T00:00:00")
   if (isNaN(targetDate.getTime())) return []
+
+  // Horario configurado para ese día (si está cerrado, no hay slots)
+  const { data: sched } = await admin
+    .from("clinic_schedules")
+    .select("is_open, open_time, close_time")
+    .eq("clinic_id", clinicId)
+    .eq("day_of_week", targetDate.getDay())
+    .maybeSingle()
+  if (sched && sched.is_open === false) return []
+  const [openH, openM] = (sched?.open_time || "09:00").split(":").map(Number)
+  const [closeH, closeM] = (sched?.close_time || "18:00").split(":").map(Number)
+
   const { data: appts } = await admin
     .from("appointments")
     .select("scheduled_at, duration_minutes, status")
@@ -83,8 +95,8 @@ async function checkAvailability(admin: Admin, clinicId: string, dateStr: string
     .neq("status", "cancelada")
 
   const slots: string[] = []
-  const cursor = new Date(targetDate); cursor.setHours(9, 0, 0, 0)
-  const dayEnd = new Date(targetDate); dayEnd.setHours(18, 0, 0, 0)
+  const cursor = new Date(targetDate); cursor.setHours(openH, openM || 0, 0, 0)
+  const dayEnd = new Date(targetDate); dayEnd.setHours(closeH, closeM || 0, 0, 0)
   const now = new Date()
 
   while (!isAfter(addMinutes(cursor, duration), dayEnd)) {

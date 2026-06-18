@@ -42,6 +42,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/agenda') &&
     !request.nextUrl.pathname.startsWith('/colaborar') &&
+    !request.nextUrl.pathname.startsWith('/consent-sign') &&
     !request.nextUrl.pathname.startsWith('/api/public') &&
     !request.nextUrl.pathname.startsWith('/api/auth') &&
     !request.nextUrl.pathname.startsWith('/api/admin/create-demo-clinic') &&

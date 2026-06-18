@@ -1,54 +1,56 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { groqChat, isGroqConfigured, type ChatMessage } from "@/lib/ai/groq"
+import { isGroqConfigured, type ChatMessage } from "@/lib/ai/groq"
+import { requireAuth } from "@/lib/security/auth-guard"
+import { runCopilotReply } from "@/lib/ai/copilot-agent"
 
-const SYSTEM = `Eres "Copilot", el asistente de IA de Medique, un software de gestión para clínicas estéticas.
-Ayudas al equipo de la clínica (administradores y profesionales) a usar la plataforma y a resolver dudas del día a día.
-
-La app tiene estas secciones:
-- Resumen/Dashboard: indicadores de la clínica.
-- Mi Panel: widgets personalizables.
-- Pacientes: fichas, antecedentes, alergias, procedimientos, consentimientos (con firma), fidelidad.
-- Agenda/Reservas: calendario con un botón "+" en cada horario libre para agendar directo.
-- Sala de espera, Caja, Servicios, Inventario, Equipo, Fidelidad, Marketing, Automatizaciones.
-- Agente IA: bandeja de WhatsApp.
-- Reportes y Configuración (ahí está el link de reserva online + código QR).
-
-Pautas:
-- Responde SIEMPRE en español, de forma breve, clara y amable. Usa viñetas cuando ayuden.
-- Si preguntan cómo hacer algo, da los pasos concretos dentro de la app.
-- Puedes ayudar a redactar mensajes para pacientes (recordatorios, postventa, cumpleaños, etc.).
-- Si no sabes algo o requiere datos que no tienes, dilo con honestidad y sugiere dónde mirar.
-- No inventes datos clínicos ni precios; pídelos si hacen falta.`
+export const dynamic = "force-dynamic"
+export const maxDuration = 60
 
 export async function POST(req: Request) {
   try {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    const { context, errorResponse } = await requireAuth("clinic_admin")
+    if (errorResponse || !context) return errorResponse
 
     if (!isGroqConfigured()) {
       return NextResponse.json({
         reply:
-          "El asistente todavía no está conectado. Falta configurar la clave **GROQ_API_KEY** en el servidor (es gratis en groq.com). En cuanto la agregues, podré responderte aquí mismo. 🙂",
+          "El asistente todavía no está conectado. Falta configurar la clave **GROQ_API_KEY** en el servidor (es gratis en groq.com). En cuanto la agregues, podré agendar citas, buscar pacientes y más desde aquí. 🙂",
       })
     }
+
+    const supabase = createClient()
+    const { data: clinic } = await supabase.from("clinics").select("name").eq("id", context.clinicId).single()
 
     const body = await req.json().catch(() => ({}))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const incoming: any[] = Array.isArray(body?.messages) ? body.messages : []
-    // Conservamos los últimos ~12 mensajes para limitar tokens
-    const trimmed: ChatMessage[] = incoming.slice(-12).map((m) => ({
+    const normalized: ChatMessage[] = incoming.slice(-12).map((m) => ({
       role: m.role === "assistant" ? "assistant" : "user",
       content: String(m.content || "").slice(0, 4000),
     }))
 
-    const messages: ChatMessage[] = [{ role: "system", content: SYSTEM }, ...trimmed]
-    const out = await groqChat({ messages, temperature: 0.4 })
-    return NextResponse.json({ reply: out.content || "No pude generar una respuesta. Intenta de nuevo." })
-  } catch {
-    return NextResponse.json({
-      reply: "Ups, tuve un problema para responder. Intenta nuevamente en un momento.",
+    // El último mensaje del usuario es el texto nuevo; el resto es historial.
+    let userText = ""
+    const history: ChatMessage[] = []
+    for (let i = normalized.length - 1; i >= 0; i--) {
+      if (!userText && normalized[i].role === "user") {
+        userText = normalized[i].content || ""
+        history.unshift(...normalized.slice(0, i))
+        break
+      }
+    }
+    if (!userText) return NextResponse.json({ reply: "¿En qué te ayudo?" })
+
+    const reply = await runCopilotReply({
+      clinicId: context.clinicId,
+      clinicName: clinic?.name || "la clínica",
+      history,
+      userText,
     })
+    return NextResponse.json({ reply })
+  } catch (e) {
+    console.error("copilot error:", e)
+    return NextResponse.json({ reply: "Ups, tuve un problema para responder. Intenta nuevamente en un momento." })
   }
 }

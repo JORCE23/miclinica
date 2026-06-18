@@ -282,10 +282,23 @@ export function AiAgentView() {
       ) : (
         <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
           <Sparkles className="h-5 w-5 shrink-0 mt-0.5 text-amber-500" />
-          <p className="text-sm">
-            <span className="font-semibold">Modo prototipo.</span> Las conversaciones son de ejemplo y el bot responde con respuestas simuladas
-            basadas en el contexto del negocio. Cuando quieras, conectamos tu WhatsApp (UltraMsg) y la IA real que elijas abajo.
-          </p>
+          <div className="text-sm space-y-2">
+            <p>
+              <span className="font-semibold">Modo prototipo.</span> Las conversaciones son de ejemplo y el bot responde con respuestas simuladas
+              basadas en el contexto del negocio. Para activarlo de verdad: pon <code className="text-xs bg-amber-100 px-1 rounded">GROQ_API_KEY</code> + <code className="text-xs bg-amber-100 px-1 rounded">ULTRAMSG_INSTANCE_ID</code>/<code className="text-xs bg-amber-100 px-1 rounded">ULTRAMSG_TOKEN</code> en Vercel y registra esta URL de webhook en UltraMsg:
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <code className="text-xs font-mono bg-white border border-amber-200 rounded-lg px-2 py-1 break-all">
+                {(typeof window !== "undefined" ? window.location.origin : "https://TU-DOMINIO")}/api/whatsapp/webhook
+              </code>
+              <button
+                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/api/whatsapp/webhook`); }}
+                className="text-xs font-medium text-amber-700 hover:text-amber-900 underline"
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
