@@ -59,3 +59,32 @@ export async function groqChat(opts: {
     tool_calls: msg?.tool_calls,
   }
 }
+
+// Transcribe un audio (nota de voz de WhatsApp) a texto usando Whisper de Groq.
+// Devuelve el texto, o null si falla / no hay key.
+export async function transcribeAudioFromUrl(mediaUrl: string): Promise<string | null> {
+  const key = process.env.GROQ_API_KEY
+  if (!key || !mediaUrl) return null
+  try {
+    const audioRes = await fetch(mediaUrl)
+    if (!audioRes.ok) return null
+    const blob = await audioRes.blob()
+
+    const form = new FormData()
+    form.append("file", blob, "audio.ogg")
+    form.append("model", "whisper-large-v3-turbo")
+    form.append("language", "es")
+    form.append("response_format", "text")
+
+    const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}` },
+      body: form,
+    })
+    if (!res.ok) return null
+    const text = (await res.text()).trim()
+    return text || null
+  } catch {
+    return null
+  }
+}
