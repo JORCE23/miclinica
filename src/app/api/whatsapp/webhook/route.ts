@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { isGroqConfigured } from "@/lib/ai/groq"
+import { isGroqConfigured, transcribeAudioFromUrl } from "@/lib/ai/groq"
 import { runAgentReply, resolveClinic } from "@/lib/ai/agent"
 import {
   isUltramsgConfigured,
@@ -33,15 +33,27 @@ export async function POST(request: Request) {
   }
 
   const inbound = parseUltramsgWebhook(payload)
-  // Ignorar mensajes propios, vacíos o no-texto
-  if (!inbound || inbound.fromMe || !inbound.body || (inbound.type && inbound.type !== "chat")) {
+  if (!inbound || inbound.fromMe) {
     return NextResponse.json({ ok: true })
   }
 
-  // Si falta configuración, registramos y salimos sin error (modo no-conectado)
+  // Si falta configuración, salimos sin error (modo no-conectado)
   if (!isUltramsgConfigured() || !isGroqConfigured()) {
     return NextResponse.json({ ok: true, note: "whatsapp/groq no configurado" })
   }
+
+  // Determinar el texto del mensaje. Si es nota de voz/audio, transcribir con Whisper.
+  const isAudio = inbound.type === "ptt" || inbound.type === "audio"
+  let text = (inbound.body || "").trim()
+  if (!text && isAudio && inbound.media) {
+    text = (await transcribeAudioFromUrl(inbound.media)) || ""
+  }
+  // Ignorar si no hay texto utilizable, o si es otro tipo no soportado (imagen, sticker, etc.)
+  if (!text || (inbound.type && inbound.type !== "chat" && !isAudio)) {
+    return NextResponse.json({ ok: true })
+  }
+  // A partir de aquí trabajamos con el texto resuelto (transcrito si vino por audio)
+  inbound.body = isAudio ? `🎤 ${text}` : text
 
   const phone = normalizePhone(inbound.from)
   const admin = createAdminClient()

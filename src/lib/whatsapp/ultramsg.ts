@@ -33,6 +33,7 @@ export type UltramsgInbound = {
   pushname?: string
   fromMe?: boolean
   type?: string
+  media?: string
 }
 
 // Extrae el mensaje entrante del payload del webhook de UltraMsg.
@@ -48,5 +49,6 @@ export function parseUltramsgWebhook(payload: any): UltramsgInbound | null {
     pushname: d.pushname,
     fromMe: !!d.fromMe || !!d.self,
     type: d.type,
+    media: d.media || undefined, // URL del audio/imagen cuando aplica
   }
 }
