@@ -23,6 +23,12 @@ const day = (offset: number, h = 10, m = 0) => {
   return d
 }
 const pick = <T,>(arr: T[], i: number) => arr[i % arr.length]
+// Firma manuscrita simulada como dataURL (se renderiza como imagen en el consentimiento)
+const signatureSvg = (name: string) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="120"><rect width="100%" height="100%" fill="white"/><path d="M15 80 C 55 15, 85 110, 125 60 S 200 15, 245 70 S 290 95, 305 55" stroke="#162439" fill="none" stroke-width="3" stroke-linecap="round"/><text x="18" y="108" font-family="cursive" font-size="15" fill="#5b6472">${name}</text></svg>`
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`
+}
+const portrait = (g: string, n: number) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`
 
 // ── borra por completo una clínica demo previa (reset) ──────────────────────
 async function resetDemo(clinicId: string) {
@@ -30,6 +36,7 @@ async function resetDemo(clinicId: string) {
   const childTables = [
     "loyalty_transactions", "loyalty_accounts", "appointments",
     "medical_history", "allergies", "aesthetic_procedures_history",
+    "clinical_records", "treatment_simulations", "consents",
     "inventory_movements", "inventory_products", "cash_movements",
     "whatsapp_messages", "tasks", "collaborations", "clinic_schedules",
     "campaigns", "services", "professionals",
@@ -198,6 +205,15 @@ async function run(request: Request) {
         created_by: adminId,
       })
     }
+    // Reservas largas (más de media hora) visibles esta semana → bloque alto en la agenda
+    const longSvc = svc.find((s) => s.duration_minutes >= 60) || svc[0]
+    const midSvc = svc.find((s) => s.duration_minutes === 45) || longSvc
+    if (longSvc && patientIds[0]) {
+      apptRows.push(
+        { clinic_id: clinicId, patient_id: patientIds[0], service_id: longSvc.id, scheduled_at: day(0, 12, 0).toISOString(), duration_minutes: longSvc.duration_minutes, status: "confirmada", price: longSvc.price, created_by: adminId },
+        { clinic_id: clinicId, patient_id: patientIds[3], service_id: midSvc.id, scheduled_at: day(1, 16, 30).toISOString(), duration_minutes: midSvc.duration_minutes, status: "confirmada", price: midSvc.price, created_by: adminId },
+      )
+    }
     await admin.from("appointments").insert(apptRows)
 
     // 8a. Inventario
@@ -291,6 +307,104 @@ async function run(request: Request) {
       { clinic_id: clinicId, contact_phone: "+56955551234", contact_name: "Matías Vera", direction: "out", body: "El relleno de labios con ácido hialurónico tiene un valor de $250.000. Incluye control posterior. ¿Quieres reservar una evaluación?", ai_model: "llama-3.3-70b" },
     ])
 
+    // 8h. Ficha clínica (clinical_records) para los primeros pacientes
+    const fichas = patientIds.slice(0, 8).map((pid, i) => ({
+      clinic_id: clinicId, patient_id: pid,
+      antecedentes_morbidos: pick(["Sin antecedentes relevantes", "Hipertensión arterial controlada", "Hipotiroidismo en tratamiento", "Sin antecedentes"], i),
+      alergias: pick(["Niega alergias conocidas", "Penicilina (urticaria)", "Niega", "AINEs"], i),
+      antecedentes_quirurgicos: pick(["Apendicectomía (2015)", "Ninguno", "Cesárea (2019)", "Ninguno"], i),
+      procedimientos_previos: pick(["Botox frontal hace 8 meses", "Limpieza facial mensual", "Relleno labial (2023)", "Ninguno"], i),
+      medicamentos_diarios: pick(["Ninguno", "Losartán 50mg", "Levotiroxina 75mcg", "Anticonceptivo oral"], i),
+      patologia_dermica: pick(["Piel mixta, leve rosácea", "Piel seca", "Acné leve zona T", "Piel normal"], i),
+      problemas_coagulacion: "No",
+      herpes_labial: pick(["No", "Sí, ocasional", "No", "No"], i),
+      exposicion_solar: pick(["Moderada, usa FPS 50", "Alta, trabajo al aire libre", "Baja", "Moderada"], i),
+      tabaco: pick(["No", "Ocasional (fines de semana)", "No", "No"], i),
+      alcohol: pick(["Social", "No", "Social", "Ocasional"], i),
+      alimentacion: pick(["Balanceada", "Alta en azúcares", "Vegetariana", "Balanceada"], i),
+      consumo_agua: pick(["2 L al día", "1 L al día", "2.5 L al día", "1.5 L al día"], i),
+      actividad_fisica: pick(["3x por semana", "Sedentaria", "Yoga 2x semana", "Caminatas diarias"], i),
+      embarazo_lactancia: "No",
+      skincare_casa: pick(["Limpiador + FPS + retinol noche", "Solo agua micelar", "Vitamina C + FPS", "Limpiador + hidratante"], i),
+      evaluacion_facial: pick([
+        "Líneas de expresión frontales y periorbitarias. Volumen labial disminuido.",
+        "Flacidez leve del tercio inferior. Surcos nasogenianos marcados.",
+        "Deshidratación cutánea, poros dilatados en zona T.",
+        "Buen estado general de la piel, paciente en mantención.",
+      ], i),
+      tratamientos_recomendados: pick([
+        "Botox tercio superior + relleno labial",
+        "Bioestimulador + ácido hialurónico en surcos",
+        "Limpieza profunda + skinbooster",
+        "Mantención trimestral",
+      ], i),
+    }))
+    await admin.from("clinical_records").insert(fichas)
+
+    // 8i. Procedimientos con puntos faciales (frontal/perfil) y fotos antes/después
+    const procedures = [
+      {
+        patient: patientIds[0], procedure_name: "Toxina botulínica tercio superior",
+        performed_at: day(-30).toISOString().slice(0, 10), performed_by: "Dra. Camila Rojas",
+        notes: "Botox 20U distribuidas. Buena respuesta, sin eventos adversos.",
+        before_image_url: portrait("women", 21), after_image_url: portrait("women", 22),
+        facial_diagram_data: [
+          { id: "p1", x: 35, y: 22, treatment: "Botox", notes: "4 U", view: "front" },
+          { id: "p2", x: 50, y: 16, treatment: "Botox", notes: "6 U frontal", view: "front" },
+          { id: "p3", x: 65, y: 22, treatment: "Botox", notes: "4 U", view: "front" },
+          { id: "p4", x: 26, y: 34, treatment: "Botox", notes: "3 U patas de gallo", view: "front" },
+          { id: "p5", x: 74, y: 34, treatment: "Botox", notes: "3 U patas de gallo", view: "front" },
+          { id: "p6", x: 58, y: 30, treatment: "Botox", notes: "lateral", view: "profile" },
+        ],
+      },
+      {
+        patient: patientIds[2], procedure_name: "Relleno labial con ácido hialurónico",
+        performed_at: day(-15).toISOString().slice(0, 10), performed_by: "Dra. Camila Rojas",
+        notes: "1 ml Juvederm. Técnica de hidratación y definición del borde bermellón.",
+        before_image_url: portrait("women", 31), after_image_url: portrait("women", 32),
+        facial_diagram_data: [
+          { id: "q1", x: 42, y: 70, treatment: "Ácido hialurónico", notes: "0.5 ml", view: "front" },
+          { id: "q2", x: 58, y: 70, treatment: "Ácido hialurónico", notes: "0.5 ml", view: "front" },
+          { id: "q3", x: 55, y: 62, treatment: "Ácido hialurónico", notes: "definición borde", view: "profile" },
+        ],
+      },
+      {
+        patient: patientIds[4], procedure_name: "Bioestimulador de colágeno",
+        performed_at: day(-7).toISOString().slice(0, 10), performed_by: "Dr. Andrés Soto",
+        notes: "Sculptra 1 vial en tercio medio e inferior. Indicado masaje post-procedimiento.",
+        before_image_url: portrait("women", 41), after_image_url: portrait("women", 42),
+        facial_diagram_data: [
+          { id: "r1", x: 30, y: 50, treatment: "Bioestimulador", notes: "región malar", view: "front" },
+          { id: "r2", x: 70, y: 50, treatment: "Bioestimulador", notes: "región malar", view: "front" },
+          { id: "r3", x: 60, y: 62, treatment: "Bioestimulador", notes: "línea mandibular", view: "profile" },
+        ],
+      },
+    ]
+    await admin.from("aesthetic_procedures_history").insert(
+      procedures.map((p) => ({
+        clinic_id: clinicId, patient_id: p.patient, procedure_name: p.procedure_name,
+        performed_at: p.performed_at, performed_by: p.performed_by, notes: p.notes,
+        before_image_url: p.before_image_url, after_image_url: p.after_image_url,
+        facial_diagram_data: p.facial_diagram_data,
+      }))
+    )
+
+    // 8j. Simulaciones (fotos antes/después + plan)
+    await admin.from("treatment_simulations").insert([
+      { clinic_id: clinicId, patient_id: patientIds[0], title: "Armonización tercio superior", before_url: portrait("women", 21), after_url: portrait("women", 22), plan: "Botox preventivo cada 4-6 meses. Próxima sesión sugerida en 5 meses.", created_by: adminId },
+      { clinic_id: clinicId, patient_id: patientIds[2], title: "Proyección labial", before_url: portrait("women", 31), after_url: portrait("women", 32), plan: "Mantención de relleno labial cada 9-12 meses.", created_by: adminId },
+      { clinic_id: clinicId, patient_id: patientIds[4], title: "Lifting sin cirugía", before_url: portrait("women", 41), after_url: portrait("women", 42), plan: "2 sesiones de bioestimulador separadas por 30 días + skinbooster.", created_by: adminId },
+    ])
+
+    // 8k. Consentimientos firmados
+    const signedAt = (n: number) => day(-n).toISOString()
+    await admin.from("consents").insert([
+      { clinic_id: clinicId, patient_id: patientIds[0], title: "Consentimiento Toxina Botulínica", body: "El/la paciente declara haber sido informado/a sobre el procedimiento de aplicación de toxina botulínica, sus beneficios, riesgos y cuidados posteriores, y autoriza su realización.", signature: signatureSvg("Valentina Fuentes"), signed_at: signedAt(30), created_by: adminId },
+      { clinic_id: clinicId, patient_id: patientIds[2], title: "Consentimiento Ácido Hialurónico", body: "Declaro conocer los riesgos y cuidados del relleno con ácido hialurónico y autorizo el procedimiento.", signature: signatureSvg("Josefa Araya"), signed_at: signedAt(15), created_by: adminId },
+      { clinic_id: clinicId, patient_id: patientIds[4], title: "Consentimiento Bioestimulador", body: "Autorizo la aplicación de bioestimulador de colágeno habiendo sido informado/a de los cuidados post-procedimiento.", signature: signatureSvg("Florencia Muñoz"), signed_at: signedAt(7), created_by: adminId },
+      { clinic_id: clinicId, patient_id: patientIds[1], title: "Consentimiento Limpieza Facial", body: "Consentimiento informado para limpieza facial profunda.", signature: signatureSvg("Martín González"), signed_at: signedAt(3), created_by: adminId },
+    ])
+
     return NextResponse.json({
       success: true,
       message: "Clínica demo creada con datos.",
@@ -300,6 +414,8 @@ async function run(request: Request) {
       counts: {
         servicios: services.length, pacientes: patientIds.length,
         citas: apptRows.length, inventario: inventory.length, caja: cashRows.length,
+        fichas_clinicas: fichas.length, procedimientos: procedures.length,
+        simulaciones: 3, consentimientos: 4,
       },
     })
   } catch (error: any) {
