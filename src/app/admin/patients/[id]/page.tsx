@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
   ChevronLeft, Pencil, Calendar, Bell, ShieldAlert, ShieldCheck, HeartPulse,
-  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2,
+  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2, Sparkles,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -19,11 +19,13 @@ import { LoyaltyTab } from "@/components/admin/patients/tabs/LoyaltyTab"
 import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
 import { ClinicalRecordTab } from "@/components/admin/patients/tabs/ClinicalRecordTab"
 import { SimulationTab } from "@/components/admin/patients/tabs/SimulationTab"
+import { AiSummaryTab } from "@/components/admin/patients/tabs/AiSummaryTab"
 import { WhatsappButton } from "@/components/admin/WhatsappButton"
 import { MailButton } from "@/components/admin/MailButton"
 
 const TABS = [
   { value: "ficha", label: "Ficha Clínica", icon: ClipboardList },
+  { value: "ai-summary", label: "Resumen IA", icon: Sparkles },
   { value: "clinical", label: "Procedimientos", icon: Activity },
   { value: "medical", label: "Antecedentes", icon: HeartPulse },
   { value: "appointments", label: "Atenciones", icon: Calendar },
@@ -262,6 +264,10 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
 
           <TabsContent value="ficha" className="mt-0 outline-none">
             <ClinicalRecordTab patientId={patient.id} patientName={patient.full_name} />
+          </TabsContent>
+
+          <TabsContent value="ai-summary" className="mt-0 outline-none">
+            <AiSummaryTab patientId={patient.id} />
           </TabsContent>
 
           <TabsContent value="clinical" className="mt-0 outline-none">

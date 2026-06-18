@@ -71,3 +71,14 @@ CREATE POLICY "admin_manage_schedules" ON public.clinic_schedules FOR ALL USING 
 );
 DROP POLICY IF EXISTS "public_read_schedules" ON public.clinic_schedules;
 CREATE POLICY "public_read_schedules" ON public.clinic_schedules FOR SELECT USING (true);
+
+-- ─── 4) Resumen clínico IA + firma remota de consentimientos (Fase 3) ──
+ALTER TABLE public.clinical_records ADD COLUMN IF NOT EXISTS ai_summary    TEXT;
+ALTER TABLE public.clinical_records ADD COLUMN IF NOT EXISTS ai_summary_at TIMESTAMPTZ;
+
+ALTER TABLE public.consents ADD COLUMN IF NOT EXISTS sign_token        UUID;
+ALTER TABLE public.consents ADD COLUMN IF NOT EXISTS professional_id   UUID REFERENCES professionals(id);
+ALTER TABLE public.consents ADD COLUMN IF NOT EXISTS patient_email     TEXT;
+ALTER TABLE public.consents ADD COLUMN IF NOT EXISTS patient_phone     TEXT;
+ALTER TABLE public.consents ADD COLUMN IF NOT EXISTS signed_by_patient BOOLEAN DEFAULT false;
+CREATE INDEX IF NOT EXISTS idx_consents_sign_token ON public.consents (sign_token);

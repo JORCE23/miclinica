@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { createClient } from "@/lib/supabase/server"
 import { requireAuth } from "@/lib/security/auth-guard"
 
@@ -12,7 +13,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
   const supabase = createClient()
   const { data, error } = await supabase
     .from("consents")
-    .select("id, title, body, signature, signed_at, created_at")
+    .select("id, title, body, signature, signed_at, created_at, sign_token, signed_by_patient, professional_id, patient_email, patient_phone, professional:professionals(full_name)")
     .eq("clinic_id", context.clinicId)
     .eq("patient_id", params.id)
     .order("created_at", { ascending: false })
@@ -43,6 +44,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
       body: (body?.body || "").toString().slice(0, 8000) || null,
       signature,
       signed_at: signature ? new Date().toISOString() : null,
+      signed_by_patient: false,
+      professional_id: body?.professional_id || null,
+      patient_email: (body?.patient_email || "").toString().trim() || null,
+      patient_phone: (body?.patient_phone || "").toString().trim() || null,
+      sign_token: randomUUID(), // siempre, para poder enviar a firmar remotamente
       created_by: context.userId,
     })
     .select()
