@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { usePatients } from "@/hooks/usePatients"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -14,6 +15,7 @@ import { toast } from "sonner"
 
 export function PatientList() {
   const { data: patients, isLoading, error } = usePatients()
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [patientToDelete, setPatientToDelete] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -93,13 +95,17 @@ export function PatientList() {
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
                 {filteredPatients.map((patient) => (
-                  <tr key={patient.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <tr
+                    key={patient.id}
+                    onClick={() => router.push(`/admin/patients/${patient.id}`)}
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
+                  >
                     <td className="p-4 align-middle font-medium">{patient.full_name}</td>
                     <td className="p-4 align-middle">{patient.rut ? formatRut(patient.rut) : "-"}</td>
                     <td className="p-4 align-middle">{patient.phone || "-"}</td>
                     <td className="p-4 align-middle">{patient.email}</td>
                     <td className="p-4 align-middle text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                         <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
                             Ver Ficha <ExternalLink className="ml-2 h-4 w-4" />
                         </Button>

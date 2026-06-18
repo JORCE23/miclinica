@@ -20,6 +20,7 @@ import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
 import { ClinicalRecordTab } from "@/components/admin/patients/tabs/ClinicalRecordTab"
 import { SimulationTab } from "@/components/admin/patients/tabs/SimulationTab"
 import { WhatsappButton } from "@/components/admin/WhatsappButton"
+import { MailButton } from "@/components/admin/MailButton"
 
 const TABS = [
   { value: "ficha", label: "Ficha Clínica", icon: ClipboardList },
@@ -82,6 +83,15 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     },
   })
 
+  // Ficha clínica: para mostrar también su texto de antecedentes/alergias en el resumen
+  const { data: clinicalRecord } = useQuery<Record<string, string>>({
+    queryKey: ["clinical-record", params.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/patients/${params.id}/clinical-record`)
+      return res.ok ? res.json() : {}
+    },
+  })
+
   if (isLoading) return <div className="p-8 text-center text-slate-500">Cargando expediente clínico...</div>
   if (!patient) return <div className="p-8 text-center text-red-500 font-bold">Paciente no encontrado</div>
 
@@ -92,6 +102,11 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     { icon: Mail, label: "Email", value: patient.email || "—" },
     { icon: Activity, label: "Estado", value: patient.is_active ? "Activo" : "Inactivo" },
   ]
+
+  // Texto de la ficha clínica que se refleja en el resumen
+  const recAlergias = (clinicalRecord?.alergias || "").trim()
+  const recAntecedentes = (clinicalRecord?.antecedentes_morbidos || "").trim()
+  const hasAllergy = allergies.length > 0 || !!recAlergias
 
   return (
     <div className="pb-10 space-y-5">
@@ -122,6 +137,12 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                 <WhatsappButton
                   phone={patient.phone}
                   message={`Hola ${patient.full_name.split(" ")[0]}, te saludamos de la clínica 👋`}
+                  size="default"
+                />
+                <MailButton
+                  email={patient.email}
+                  subject={`Clínica · ${patient.full_name}`}
+                  body={`Hola ${patient.full_name.split(" ")[0]},\n\n`}
                   size="default"
                 />
                 <Button variant="outline" onClick={() => goToTab("administrative")} className="rounded-xl">
@@ -175,12 +196,12 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           </div>
 
           {/* Alergias (alerta de seguridad) */}
-          <div className={`rounded-2xl border p-4 ${allergies.length ? "border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30" : "border-emerald-200 bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/30"}`}>
-            <div className={`flex items-center gap-2 mb-2 ${allergies.length ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
-              {allergies.length ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+          <div className={`rounded-2xl border p-4 ${hasAllergy ? "border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30" : "border-emerald-200 bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/30"}`}>
+            <div className={`flex items-center gap-2 mb-2 ${hasAllergy ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+              {hasAllergy ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
               <h3 className="font-semibold text-sm">Alergias {allergies.length ? `(${allergies.length})` : ""}</h3>
             </div>
-            {allergies.length ? (
+            {allergies.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {allergies.slice(0, 6).map((a, i) => (
                   <span key={i} className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
@@ -188,7 +209,11 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                   </span>
                 ))}
               </div>
-            ) : (
+            )}
+            {recAlergias && (
+              <p className="text-sm text-red-800/80 dark:text-red-300/80 leading-relaxed mt-1.5 whitespace-pre-wrap">{recAlergias}</p>
+            )}
+            {!hasAllergy && (
               <p className="text-sm text-emerald-800/80 dark:text-emerald-300/80">Sin alergias registradas.</p>
             )}
           </div>
@@ -199,7 +224,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
               <HeartPulse className="h-4 w-4 text-brand" />
               <h3 className="font-semibold text-sm">Antecedentes {medicalHistory.length ? `(${medicalHistory.length})` : ""}</h3>
             </div>
-            {medicalHistory.length ? (
+            {medicalHistory.length > 0 && (
               <ul className="space-y-1 text-sm text-muted-foreground">
                 {medicalHistory.slice(0, 3).map((m, i) => (
                   <li key={i} className="truncate">• {m.condition}</li>
@@ -208,7 +233,11 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                   <li><button onClick={() => goToTab("medical")} className="text-brand text-xs font-medium hover:underline">Ver todos →</button></li>
                 )}
               </ul>
-            ) : (
+            )}
+            {recAntecedentes && (
+              <p className="text-sm text-muted-foreground leading-relaxed mt-1.5 whitespace-pre-wrap">{recAntecedentes}</p>
+            )}
+            {medicalHistory.length === 0 && !recAntecedentes && (
               <p className="text-sm text-muted-foreground">Sin antecedentes registrados.</p>
             )}
           </div>
