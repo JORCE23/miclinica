@@ -27,6 +27,7 @@ export const serviceSchema = z.object({
 
   // Nuevos campos del Libro Maestro de Procedimientos
   category: z.string().trim().optional(),
+  section: z.string().trim().optional(),
   service_code: z.string().trim().optional(),
   zones: z.array(z.string()).optional(),
   reference_products: z.array(z.string()).optional(),

@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     const rawBody = await request.json()
     const body = sanitizeInput(rawBody)
 
-    const { name, description, duration_minutes, price, loyalty_points_earned, is_active } = body
+    const { name, description, category, section, duration_minutes, price, loyalty_points_earned, is_active } = body
 
     if (!name || !duration_minutes) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
@@ -74,6 +74,8 @@ export async function POST(request: Request) {
         clinic_id: context!.clinicId,
         name,
         description: description || null,
+        category: category || null,
+        section: section || null,
         duration_minutes: Number(duration_minutes),
         price: price ? Number(price) : null,
         loyalty_points_earned: Number(loyalty_points_earned) || 0,

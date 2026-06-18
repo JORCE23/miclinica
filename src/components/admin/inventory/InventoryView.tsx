@@ -31,10 +31,17 @@ const emptyForm = {
   name: "", category: "", sku: "", unit: "unidad", stock: "0", min_stock: "5", cost: "", supplier: "", notes: "",
 }
 
+export const INVENTORY_CATEGORIES = [
+  "Toxinas", "Ácidos", "Bioestimuladores", "Mesoterapia", "Revitalizantes", "Guantes",
+  "Insumos blancos", "Jeringas", "Agujas", "Anestesias", "Barbijos", "Kofi",
+  "Cubre camilla", "Alcoholes", "Sueros", "Aguas estériles", "Quemadores de grasa",
+]
+
 export function InventoryView() {
   const qc = useQueryClient()
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<"todos" | "bajo" | "agotado">("todos")
+  const [categoryFilter, setCategoryFilter] = useState<string>("todas")
 
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
@@ -74,6 +81,8 @@ export function InventoryView() {
   const outCount = products.filter(outOf).length
   const totalValue = products.reduce((acc, p) => acc + p.stock * (p.cost || 0), 0)
 
+  const presentCategories = Array.from(new Set(products.map((p) => p.category || "Sin categoría"))).sort()
+
   const filtered = products
     .filter((p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -81,6 +90,7 @@ export function InventoryView() {
       (p.sku || "").toLowerCase().includes(search.toLowerCase())
     )
     .filter((p) => (filter === "bajo" ? lowOf(p) : filter === "agotado" ? outOf(p) : true))
+    .filter((p) => categoryFilter === "todas" || (p.category || "Sin categoría") === categoryFilter)
 
   // --- acciones ---
   const openCreate = () => { setEditing(null); setForm({ ...emptyForm }); setShowForm(true) }
@@ -245,6 +255,16 @@ export function InventoryView() {
         </div>
       </div>
 
+      {/* Navegación por categoría */}
+      {presentCategories.length > 0 && (
+        <div className="flex gap-1.5 overflow-x-auto sidebar-scroll pb-1">
+          <button onClick={() => setCategoryFilter("todas")} className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${categoryFilter === "todas" ? "bg-brand text-white border-brand" : "text-muted-foreground border-border hover:text-foreground hover:border-brand/40"}`}>Todas</button>
+          {presentCategories.map((c) => (
+            <button key={c} onClick={() => setCategoryFilter(c)} className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${categoryFilter === c ? "bg-brand text-white border-brand" : "text-muted-foreground border-border hover:text-foreground hover:border-brand/40"}`}>{c}</button>
+          ))}
+        </div>
+      )}
+
       {/* Tabla / lista */}
       <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
         {isLoading ? (
@@ -348,7 +368,10 @@ export function InventoryView() {
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} placeholder="Ej. Ácido Hialurónico 1ml" />
               </Field>
               <Field label="Categoría">
-                <input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputCls} placeholder="Rellenos, Insumos..." />
+                <input list="inv-categories" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputCls} placeholder="Toxinas, Ácidos, Jeringas..." />
+                <datalist id="inv-categories">
+                  {INVENTORY_CATEGORIES.map((c) => <option key={c} value={c} />)}
+                </datalist>
               </Field>
               <Field label="SKU / Código">
                 <input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} className={inputCls} />
