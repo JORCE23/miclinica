@@ -14,7 +14,7 @@ export async function GET() {
 
     const { data: clinic, error } = await supabase
       .from("clinics")
-      .select("id, name, slug, address, phone, email")
+      .select("id, name, slug, address, phone, email, legal_name, tax_id, billing_plan")
       .eq("id", profile.clinic_id)
       .single()
 
@@ -38,15 +38,20 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json()
-    const { name, address, phone, email } = body
+    const { name, address, phone, email, legal_name, tax_id, billing_plan } = body
 
     if (!name) {
       return NextResponse.json({ error: "El nombre de la clínica es obligatorio" }, { status: 400 })
     }
 
+    const updateData: Record<string, unknown> = { name, address, phone, email }
+    if (legal_name !== undefined) updateData.legal_name = legal_name || null
+    if (tax_id !== undefined) updateData.tax_id = tax_id || null
+    if (billing_plan !== undefined) updateData.billing_plan = billing_plan || null
+
     const { data: clinic, error } = await supabase
       .from("clinics")
-      .update({ name, address, phone, email })
+      .update(updateData)
       .eq("id", profile.clinic_id)
       .select()
       .single()
