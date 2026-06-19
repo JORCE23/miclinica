@@ -60,18 +60,13 @@ export async function groqChat(opts: {
   }
 }
 
-// Transcribe un audio (nota de voz de WhatsApp) a texto usando Whisper de Groq.
-// Devuelve el texto, o null si falla / no hay key.
-export async function transcribeAudioFromUrl(mediaUrl: string): Promise<string | null> {
+// Transcribe un audio (Blob/File) a texto usando Whisper de Groq. Devuelve el texto o null.
+export async function transcribeAudio(file: Blob, filename = "audio.webm"): Promise<string | null> {
   const key = process.env.GROQ_API_KEY
-  if (!key || !mediaUrl) return null
+  if (!key) return null
   try {
-    const audioRes = await fetch(mediaUrl)
-    if (!audioRes.ok) return null
-    const blob = await audioRes.blob()
-
     const form = new FormData()
-    form.append("file", blob, "audio.ogg")
+    form.append("file", file, filename)
     form.append("model", "whisper-large-v3-turbo")
     form.append("language", "es")
     form.append("response_format", "text")
@@ -82,8 +77,19 @@ export async function transcribeAudioFromUrl(mediaUrl: string): Promise<string |
       body: form,
     })
     if (!res.ok) return null
-    const text = (await res.text()).trim()
-    return text || null
+    return (await res.text()).trim() || null
+  } catch {
+    return null
+  }
+}
+
+// Descarga un audio desde una URL (nota de voz de WhatsApp) y lo transcribe.
+export async function transcribeAudioFromUrl(mediaUrl: string): Promise<string | null> {
+  if (!mediaUrl) return null
+  try {
+    const audioRes = await fetch(mediaUrl)
+    if (!audioRes.ok) return null
+    return transcribeAudio(await audioRes.blob(), "audio.ogg")
   } catch {
     return null
   }
