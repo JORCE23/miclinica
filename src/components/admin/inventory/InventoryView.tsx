@@ -11,6 +11,7 @@ import {
   Minus, Layers, X, Save, TrendingDown, CalendarClock, History,
 } from "lucide-react"
 import { BatchesDialog } from "./BatchesDialog"
+import { InvoiceImport } from "./InvoiceImport"
 
 type Product = {
   id: string
@@ -183,6 +184,7 @@ export function InventoryView() {
         <Button variant="outline" render={<Link href="/admin/inventory/movements" />} className="rounded-xl">
           <History className="h-4 w-4 mr-2" /> Historial
         </Button>
+        <InvoiceImport onImported={refresh} />
         <Button onClick={openCreate} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
           <Plus className="h-4 w-4 mr-2" /> Nuevo Producto
         </Button>
