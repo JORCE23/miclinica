@@ -52,6 +52,7 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mvRef = useRef<any>(null)
   const [selected, setSelected] = useState<string | null>(null)
+  const [error, setError] = useState(false)
 
   const addPointAt = (clientX: number, clientY: number) => {
     if (disabled) return
@@ -89,16 +90,29 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
               <span className="text-xs">Cargando visor 3D…</span>
             </div>
           )}
+          {ready && error && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground gap-2 z-10 px-4 text-center">
+              <span className="text-xs">No se pudo cargar el modelo 3D. Verifica tu conexión o vuelve a intentar.</span>
+            </div>
+          )}
           {ready && (
             <model-viewer
               ref={mvRef}
               src={MODEL_URL}
               camera-controls={true}
               touch-action="pan-y"
-              shadow-intensity="1"
-              exposure="1.1"
+              environment-image="neutral"
+              exposure="1.15"
+              shadow-intensity="0.6"
+              camera-orbit="0deg 90deg 100%"
+              loading="eager"
+              reveal="auto"
+              auto-rotate={true}
+              auto-rotate-delay="0"
               interaction-prompt="none"
               style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
+              onError={() => setError(true)}
+              onLoad={() => setError(false)}
               onClick={(e: React.MouseEvent) => addPointAt(e.clientX, e.clientY)}
             >
               {points.map((p, i) => (
