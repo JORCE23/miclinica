@@ -13,8 +13,8 @@ export interface DiagramPoint3D {
   notes: string
 }
 
-// Modelo 3D genérico (placeholder). Reemplázalo por una cabeza mejor dejando
-// otro archivo en public/models/face.glb — no hace falta tocar el código.
+// Modelo 3D genérico (placeholder). Reemplázalo dejando otro archivo en
+// public/models/face.glb (sin compresión meshopt/draco) — sin tocar código.
 const MODEL_URL = "/models/face.glb"
 const MV_SCRIPT = "https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
 
@@ -33,7 +33,6 @@ function useModelViewerScript() {
     }
     const check = () => { if (window.customElements?.get("model-viewer")) setReady(true) }
     s.addEventListener("load", check)
-    // Por si el módulo ya terminó de ejecutarse
     const t = setInterval(check, 300)
     const stop = setTimeout(() => clearInterval(t), 8000)
     return () => { clearInterval(t); clearTimeout(stop); s?.removeEventListener("load", check) }
@@ -54,23 +53,42 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
   const [selected, setSelected] = useState<string | null>(null)
   const [error, setError] = useState(false)
 
-  const addPointAt = (clientX: number, clientY: number) => {
-    if (disabled) return
+  // Refs para tener siempre el estado más reciente dentro de los listeners nativos
+  const pointsRef = useRef(points); pointsRef.current = points
+  const onChangeRef = useRef(onChange); onChangeRef.current = onChange
+  const disabledRef = useRef(disabled); disabledRef.current = disabled
+
+  // Colocar puntos: distingue "tap" (marcar) de "arrastrar" (girar la cámara)
+  useEffect(() => {
     const mv = mvRef.current
-    if (!mv?.positionAndNormalFromPoint) return
-    const rect = mv.getBoundingClientRect()
-    const hit = mv.positionAndNormalFromPoint(clientX - rect.left, clientY - rect.top)
-    if (!hit) return // se hizo clic fuera del rostro
-    const np: DiagramPoint3D = {
-      id: Math.random().toString(36).slice(2, 8),
-      position: hit.position.toString(),
-      normal: hit.normal.toString(),
-      treatment: "Botox",
-      notes: "",
+    if (!mv || !ready) return
+    let downX = 0, downY = 0
+    const onDown = (e: PointerEvent) => { downX = e.clientX; downY = e.clientY }
+    const onUp = (e: PointerEvent) => {
+      if (disabledRef.current) return
+      // Si arrastró (giró la cámara), no marcamos punto
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6) return
+      // Si tocó un punto existente, no creamos otro
+      const target = e.target as HTMLElement
+      if (target?.closest?.('[slot^="hotspot-"]')) return
+      if (!mv.positionAndNormalFromPoint) return
+      const rect = mv.getBoundingClientRect()
+      const hit = mv.positionAndNormalFromPoint(e.clientX - rect.left, e.clientY - rect.top)
+      if (!hit) return // tocó fuera del rostro
+      const np: DiagramPoint3D = {
+        id: Math.random().toString(36).slice(2, 8),
+        position: hit.position.toString(),
+        normal: hit.normal.toString(),
+        treatment: "Botox",
+        notes: "",
+      }
+      onChangeRef.current([...pointsRef.current, np])
+      setSelected(np.id)
     }
-    onChange([...points, np])
-    setSelected(np.id)
-  }
+    mv.addEventListener("pointerdown", onDown)
+    mv.addEventListener("pointerup", onUp)
+    return () => { mv.removeEventListener("pointerdown", onDown); mv.removeEventListener("pointerup", onUp) }
+  }, [ready])
 
   const update = (id: string, patch: Partial<DiagramPoint3D>) =>
     onChange(points.map((p) => (p.id === id ? { ...p, ...patch } : p)))
@@ -91,8 +109,8 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
             </div>
           )}
           {ready && error && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground gap-2 z-10 px-4 text-center">
-              <span className="text-xs">No se pudo cargar el modelo 3D. Verifica tu conexión o vuelve a intentar.</span>
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground gap-2 z-10 px-4 text-center">
+              <span className="text-xs">No se pudo cargar el modelo 3D.</span>
             </div>
           )}
           {ready && (
@@ -100,20 +118,17 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
               ref={mvRef}
               src={MODEL_URL}
               camera-controls={true}
-              touch-action="pan-y"
+              touch-action="none"
               environment-image="neutral"
               exposure="1.15"
               shadow-intensity="0.6"
               camera-orbit="0deg 90deg 100%"
               loading="eager"
               reveal="auto"
-              auto-rotate={true}
-              auto-rotate-delay="0"
               interaction-prompt="none"
               style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
               onError={() => setError(true)}
               onLoad={() => setError(false)}
-              onClick={(e: React.MouseEvent) => addPointAt(e.clientX, e.clientY)}
             >
               {points.map((p, i) => (
                 <button
@@ -135,7 +150,7 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
         </div>
         <p className="text-xs text-muted-foreground text-center mt-3 flex items-center justify-center gap-1.5">
           <Rotate3d className="h-3.5 w-3.5" />
-          {disabled ? "Arrastra para girar el rostro." : "Arrastra para girar · haz clic en el rostro para marcar un punto."}
+          {disabled ? "Arrastra para girar el rostro." : "Arrastra para girar · toca el rostro para marcar un punto."}
         </p>
       </div>
 
@@ -146,7 +161,7 @@ export function Face3DDiagram({ points, onChange, disabled }: Props) {
         </h4>
         {points.length === 0 ? (
           <div className="flex-1 flex items-center justify-center border-2 border-dashed rounded-xl p-8 text-center text-muted-foreground text-sm">
-            {disabled ? "Sin puntos marcados." : "Gira la cara y haz clic para marcar puntos."}
+            {disabled ? "Sin puntos marcados." : "Gira la cara y toca para marcar puntos."}
           </div>
         ) : (
           <div className="space-y-3 overflow-y-auto pr-2 flex-1 max-h-[500px]">
