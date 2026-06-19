@@ -102,3 +102,41 @@ export async function transcribeAudioFromUrl(mediaUrl: string): Promise<string |
     return null
   }
 }
+
+// Lee una imagen (ej. una factura) con un modelo de visión de Groq y devuelve texto/JSON.
+export async function groqVision(opts: {
+  imageDataUrl: string
+  prompt: string
+  model?: string
+  temperature?: number
+  jsonObject?: boolean
+}): Promise<string> {
+  const key = process.env.GROQ_API_KEY
+  if (!key) throw new Error("GROQ_API_KEY no configurada")
+  const model = opts.model || process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct"
+
+  const res = await fetch(GROQ_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    body: JSON.stringify({
+      model,
+      temperature: opts.temperature ?? 0.1,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: opts.prompt },
+            { type: "image_url", image_url: { url: opts.imageDataUrl } },
+          ],
+        },
+      ],
+      ...(opts.jsonObject ? { response_format: { type: "json_object" } } : {}),
+    }),
+  })
+  if (!res.ok) {
+    const t = await res.text().catch(() => "")
+    throw new Error(`Groq vision ${res.status}: ${t.slice(0, 300)}`)
+  }
+  const data = await res.json()
+  return data?.choices?.[0]?.message?.content || ""
+}
