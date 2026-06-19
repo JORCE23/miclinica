@@ -24,7 +24,11 @@ import { format } from "date-fns"
 import { toast } from "sonner"
 import { Plus, Image as ImageIcon, Loader2, Activity } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
-import { FacialDiagram, type DiagramPoint } from "./FacialDiagram"
+import { FacialDiagram } from "./FacialDiagram"
+import { Face3DDiagram, type DiagramPoint3D } from "./Face3DDiagram"
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const is3D = (data: any) => Array.isArray(data) && data[0] && typeof data[0] === "object" && "position" in data[0]
 
 export function ProceduresTab({ patientId }: { patientId: string }) {
   const queryClient = useQueryClient()
@@ -38,7 +42,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
   const [notes, setNotes] = useState("")
   const [beforeFile, setBeforeFile] = useState<File | null>(null)
   const [afterFile, setAfterFile] = useState<File | null>(null)
-  const [diagramPoints, setDiagramPoints] = useState<DiagramPoint[]>([])
+  const [diagramPoints, setDiagramPoints] = useState<DiagramPoint3D[]>([])
   const [showDiagram, setShowDiagram] = useState(false)
 
   const { data: procedures, isLoading } = useQuery({
@@ -165,13 +169,13 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Esquema Facial Interactivo</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Esquema Facial 3D Interactivo</label>
               <Button type="button" variant="outline" size="sm" onClick={() => setShowDiagram(!showDiagram)}>
-                {showDiagram ? "Ocultar Esquema" : "Mostrar Esquema"}
+                {showDiagram ? "Ocultar Esquema" : "Mostrar Esquema 3D"}
               </Button>
             </div>
             {showDiagram && (
-              <FacialDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />
+              <Face3DDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />
             )}
           </div>
 
@@ -255,7 +259,11 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                               <DialogTitle>Esquema Facial del Tratamiento</DialogTitle>
                             </DialogHeader>
                             <div className="mt-4">
-                              <FacialDiagram points={proc.facial_diagram_data} onChange={() => {}} disabled />
+                              {is3D(proc.facial_diagram_data) ? (
+                                <Face3DDiagram points={proc.facial_diagram_data} onChange={() => {}} disabled />
+                              ) : (
+                                <FacialDiagram points={proc.facial_diagram_data} onChange={() => {}} disabled />
+                              )}
                             </div>
                           </DialogContent>
                         </Dialog>
