@@ -119,6 +119,8 @@ type AgentContext = {
   admin: Admin
   clinicId: string
   clinicName: string
+  clinicAddress?: string | null
+  clinicPhone?: string | null
   phone: string
   pushname?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -165,7 +167,43 @@ function buildTools(): ToolDef[] {
         },
       },
     },
+    {
+      type: "function",
+      function: { name: "my_appointments", description: "Muestra las próximas citas del contacto actual (este mismo paciente de WhatsApp).", parameters: { type: "object", properties: {} } },
+    },
+    {
+      type: "function",
+      function: {
+        name: "cancel_my_appointment",
+        description: "Cancela una cita futura del contacto actual. Si tiene varias, indica la fecha.",
+        parameters: { type: "object", properties: { date: { type: "string", description: "YYYY-MM-DD de la cita a cancelar (opcional)" } } },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "reschedule_my_appointment",
+        description: "Cambia la fecha/hora de la próxima cita del contacto actual. Verifica disponibilidad antes.",
+        parameters: { type: "object", properties: { datetime_iso: { type: "string", description: "Nueva fecha y hora ISO 8601" }, date: { type: "string", description: "YYYY-MM-DD de la cita a mover (opcional)" } }, required: ["datetime_iso"] },
+      },
+    },
   ]
+}
+
+// Busca el paciente por teléfono (solo lectura) y sus citas futuras.
+async function findPatientByPhone(admin: Admin, clinicId: string, phone: string) {
+  const { data } = await admin.from("profiles").select("id, full_name").eq("clinic_id", clinicId).eq("phone", phone).eq("role", "client").maybeSingle()
+  return data || null
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function upcomingByPhone(admin: Admin, clinicId: string, patientId: string, dateStr?: string): Promise<any[]> {
+  let q = admin.from("appointments").select("id, scheduled_at, status, service:services(name)").eq("clinic_id", clinicId).eq("patient_id", patientId).neq("status", "cancelada").gte("scheduled_at", new Date().toISOString()).order("scheduled_at")
+  if (dateStr) {
+    const d = new Date(dateStr + "T00:00:00")
+    if (!isNaN(d.getTime())) q = q.gte("scheduled_at", startOfDay(d).toISOString()).lte("scheduled_at", endOfDay(d).toISOString())
+  }
+  const { data } = await q
+  return data || []
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -226,6 +264,37 @@ async function executeTool(name: string, args: any, ctx: AgentContext): Promise<
     })
   }
 
+  if (name === "my_appointments") {
+    const patient = await findPatientByPhone(ctx.admin, ctx.clinicId, ctx.phone)
+    if (!patient) return JSON.stringify({ citas: [] })
+    const appts = await upcomingByPhone(ctx.admin, ctx.clinicId, patient.id)
+    return JSON.stringify({ citas: appts.map((a: { scheduled_at: string; status: string; service?: { name?: string } }) => ({ fecha: format(new Date(a.scheduled_at), "dd/MM/yyyy HH:mm"), servicio: a.service?.name || "—", estado: a.status })) })
+  }
+
+  if (name === "cancel_my_appointment") {
+    const patient = await findPatientByPhone(ctx.admin, ctx.clinicId, ctx.phone)
+    if (!patient) return JSON.stringify({ ok: false, error: "No encuentro citas asociadas a este número." })
+    const appts = await upcomingByPhone(ctx.admin, ctx.clinicId, patient.id, args?.date)
+    if (!appts.length) return JSON.stringify({ ok: false, error: "No tienes citas futuras." })
+    if (appts.length > 1) return JSON.stringify({ ok: false, varias: appts.map((a: { scheduled_at: string }) => format(new Date(a.scheduled_at), "dd/MM HH:mm")), mensaje: "Tienes varias citas; indícame la fecha de la que quieres cancelar." })
+    const { error } = await ctx.admin.from("appointments").update({ status: "cancelada" }).eq("id", appts[0].id)
+    if (error) return JSON.stringify({ ok: false, error: "No se pudo cancelar." })
+    return JSON.stringify({ ok: true, mensaje: `Tu cita del ${format(new Date(appts[0].scheduled_at), "dd/MM HH:mm")} fue cancelada.` })
+  }
+
+  if (name === "reschedule_my_appointment") {
+    const when = new Date(args?.datetime_iso)
+    if (isNaN(when.getTime()) || isBefore(when, new Date())) return JSON.stringify({ ok: false, error: "Fecha/hora inválida o en el pasado." })
+    const patient = await findPatientByPhone(ctx.admin, ctx.clinicId, ctx.phone)
+    if (!patient) return JSON.stringify({ ok: false, error: "No encuentro citas asociadas a este número." })
+    const appts = await upcomingByPhone(ctx.admin, ctx.clinicId, patient.id, args?.date)
+    if (!appts.length) return JSON.stringify({ ok: false, error: "No tienes citas futuras." })
+    if (appts.length > 1) return JSON.stringify({ ok: false, varias: appts.map((a: { scheduled_at: string }) => format(new Date(a.scheduled_at), "dd/MM HH:mm")), mensaje: "Tienes varias citas; indícame cuál (fecha)." })
+    const { error } = await ctx.admin.from("appointments").update({ scheduled_at: when.toISOString() }).eq("id", appts[0].id)
+    if (error) return JSON.stringify({ ok: false, error: "No se pudo reagendar." })
+    return JSON.stringify({ ok: true, mensaje: `Tu cita quedó reagendada para el ${format(when, "dd/MM/yyyy HH:mm")}.` })
+  }
+
   return JSON.stringify({ error: "herramienta desconocida" })
 }
 
@@ -240,15 +309,19 @@ Responde SIEMPRE en español, de forma cálida, breve y profesional. Puedes usar
 
 Servicios disponibles:
 ${serviceList || "(consulta con list_services)"}
+${ctx.clinicAddress ? `Dirección: ${ctx.clinicAddress}` : ""}
+${ctx.clinicPhone ? `Teléfono: ${ctx.clinicPhone}` : ""}
 
-Tus capacidades:
-- Informar precios, duración, horarios y ubicación.
-- Consultar disponibilidad real con la herramienta check_availability antes de proponer horas.
-- Agendar citas con book_appointment SOLO después de confirmar el servicio y la fecha/hora con la persona.
+Tus capacidades (usa las herramientas):
+- Informar precios, duración, ubicación y horarios.
+- Consultar disponibilidad real (check_availability) antes de proponer horas.
+- Agendar citas (book_appointment) tras confirmar servicio y fecha/hora.
+- Mostrar las citas del paciente (my_appointments), cancelarlas (cancel_my_appointment) o reagendarlas (reschedule_my_appointment).
 Reglas:
 - No inventes horarios ni precios: usa las herramientas.
-- Si la persona quiere agendar, primero confirma servicio y horario, verifica disponibilidad y luego agenda.
-- El horario de atención es de 09:00 a 18:00. Sé honesto si algo no está disponible.`
+- Para agendar, confirma servicio y horario, verifica disponibilidad y luego agenda.
+- Para cancelar/reagendar, si la persona tiene varias citas, pregunta cuál (por fecha).
+- Sé honesto si algo no está disponible.`
 }
 
 // Ejecuta el agente: recibe el historial y el mensaje nuevo, devuelve la respuesta de texto.
@@ -262,11 +335,16 @@ export async function runAgentReply(opts: {
   temperature?: number
 }): Promise<string> {
   const admin = createAdminClient()
-  const services = await getActiveServices(admin, opts.clinic.id)
+  const [services, { data: clinicInfo }] = await Promise.all([
+    getActiveServices(admin, opts.clinic.id),
+    admin.from("clinics").select("address, phone").eq("id", opts.clinic.id).maybeSingle(),
+  ])
   const ctx: AgentContext = {
     admin,
     clinicId: opts.clinic.id,
     clinicName: opts.clinic.name,
+    clinicAddress: clinicInfo?.address,
+    clinicPhone: clinicInfo?.phone,
     phone: opts.phone,
     pushname: opts.pushname,
     services,
