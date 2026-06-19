@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Sparkles, X, Send, Bot } from "lucide-react"
+import { Sparkles, X, Send, Bot, Mic, Square, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Msg = { role: "user" | "assistant"; content: string }
@@ -22,8 +22,12 @@ export function Copilot() {
   const [messages, setMessages] = useState<Msg[]>([WELCOME])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+  const [recording, setRecording] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
@@ -52,6 +56,44 @@ export function Copilot() {
       setMessages((m) => [...m, { role: "assistant", content: "No pude conectar. Intenta de nuevo." }])
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Grabación de voz → transcripción (Whisper/Groq) → texto en el input
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mr = new MediaRecorder(stream)
+      chunksRef.current = []
+      mr.ondataavailable = (e) => { if (e.data.size) chunksRef.current.push(e.data) }
+      mr.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop())
+        const blob = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" })
+        if (!blob.size) return
+        setTranscribing(true)
+        try {
+          const fd = new FormData()
+          fd.append("file", blob, "audio.webm")
+          const r = await fetch("/api/transcribe", { method: "POST", body: fd })
+          const d = await r.json()
+          if (r.ok && d.text) setInput((prev) => (prev ? prev.trim() + " " : "") + d.text)
+        } catch { /* noop */ }
+        finally { setTranscribing(false); setTimeout(() => inputRef.current?.focus(), 50) }
+      }
+      recorderRef.current = mr
+      mr.start()
+      setRecording(true)
+    } catch {
+      alert("No se pudo acceder al micrófono. Revisa los permisos del navegador.")
+    }
+  }
+
+  const toggleMic = () => {
+    if (recording) {
+      recorderRef.current?.stop()
+      setRecording(false)
+    } else {
+      startRecording()
     }
   }
 
@@ -139,9 +181,20 @@ export function Copilot() {
                   }
                 }}
                 rows={1}
-                placeholder="Escribe tu pregunta…"
+                placeholder={recording ? "Grabando… toca el cuadrado para terminar" : transcribing ? "Transcribiendo tu audio…" : "Escribe o usa el micrófono…"}
                 className="flex-1 resize-none max-h-28 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none transition-all focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/15"
               />
+              <button
+                onClick={toggleMic}
+                disabled={transcribing || loading}
+                className={cn(
+                  "h-10 w-10 shrink-0 rounded-xl flex items-center justify-center transition-colors disabled:opacity-40 disabled:pointer-events-none",
+                  recording ? "bg-red-500 text-white hover:bg-red-600 animate-pulse" : "border border-border text-muted-foreground hover:text-brand hover:border-brand/40"
+                )}
+                title={recording ? "Detener y transcribir" : "Hablar"}
+              >
+                {transcribing ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : recording ? <Square className="h-[16px] w-[16px]" /> : <Mic className="h-[18px] w-[18px]" />}
+              </button>
               <button
                 onClick={() => send(input)}
                 disabled={loading || !input.trim()}
