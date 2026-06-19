@@ -50,7 +50,13 @@ export async function POST(req: Request) {
     })
     return NextResponse.json({ reply })
   } catch (e) {
-    console.error("copilot error:", e)
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error("copilot error:", msg)
+    if (/429|rate|quota|saturad/i.test(msg)) {
+      return NextResponse.json({
+        reply: "El asistente está recibiendo muchas solicitudes en este momento (límite del plan gratuito de Groq). Espera unos segundos e inténtalo de nuevo. 🙏",
+      })
+    }
     return NextResponse.json({ reply: "Ups, tuve un problema para responder. Intenta nuevamente en un momento." })
   }
 }

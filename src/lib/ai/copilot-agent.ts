@@ -187,8 +187,11 @@ async function executeTool(name: string, args: any, ctx: Ctx): Promise<string> {
 
 function buildSystemPrompt(ctx: Ctx): string {
   const nowStr = format(new Date(), "yyyy-MM-dd HH:mm (EEEE)")
-  const servicios = ctx.services.map((s) => `- ${s.name} (${s.duration_minutes} min, $${s.price ?? "—"})`).join("\n")
-  const profes = ctx.professionals.map((p) => `- ${p.full_name}${p.specialty ? ` (${p.specialty})` : ""}`).join("\n")
+  // Limitar el listado en el prompt para no saturar tokens; el resto se consulta con la herramienta.
+  const shownServices = ctx.services.slice(0, 30)
+  const servicios = shownServices.map((s) => `- ${s.name} (${s.duration_minutes} min, $${s.price ?? "—"})`).join("\n")
+    + (ctx.services.length > shownServices.length ? `\n(…y ${ctx.services.length - shownServices.length} más; usa listar_servicios para el catálogo completo)` : "")
+  const profes = ctx.professionals.slice(0, 20).map((p) => `- ${p.full_name}${p.specialty ? ` (${p.specialty})` : ""}`).join("\n")
   return `Eres "Copilot", el asistente interno del equipo de la clínica estética "${ctx.clinicName}".
 Fecha y hora actual: ${nowStr} (Chile).
 Ayudas al personal a operar la clínica y PUEDES EJECUTAR ACCIONES con las herramientas: buscar pacientes, listar citas del día, crear pacientes y agendar citas.
