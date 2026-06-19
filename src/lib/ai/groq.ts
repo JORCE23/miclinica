@@ -32,24 +32,32 @@ export async function groqChat(opts: {
   const key = process.env.GROQ_API_KEY
   if (!key) throw new Error("GROQ_API_KEY no configurada")
 
-  const res = await fetch(GROQ_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
-    body: JSON.stringify({
-      model: opts.model || DEFAULT_GROQ_MODEL,
-      temperature: opts.temperature ?? 0.5,
-      messages: opts.messages,
-      ...(opts.tools && opts.tools.length ? { tools: opts.tools, tool_choice: "auto" } : {}),
-    }),
+  const payload = JSON.stringify({
+    model: opts.model || DEFAULT_GROQ_MODEL,
+    temperature: opts.temperature ?? 0.5,
+    messages: opts.messages,
+    ...(opts.tools && opts.tools.length ? { tools: opts.tools, tool_choice: "auto" } : {}),
   })
 
-  if (!res.ok) {
+  // Hasta 3 intentos: reintenta ante saturación (429) o errores de servidor (5xx)
+  let res: Response | null = null
+  let lastErr = ""
+  for (let attempt = 0; attempt < 3; attempt++) {
+    res = await fetch(GROQ_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: payload,
+    })
+    if (res.ok) break
     const txt = await res.text().catch(() => "")
-    throw new Error(`Groq error ${res.status}: ${txt.slice(0, 300)}`)
+    lastErr = `Groq error ${res.status}: ${txt.slice(0, 300)}`
+    const retriable = res.status === 429 || res.status >= 500
+    if (!retriable || attempt === 2) throw new Error(lastErr)
+    // Respeta Retry-After si viene; si no, backoff corto
+    const retryAfter = Number(res.headers.get("retry-after")) || 0
+    await new Promise((r) => setTimeout(r, retryAfter ? retryAfter * 1000 : 1200 * (attempt + 1)))
   }
+  if (!res || !res.ok) throw new Error(lastErr || "Groq error")
 
   const data = await res.json()
   const msg = data?.choices?.[0]?.message
