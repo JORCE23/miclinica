@@ -9,14 +9,17 @@ export interface SpinPoint {
   id: string
   x: number // % horizontal dentro del visor
   y: number // % vertical
-  t: number // segundo/ángulo del video donde se marcó
+  t: number // ángulo normalizado 0..1 (posición en la vuelta)
   treatment: string
   notes: string
 }
 
-const VIDEO_URL = "/models/face360.mp4"
-// Qué tan cerca del ángulo marcado se muestra un punto (fracción de la vuelta completa).
-const ANGLE_WINDOW = 0.15
+const FRAME_BASE = "/models/face360"
+const FRAME_COUNT = 90
+// Qué tan cerca del ángulo marcado se muestra un punto (fracción de la vuelta).
+const ANGLE_WINDOW = 0.13
+
+const frameUrl = (i: number) => `${FRAME_BASE}/f_${String(((i % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT + 1).padStart(3, "0")}.jpg`
 
 interface Props {
   points: SpinPoint[]
@@ -25,44 +28,45 @@ interface Props {
 }
 
 export function Face360Spin({ points, onChange, disabled }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
-  const [duration, setDuration] = useState(0)
-  const [curT, setCurT] = useState(0)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [frame, setFrame] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
 
+  const frameRef = useRef(0)
   const pointsRef = useRef(points); pointsRef.current = points
   const onChangeRef = useRef(onChange); onChangeRef.current = onChange
   const disabledRef = useRef(disabled); disabledRef.current = disabled
 
+  // Precargar todos los fotogramas (para que el giro sea instantáneo)
   useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    const onMeta = () => { setDuration(v.duration || 0); v.pause() }
-    if (v.readyState >= 1) onMeta()
-    v.addEventListener("loadedmetadata", onMeta)
-    return () => v.removeEventListener("loadedmetadata", onMeta)
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      const im = new Image()
+      im.src = frameUrl(i)
+    }
   }, [])
 
   // Arrastrar = girar · tocar (sin arrastrar) = marcar punto
   useEffect(() => {
     const wrap = wrapRef.current
-    const v = videoRef.current
-    if (!wrap || !v || !duration) return
-    let dragging = false, startX = 0, startTime = 0, moved = 0
+    if (!wrap) return
+    let dragging = false, startX = 0, startFrame = 0, moved = 0
+    const setF = (idx: number) => {
+      const i = ((idx % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT
+      frameRef.current = i
+      if (imgRef.current) imgRef.current.src = frameUrl(i) // cambio directo = fluido
+      setFrame(i)
+    }
     const onDown = (e: PointerEvent) => {
-      dragging = true; startX = e.clientX; startTime = v.currentTime || 0; moved = 0
+      dragging = true; startX = e.clientX; startFrame = frameRef.current; moved = 0
       try { wrap.setPointerCapture(e.pointerId) } catch { /* noop */ }
     }
     const onMove = (e: PointerEvent) => {
       if (!dragging) return
       const dx = e.clientX - startX
       moved = Math.max(moved, Math.abs(dx))
-      const frac = dx / wrap.clientWidth // ancho completo ≈ una vuelta
-      let t = (startTime + frac * duration) % duration
-      if (t < 0) t += duration
-      v.currentTime = t
-      setCurT(t)
+      const idx = Math.round(startFrame + (dx / wrap.clientWidth) * FRAME_COUNT)
+      setF(idx)
     }
     const onUp = (e: PointerEvent) => {
       if (!dragging) return
@@ -72,7 +76,7 @@ export function Face360Spin({ points, onChange, disabled }: Props) {
         const x = ((e.clientX - rect.left) / rect.width) * 100
         const y = ((e.clientY - rect.top) / rect.height) * 100
         if (x < 0 || x > 100 || y < 0 || y > 100) return
-        const np: SpinPoint = { id: Math.random().toString(36).slice(2, 8), x, y, t: v.currentTime || 0, treatment: "Botox", notes: "" }
+        const np: SpinPoint = { id: Math.random().toString(36).slice(2, 8), x, y, t: frameRef.current / FRAME_COUNT, treatment: "Botox", notes: "" }
         onChangeRef.current([...pointsRef.current, np])
         setSelected(np.id)
       }
@@ -85,7 +89,7 @@ export function Face360Spin({ points, onChange, disabled }: Props) {
       wrap.removeEventListener("pointermove", onMove)
       wrap.removeEventListener("pointerup", onUp)
     }
-  }, [duration])
+  }, [])
 
   const update = (id: string, patch: Partial<SpinPoint>) =>
     onChange(points.map((p) => (p.id === id ? { ...p, ...patch } : p)))
@@ -94,15 +98,17 @@ export function Face360Spin({ points, onChange, disabled }: Props) {
     if (selected === id) setSelected(null)
   }
   const goToAngle = (t: number) => {
-    const v = videoRef.current
-    if (v) { v.currentTime = t; setCurT(t) }
+    const i = Math.round(t * FRAME_COUNT) % FRAME_COUNT
+    frameRef.current = i
+    if (imgRef.current) imgRef.current.src = frameUrl(i)
+    setFrame(i)
   }
 
+  const curFrac = frame / FRAME_COUNT
   const near = (t: number) => {
-    if (!duration) return true
-    let d = Math.abs(curT - t)
-    d = Math.min(d, duration - d) // circular
-    return d <= duration * ANGLE_WINDOW
+    let d = Math.abs(curFrac - t)
+    d = Math.min(d, 1 - d) // circular
+    return d <= ANGLE_WINDOW
   }
 
   return (
@@ -114,8 +120,8 @@ export function Face360Spin({ points, onChange, disabled }: Props) {
           className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border select-none cursor-ew-resize"
           style={{ touchAction: "none" }}
         >
-          <video ref={videoRef} src={VIDEO_URL} muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-contain pointer-events-none" />
-          {/* Puntos visibles según el ángulo actual */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img ref={imgRef} src={frameUrl(0)} alt="Rostro 360°" draggable={false} className="absolute inset-0 w-full h-full object-contain pointer-events-none" />
           {points.map((p, i) => near(p.t) && (
             <button
               key={p.id}
