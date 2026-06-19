@@ -1,14 +1,14 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Sparkles, X, Send, Bot, Mic, Square, Loader2 } from "lucide-react"
+import { Sparkles, X, Send, Bot, Mic, Square, Loader2, Volume2, VolumeX } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
 const WELCOME: Msg = {
   role: "assistant",
-  content: "¡Hola! Soy tu Copilot ✨. Puedo ayudarte a usar Medique, redactar mensajes para pacientes o resolver dudas. ¿En qué te ayudo?",
+  content: "¡Hola! Soy tu Copilot ✨. Puedo ayudarte a usar Medique, agendar citas, buscar pacientes o redactar mensajes. Escríbeme o háblame con el micrófono.",
 }
 
 const SUGGESTIONS = [
@@ -24,10 +24,14 @@ export function Copilot() {
   const [loading, setLoading] = useState(false)
   const [recording, setRecording] = useState(false)
   const [transcribing, setTranscribing] = useState(false)
+  const [voiceMode, setVoiceMode] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const recorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
+  const voiceModeRef = useRef(false)
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
@@ -36,6 +40,33 @@ export function Copilot() {
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 150)
   }, [open])
+
+  // Mantener el modo voz en un ref (para callbacks) y precargar las voces del navegador
+  useEffect(() => {
+    voiceModeRef.current = voiceMode
+    if (!voiceMode && typeof window !== "undefined") window.speechSynthesis?.cancel()
+  }, [voiceMode])
+
+  useEffect(() => {
+    if (typeof window !== "undefined") window.speechSynthesis?.getVoices()
+    return () => { if (typeof window !== "undefined") window.speechSynthesis?.cancel() }
+  }, [])
+
+  // El Copilot lee en voz alta su respuesta (español)
+  const speak = (text: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+    const u = new SpeechSynthesisUtterance(text.replace(/[*_#`]/g, ""))
+    u.lang = "es-ES"
+    const voices = window.speechSynthesis.getVoices()
+    const esVoice = voices.find((v) => v.lang?.toLowerCase().startsWith("es"))
+    if (esVoice) u.voice = esVoice
+    u.rate = 1.05
+    u.onstart = () => setSpeaking(true)
+    u.onend = () => setSpeaking(false)
+    u.onerror = () => setSpeaking(false)
+    window.speechSynthesis.speak(u)
+  }
 
   const send = async (text: string) => {
     const content = text.trim()
@@ -51,7 +82,9 @@ export function Copilot() {
         body: JSON.stringify({ messages: next.filter((m) => m !== WELCOME) }),
       })
       const data = await res.json()
-      setMessages((m) => [...m, { role: "assistant", content: data.reply || "…" }])
+      const reply = data.reply || "…"
+      setMessages((m) => [...m, { role: "assistant", content: reply }])
+      if (voiceModeRef.current) speak(reply)
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "No pude conectar. Intenta de nuevo." }])
     } finally {
@@ -59,7 +92,7 @@ export function Copilot() {
     }
   }
 
-  // Grabación de voz → transcripción (Whisper/Groq) → texto en el input
+  // Grabación de voz → transcripción (Whisper/Groq)
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -76,9 +109,12 @@ export function Copilot() {
           fd.append("file", blob, "audio.webm")
           const r = await fetch("/api/transcribe", { method: "POST", body: fd })
           const d = await r.json()
-          if (r.ok && d.text) setInput((prev) => (prev ? prev.trim() + " " : "") + d.text)
+          if (r.ok && d.text) {
+            if (voiceModeRef.current) send(d.text)               // modo voz: envía solo
+            else setInput((prev) => (prev ? prev.trim() + " " : "") + d.text)  // si no, lo deja para revisar
+          }
         } catch { /* noop */ }
-        finally { setTranscribing(false); setTimeout(() => inputRef.current?.focus(), 50) }
+        finally { setTranscribing(false); if (!voiceModeRef.current) setTimeout(() => inputRef.current?.focus(), 50) }
       }
       recorderRef.current = mr
       mr.start()
@@ -93,6 +129,7 @@ export function Copilot() {
       recorderRef.current?.stop()
       setRecording(false)
     } else {
+      if (typeof window !== "undefined") window.speechSynthesis?.cancel()
       startRecording()
     }
   }
@@ -109,9 +146,16 @@ export function Copilot() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold leading-tight">Copilot</p>
-              <p className="text-[11px] text-white/60 leading-tight">Asistente de Medique</p>
+              <p className="text-[11px] text-white/60 leading-tight">{speaking ? "Hablando…" : voiceMode ? "Modo voz activo" : "Asistente de Medique"}</p>
             </div>
-            <button onClick={() => setOpen(false)} className="h-8 w-8 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors" title="Cerrar">
+            <button
+              onClick={() => setVoiceMode((v) => !v)}
+              className={cn("h-8 w-8 rounded-lg flex items-center justify-center transition-colors", voiceMode ? "bg-white/20 text-white" : "text-white/70 hover:text-white hover:bg-white/10")}
+              title={voiceMode ? "Desactivar modo voz" : "Activar modo voz (te responde hablando)"}
+            >
+              {voiceMode ? <Volume2 className="h-[18px] w-[18px]" /> : <VolumeX className="h-[18px] w-[18px]" />}
+            </button>
+            <button onClick={() => { setOpen(false); window.speechSynthesis?.cancel() }} className="h-8 w-8 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors" title="Cerrar">
               <X className="h-[18px] w-[18px]" />
             </button>
           </div>
@@ -181,7 +225,7 @@ export function Copilot() {
                   }
                 }}
                 rows={1}
-                placeholder={recording ? "Grabando… toca el cuadrado para terminar" : transcribing ? "Transcribiendo tu audio…" : "Escribe o usa el micrófono…"}
+                placeholder={recording ? "Grabando… toca ■ para enviar" : transcribing ? "Transcribiendo…" : voiceMode ? "Habla con el micrófono…" : "Escribe o usa el micrófono…"}
                 className="flex-1 resize-none max-h-28 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none transition-all focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/15"
               />
               <button
@@ -191,7 +235,7 @@ export function Copilot() {
                   "h-10 w-10 shrink-0 rounded-xl flex items-center justify-center transition-colors disabled:opacity-40 disabled:pointer-events-none",
                   recording ? "bg-red-500 text-white hover:bg-red-600 animate-pulse" : "border border-border text-muted-foreground hover:text-brand hover:border-brand/40"
                 )}
-                title={recording ? "Detener y transcribir" : "Hablar"}
+                title={recording ? "Detener y enviar" : "Hablar"}
               >
                 {transcribing ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : recording ? <Square className="h-[16px] w-[16px]" /> : <Mic className="h-[18px] w-[18px]" />}
               </button>
@@ -204,7 +248,9 @@ export function Copilot() {
                 <Send className="h-[18px] w-[18px]" />
               </button>
             </div>
-            <p className="text-[10px] text-muted-foreground/70 mt-1.5 text-center">El Copilot puede equivocarse. Verifica la información importante.</p>
+            <p className="text-[10px] text-muted-foreground/70 mt-1.5 text-center">
+              {voiceMode ? "Modo voz: hablas y el Copilot te responde en voz alta." : "El Copilot puede equivocarse. Verifica la información importante."}
+            </p>
           </div>
         </div>
       )}
