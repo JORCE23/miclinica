@@ -8,22 +8,30 @@ import { ScanLine, X, Trash2, Sparkles, Loader2, Plus } from "lucide-react"
 
 type Item = { name: string; quantity: number; unit_cost: number; category: string; include: boolean }
 
-// Reduce la imagen para enviarla rápido y dentro de los límites de la IA
+// Escala un canvas a un dataURL JPEG dentro de los límites de la IA
+function scaleCanvasToDataUrl(canvas: HTMLCanvasElement, maxDim = 1600, quality = 0.85): string {
+  const { width, height } = canvas
+  if (width > maxDim || height > maxDim) {
+    const s = maxDim / Math.max(width, height)
+    const out = document.createElement("canvas")
+    out.width = Math.round(width * s); out.height = Math.round(height * s)
+    out.getContext("2d")!.drawImage(canvas, 0, 0, out.width, out.height)
+    return out.toDataURL("image/jpeg", quality)
+  }
+  return canvas.toDataURL("image/jpeg", quality)
+}
+
+// Imagen → dataURL reducido
 function resizeImage(file: File, maxDim = 1400, quality = 0.85): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => {
       const img = new Image()
       img.onload = () => {
-        let { width, height } = img
-        if (width > maxDim || height > maxDim) {
-          const s = maxDim / Math.max(width, height)
-          width = Math.round(width * s); height = Math.round(height * s)
-        }
         const canvas = document.createElement("canvas")
-        canvas.width = width; canvas.height = height
-        canvas.getContext("2d")!.drawImage(img, 0, 0, width, height)
-        resolve(canvas.toDataURL("image/jpeg", quality))
+        canvas.width = img.width; canvas.height = img.height
+        canvas.getContext("2d")!.drawImage(img, 0, 0)
+        resolve(scaleCanvasToDataUrl(canvas, maxDim, quality))
       }
       img.onerror = reject
       img.src = reader.result as string
@@ -33,6 +41,35 @@ function resizeImage(file: File, maxDim = 1400, quality = 0.85): Promise<string>
   })
 }
 
+// PDF → imagen (renderiza hasta 3 páginas y las une verticalmente)
+async function renderPdfToImage(file: File): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pdfjs: any = await import("pdfjs-dist")
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+  const data = new Uint8Array(await file.arrayBuffer())
+  const pdf = await pdfjs.getDocument({ data }).promise
+  const n = Math.min(pdf.numPages, 3)
+  const canvases: HTMLCanvasElement[] = []
+  for (let i = 1; i <= n; i++) {
+    const page = await pdf.getPage(i)
+    const viewport = page.getViewport({ scale: 1.6 })
+    const c = document.createElement("canvas")
+    c.width = viewport.width; c.height = viewport.height
+    const ctx = c.getContext("2d")!
+    await page.render({ canvasContext: ctx, viewport, canvas: c }).promise
+    canvases.push(c)
+  }
+  const width = Math.max(...canvases.map((c) => c.width))
+  const height = canvases.reduce((s, c) => s + c.height, 0)
+  const out = document.createElement("canvas")
+  out.width = width; out.height = height
+  const octx = out.getContext("2d")!
+  octx.fillStyle = "#fff"; octx.fillRect(0, 0, width, height)
+  let y = 0
+  for (const c of canvases) { octx.drawImage(c, 0, y); y += c.height }
+  return scaleCanvasToDataUrl(out, 1700, 0.85)
+}
+
 export function InvoiceImport({ onImported }: { onImported: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
@@ -40,6 +77,7 @@ export function InvoiceImport({ onImported }: { onImported: () => void }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null)
   const [reading, setReading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [converting, setConverting] = useState(false)
   const [items, setItems] = useState<Item[] | null>(null)
   const [proveedor, setProveedor] = useState<string | null>(null)
 
@@ -48,10 +86,16 @@ export function InvoiceImport({ onImported }: { onImported: () => void }) {
 
   const onPick = async (file?: File | null) => {
     if (!file) return
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+    setConverting(true)
     try {
-      const url = await resizeImage(file)
+      const url = isPdf ? await renderPdfToImage(file) : await resizeImage(file)
       setDataUrl(url); setPreview(url); setItems(null)
-    } catch { toast.error("No se pudo leer la imagen") }
+    } catch {
+      toast.error(isPdf ? "No se pudo procesar el PDF" : "No se pudo leer la imagen")
+    } finally {
+      setConverting(false)
+    }
   }
 
   const readInvoice = async () => {
@@ -109,9 +153,13 @@ export function InvoiceImport({ onImported }: { onImported: () => void }) {
 
             {!items ? (
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">Sube o toma una foto de la factura/boleta. La IA leerá los productos, cantidades y precios para agregarlos al inventario.</p>
-                <input ref={fileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => onPick(e.target.files?.[0])} />
-                {preview ? (
+                <p className="text-sm text-muted-foreground">Sube una <b>foto</b> o un <b>PDF</b> de la factura/boleta. La IA leerá los productos, cantidades y precios para agregarlos al inventario.</p>
+                <input ref={fileRef} type="file" accept="application/pdf,image/*" className="hidden" onChange={(e) => onPick(e.target.files?.[0])} />
+                {converting ? (
+                  <div className="w-full border-2 border-dashed border-border rounded-xl p-10 text-center text-muted-foreground flex flex-col items-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin" /> Procesando archivo…
+                  </div>
+                ) : preview ? (
                   <div className="relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={preview} alt="Factura" className="max-h-72 w-full object-contain rounded-xl border bg-muted/30" />
@@ -120,12 +168,12 @@ export function InvoiceImport({ onImported }: { onImported: () => void }) {
                 ) : (
                   <button onClick={() => fileRef.current?.click()} className="w-full border-2 border-dashed border-border rounded-xl p-10 text-center text-muted-foreground hover:border-brand/40 hover:text-foreground transition-colors">
                     <ScanLine className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    Toca para subir o tomar una foto de la factura
+                    Toca para subir una <b>foto</b> o un <b>PDF</b> de la factura
                   </button>
                 )}
                 <div className="flex justify-end gap-2">
                   <Button variant="ghost" onClick={close}>Cancelar</Button>
-                  <Button onClick={readInvoice} disabled={!dataUrl || reading} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+                  <Button onClick={readInvoice} disabled={!dataUrl || reading || converting} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
                     {reading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Leyendo…</> : <><Sparkles className="h-4 w-4 mr-2" /> Leer factura</>}
                   </Button>
                 </div>
