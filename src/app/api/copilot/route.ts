@@ -45,6 +45,7 @@ export async function POST(req: Request) {
     const reply = await runCopilotReply({
       clinicId: context.clinicId,
       clinicName: clinic?.name || "la clínica",
+      userId: context.userId,
       history,
       userText,
     })
