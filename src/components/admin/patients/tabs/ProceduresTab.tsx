@@ -26,9 +26,12 @@ import { Plus, Image as ImageIcon, Loader2, Activity } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { FacialDiagram } from "./FacialDiagram"
 import { Face3DDiagram } from "./Face3DDiagram"
+import { Face360Spin } from "./Face360Spin"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const is3D = (data: any) => Array.isArray(data) && data[0] && typeof data[0] === "object" && "position" in data[0]
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isSpin = (data: any) => Array.isArray(data) && data[0] && typeof data[0] === "object" && "t" in data[0]
 
 export function ProceduresTab({ patientId }: { patientId: string }) {
   const queryClient = useQueryClient()
@@ -44,7 +47,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
   const [afterFile, setAfterFile] = useState<File | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [diagramPoints, setDiagramPoints] = useState<any[]>([])
-  const [diagramMode, setDiagramMode] = useState<"2d" | "3d">("2d")
+  const [diagramMode, setDiagramMode] = useState<"2d" | "3d" | "360">("2d")
   const [showDiagram, setShowDiagram] = useState(false)
 
   const { data: procedures, isLoading } = useQuery({
@@ -178,13 +181,21 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
             </div>
             {showDiagram && (
               <div className="space-y-3">
-                <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted/40">
-                  <button type="button" onClick={() => { if (diagramMode !== "2d") { setDiagramMode("2d"); setDiagramPoints([]) } }} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${diagramMode === "2d" ? "bg-brand text-white" : "text-muted-foreground hover:text-foreground"}`}>Músculos (2D)</button>
-                  <button type="button" onClick={() => { if (diagramMode !== "3d") { setDiagramMode("3d"); setDiagramPoints([]) } }} className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${diagramMode === "3d" ? "bg-brand text-white" : "text-muted-foreground hover:text-foreground"}`}>Cabeza 3D</button>
+                <div className="inline-flex flex-wrap rounded-lg border border-border p-0.5 bg-muted/40 gap-0.5">
+                  {([["2d", "Músculos (2D)"], ["3d", "Cabeza 3D"], ["360", "Video 360°"]] as const).map(([mode, label]) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => { if (diagramMode !== mode) { setDiagramMode(mode); setDiagramPoints([]) } }}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${diagramMode === mode ? "bg-brand text-white" : "text-muted-foreground hover:text-foreground"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
-                {diagramMode === "2d"
-                  ? <FacialDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />
-                  : <Face3DDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
+                {diagramMode === "2d" && <FacialDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
+                {diagramMode === "3d" && <Face3DDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
+                {diagramMode === "360" && <Face360Spin points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
               </div>
             )}
           </div>
@@ -269,7 +280,9 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                               <DialogTitle>Esquema Facial del Tratamiento</DialogTitle>
                             </DialogHeader>
                             <div className="mt-4">
-                              {is3D(proc.facial_diagram_data) ? (
+                              {isSpin(proc.facial_diagram_data) ? (
+                                <Face360Spin points={proc.facial_diagram_data} onChange={() => {}} disabled />
+                              ) : is3D(proc.facial_diagram_data) ? (
                                 <Face3DDiagram points={proc.facial_diagram_data} onChange={() => {}} disabled />
                               ) : (
                                 <FacialDiagram points={proc.facial_diagram_data} onChange={() => {}} disabled />
