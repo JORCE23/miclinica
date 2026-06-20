@@ -59,14 +59,14 @@ export function DashboardStats() {
       title: "Citas Hoy",
       value: stats.todayAppointments,
       icon: Calendar,
-      tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+      tint: "bg-brand/10 text-brand",
       description: "Agendadas para hoy",
     },
     {
       title: "Nuevos Pacientes",
       value: stats.newPatientsThisMonth,
       icon: UserPlus,
-      tint: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400",
+      tint: "bg-brand/10 text-brand",
       description: "Añadidos este mes",
     },
     {
@@ -257,7 +257,7 @@ export function DashboardStats() {
                   </Link>
 
                   <Link href="/admin/loyalty" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
-                    <div className="h-10 w-10 rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center">
                       <Star className="h-4 w-4" />
                     </div>
                     <div>
