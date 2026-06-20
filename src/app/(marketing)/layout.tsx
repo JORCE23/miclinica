@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { MarketingNav } from "@/components/marketing/MarketingNav"
 
 /**
  * Layout del sitio público (marketing). Nav superior + footer.
@@ -8,31 +9,7 @@ import type { ReactNode } from "react"
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md">
-        <nav className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-medique-simbolo.png" alt="" className="h-8 w-8 object-contain" />
-            <span className="font-display text-2xl font-semibold text-brand-dark tracking-tight">Medique</span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
-            <Link href="/#funciones" className="hover:text-foreground transition-colors">Funciones</Link>
-            <Link href="/#verticales" className="hover:text-foreground transition-colors">Para tu clínica</Link>
-            <Link href="/planes" className="hover:text-foreground transition-colors">Planes</Link>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/login" className="hidden sm:inline-flex h-9 items-center px-3 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              Iniciar sesión
-            </Link>
-            <Link href="/crear-cuenta" className="inline-flex h-9 items-center px-4 rounded-xl text-sm font-semibold bg-brand text-white hover:bg-brand-dark shadow-soft transition-colors">
-              Prueba gratis
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <MarketingNav />
 
       <main className="flex-1">{children}</main>
 

@@ -355,3 +355,123 @@
     margin: 14mm;
   }
 }
+
+/* ============================================================
+   EFECTOS DEL SITIO PÚBLICO (marketing) — look premium "wow"
+   ============================================================ */
+
+/* Aurora animada (mesh de gradientes en movimiento) */
+.aurora-bg { position: absolute; inset: 0; overflow: hidden; }
+.aurora-bg::before,
+.aurora-bg::after {
+  content: "";
+  position: absolute;
+  width: 60vw; height: 60vw;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.aurora-bg::before {
+  background: radial-gradient(circle at 30% 30%, #5BA3CE, transparent 60%);
+  top: -10%; left: -10%;
+  animation: aurora1 18s ease-in-out infinite;
+}
+.aurora-bg::after {
+  background: radial-gradient(circle at 70% 70%, #2E7FB0, transparent 60%);
+  bottom: -15%; right: -10%;
+  animation: aurora2 22s ease-in-out infinite;
+}
+@keyframes aurora1 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(12%, 8%) scale(1.15); }
+}
+@keyframes aurora2 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-10%, -6%) scale(1.1); }
+}
+
+/* Texto con gradiente animado (shine) */
+.text-shine {
+  background: linear-gradient(100deg, #2E7FB0, #5BA3CE 30%, #DCEAF4 50%, #5BA3CE 70%, #2E7FB0);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+@keyframes shine { to { background-position: 200% center; } }
+
+/* Marquee infinito */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Máscara de desvanecido lateral (bordes del marquee) */
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Borde con gradiente (tarjetas premium) */
+.gradient-border {
+  position: relative;
+  background-clip: padding-box;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(91,163,206,.7), rgba(46,127,176,.15) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Resplandor suave bajo botones/tarjetas */
+.glow-soft { box-shadow: 0 10px 40px -12px rgba(46,127,176,.55); }
+.glow-strong { box-shadow: 0 20px 60px -15px rgba(46,127,176,.7); }
+
+/* Brillo que cruza (sheen) en hover de tarjetas */
+.sheen { position: relative; overflow: hidden; }
+.sheen::after {
+  content: "";
+  position: absolute; top: 0; left: -120%;
+  width: 60%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-20deg);
+  transition: left .7s ease;
+}
+.sheen:hover::after { left: 140%; }
+
+/* Pulso de anillo (badges/indicadores live) */
+.pulse-dot { position: relative; }
+.pulse-dot::before {
+  content:""; position:absolute; inset:0; border-radius:9999px;
+  background: currentColor; opacity:.5;
+  animation: pulsering 2s ease-out infinite;
+}
+@keyframes pulsering {
+  0% { transform: scale(1); opacity:.5; }
+  100% { transform: scale(2.6); opacity:0; }
+}
+
+/* Float con leve rotación para mockups */
+.animate-float-tilt { animation: floatTilt 7s ease-in-out infinite; }
+@keyframes floatTilt {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-1deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-bg::before, .aurora-bg::after, .text-shine, .marquee-track,
+  .animate-float, .animate-float-slow, .animate-float-tilt, .pulse-dot::before {
+    animation: none !important;
+  }
+}
