@@ -80,7 +80,7 @@ type Analysis = {
   metrics: Metric[]
   harmony: number
   recs: string[]
-  lines: { t1y: number; t2y: number; topY: number; botY: number }
+  lines: { t1y: number; t2y: number; topY: number; botY: number; fifths: number[] }
 }
 
 function aureoCompute(lm: LM[], W: number, H: number): Analysis {
@@ -133,7 +133,12 @@ function aureoCompute(lm: LM[], W: number, H: number): Analysis {
   if (symmetry < 0.9) recs.push("Asimetría de expresión: la toxina botulínica puede equilibrar la musculatura.")
   if (!recs.length) recs.push("Proporciones dentro de rangos armónicos. Mantención y prevención.")
 
-  return { metrics, harmony, recs, lines: { t1y: glabella.y / H, t2y: subnasale.y / H, topY: trichion.y / H, botY: menton.y / H } }
+  // quintos verticales: bordes de cara + cantos externos/internos de ojos (orden por x)
+  const fifths = [P(234).x, P(33).x, P(133).x, P(362).x, P(263).x, P(454).x]
+    .map((x) => x / W)
+    .sort((a, b) => a - b)
+
+  return { metrics, harmony, recs, lines: { t1y: glabella.y / H, t2y: subnasale.y / H, topY: trichion.y / H, botY: menton.y / H, fifths } }
 }
 
 /* ───────────────────────── Máscara de Marquardt (φ) ───────────────────────── */
@@ -333,10 +338,14 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
               <img src={photo} alt="Rostro en reposo" className="absolute inset-0 h-full w-full object-contain" />
               {thirds && analysis && (
                 <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  {/* Tercios horizontales */}
                   {[analysis.lines.topY, analysis.lines.t1y, analysis.lines.t2y, analysis.lines.botY].map((y, i) => (
-                    <line key={i} x1="6" x2="94" y1={y * 100} y2={y * 100} stroke="#54707F" strokeWidth="0.4" strokeDasharray="1.5 1.5" opacity="0.8" />
+                    <line key={`h${i}`} x1="4" x2="96" y1={y * 100} y2={y * 100} stroke="#54707F" strokeWidth="0.4" strokeDasharray="1.5 1.5" opacity="0.85" />
                   ))}
-                  <line x1="50" x2="50" y1={analysis.lines.topY * 100} y2={analysis.lines.botY * 100} stroke="#8A929B" strokeWidth="0.3" strokeDasharray="1.5 1.5" opacity="0.7" />
+                  {/* Quintos verticales */}
+                  {analysis.lines.fifths.map((x, i) => (
+                    <line key={`v${i}`} x1={x * 100} x2={x * 100} y1={analysis.lines.topY * 100} y2={analysis.lines.botY * 100} stroke="#8A929B" strokeWidth="0.35" strokeDasharray="1.5 1.5" opacity="0.7" />
+                  ))}
                 </svg>
               )}
               {mask && <MarquardtMask scale={mScale} dy={mY} opacity={0.9} />}
@@ -355,7 +364,7 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
                 onClick={() => setThirds((v) => !v)}
                 className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${thirds ? "border-brand bg-accent text-brand" : "border-border text-muted-foreground hover:text-foreground"}`}
               >
-                <Rows3 className="h-3.5 w-3.5" /> Tercios
+                <Rows3 className="h-3.5 w-3.5" /> Tercios y quintos
               </button>
               <button
                 onClick={() => setMask((v) => !v)}
