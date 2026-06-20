@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useAdminModals } from "@/components/admin/AdminModals"
 import { useAppointments } from "@/hooks/useAppointments"
 import { format, addDays, startOfDay, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
@@ -21,6 +22,7 @@ const STATUS_DOT: Record<string, string> = {
 
 export function WeekAgendaGrid() {
   const router = useRouter()
+  const { openAppointment } = useAdminModals()
   const { data: appointments, isLoading } = useAppointments()
   const [weekStart, setWeekStart] = useState<Date>(() => startOfDay(new Date()))
 
@@ -52,7 +54,7 @@ export function WeekAgendaGrid() {
 
   const goCreate = (day: Date, hour: string) => {
     const dt = `${format(day, "yyyy-MM-dd")}T${hour}`
-    router.push(`/admin/appointments/new?scheduled_at=${encodeURIComponent(dt)}`)
+    openAppointment({ scheduled_at: new Date(dt).toISOString() })
   }
 
   const cols = "64px repeat(7, minmax(96px, 1fr))"

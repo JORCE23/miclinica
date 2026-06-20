@@ -8,8 +8,8 @@ import {
   ChevronLeft, Pencil, Calendar, Bell, ShieldAlert, ShieldCheck, HeartPulse,
   CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2, Sparkles,
 } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useAdminModals } from "@/components/admin/AdminModals"
 import { PersonalTab } from "@/components/admin/patients/tabs/PersonalTab"
 import { MedicalHistoryTab } from "@/components/admin/patients/tabs/MedicalHistoryTab"
 import { AllergiesTab } from "@/components/admin/patients/tabs/AllergiesTab"
@@ -47,6 +47,7 @@ function calculateAge(birthDate?: string) {
 
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
+  const { openAppointment } = useAdminModals()
   const [activeTab, setActiveTab] = useState("ficha")
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -150,7 +151,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                 <Button variant="outline" onClick={() => goToTab("administrative")} className="rounded-xl">
                   <Pencil className="h-4 w-4 mr-2" /> Editar datos
                 </Button>
-                <Button render={<Link href="/admin/appointments/new" />} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+                <Button onClick={() => openAppointment({ patient_id: params.id })} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
                   <Calendar className="h-4 w-4 mr-2" /> Agendar cita
                 </Button>
               </div>

@@ -8,9 +8,11 @@ import { Plus, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
+import { useAdminModals } from "@/components/admin/AdminModals"
 
 export function ProfessionalList() {
   const queryClient = useQueryClient()
+  const { openProfessional } = useAdminModals()
 
   const { data: professionals, isLoading } = useQuery<Professional[]>({
     queryKey: ['professionals'],
@@ -46,11 +48,9 @@ export function ProfessionalList() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end items-center">
-        <Link href="/admin/professionals/new">
-          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
-            <Plus className="w-4 h-4 mr-2" /> Nuevo Profesional
-          </Button>
-        </Link>
+        <Button onClick={() => openProfessional()} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+          <Plus className="w-4 h-4 mr-2" /> Nuevo Profesional
+        </Button>
       </div>
 
       <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-x-auto">

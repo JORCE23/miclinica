@@ -30,7 +30,15 @@ const SOURCE_OPTIONS: { value: string; label: string }[] = [
   { value: "otro", label: "Otro" },
 ]
 
-export function PatientForm() {
+interface PatientFormProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSuccess?: (patient: any) => void
+  onCancel?: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  defaults?: Partial<Record<string, any>>
+}
+
+export function PatientForm({ onSuccess, onCancel, defaults }: PatientFormProps = {}) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -42,11 +50,11 @@ export function PatientForm() {
   } = useForm<PatientFormValues>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
-      full_name: "",
-      rut: "",
+      full_name: defaults?.full_name || "",
+      rut: defaults?.rut || "",
       birth_date: "",
-      phone: "",
-      email: "",
+      phone: defaults?.phone || "",
+      email: defaults?.email || "",
       password: "",
       source: "",
       notes: "",
@@ -69,7 +77,8 @@ export function PatientForm() {
       }
 
       toast.success("Paciente creado exitosamente")
-      router.push(`/admin/patients/${result.id}`)
+      if (onSuccess) onSuccess(result)
+      else router.push(`/admin/patients/${result.id}`)
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -167,7 +176,7 @@ export function PatientForm() {
       </div>
 
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={() => router.push("/admin/patients")} disabled={isLoading}>
+        <Button type="button" variant="outline" onClick={() => (onCancel ? onCancel() : router.push("/admin/patients"))} disabled={isLoading}>
           Cancelar
         </Button>
         <Button type="submit" disabled={isLoading} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl">

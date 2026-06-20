@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Plus, Search, Filter, Eye, List, CheckCircle2, XCircle, Clock } from "lucide-react"
-import Link from "next/link"
+import { useAdminModals } from "@/components/admin/AdminModals"
 import { format, isToday, isFuture, isPast, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
+  const { openAppointment } = useAdminModals()
   const [searchTerm, setSearchTerm] = useState("")
   const [isExtended, setIsExtended] = useState(false)
   const [statusFilter, setStatusFilter] = useState("todos")
@@ -153,7 +154,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button render={<Link href={`/admin/appointments/new?patientId=${patientId}`} />} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl border-0">
+          <Button onClick={() => openAppointment({ patient_id: patientId })} className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl border-0">
               <Plus className="mr-1 h-4 w-4" /> Nuevo
           </Button>
         </div>
