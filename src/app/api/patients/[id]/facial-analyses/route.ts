@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
   const supabase = createClient()
   const { data, error } = await supabase
     .from("facial_analyses")
-    .select("id, photo_url, harmony, metrics, recs, notes, created_at")
+    .select("id, kind, photo_url, harmony, metrics, recs, notes, created_at")
     .eq("clinic_id", context.clinicId)
     .eq("patient_id", params.id)
     .order("created_at", { ascending: false })
@@ -36,6 +36,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     .insert({
       clinic_id: context.clinicId,
       patient_id: params.id,
+      kind: body?.kind === "ricketts" ? "ricketts" : "aureo",
       photo_url: body?.photo_url || null,
       harmony,
       metrics: body?.metrics ?? null,

@@ -187,12 +187,13 @@ function fileToDataURL(file: File, maxDim: number, cb: (url: string) => void) {
   rd.readAsDataURL(file)
 }
 
-type SavedAnalysis = { id: string; photo_url: string | null; harmony: number | null; metrics: Metric[] | null; recs: string[] | null; notes: string | null; created_at: string }
+type SavedAnalysis = { id: string; kind?: string; photo_url: string | null; harmony: number | null; metrics: any; recs: string[] | null; notes: string | null; created_at: string }
 
 /* ───────────────────────── Componente ───────────────────────── */
 export function AnalisisFacialTab({ patientId }: { patientId: string }) {
   const qc = useQueryClient()
   const supabase = createClient()
+  const [mode, setMode] = useState<"aureo" | "ricketts">("aureo")
   const [photo, setPhoto] = useState<string | null>(null)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
@@ -281,18 +282,34 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
             <Sparkles className="h-5 w-5 text-brand" /> Análisis facial con <em className="font-cormorant italic text-brand not-italic md:italic">IA</em>
           </h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-xl font-light">
-            Sube una foto frontal en reposo. La IA detecta los puntos del rostro y calcula la
-            armonía según la proporción áurea (φ). Apoyo a la evaluación; el criterio clínico es del profesional.
+            {mode === "aureo"
+              ? "Sube una foto frontal en reposo. La IA detecta los puntos del rostro y calcula la armonía según la proporción áurea (φ). Apoyo a la evaluación; el criterio clínico es del profesional."
+              : "Análisis de perfil: traza la línea estética E de Ricketts y evalúa la posición de los labios. Apoyo a la evaluación; el criterio clínico es del profesional."}
           </p>
         </div>
-        {photo && (
+        {mode === "aureo" && photo && (
           <Button variant="outline" onClick={reset} className="rounded-xl shrink-0">
             <RotateCcw className="h-4 w-4 mr-2" /> Nueva foto
           </Button>
         )}
       </div>
 
-      {!photo ? (
+      {/* Selector de análisis */}
+      <div className="inline-flex rounded-full border border-border bg-surface p-1">
+        {([["aureo", "Proporción áurea (φ)"], ["ricketts", "Plano de Ricketts"]] as const).map(([k, lbl]) => (
+          <button
+            key={k}
+            onClick={() => setMode(k)}
+            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${mode === k ? "bg-accent text-brand" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {lbl}
+          </button>
+        ))}
+      </div>
+
+      {mode === "ricketts" && <RickettsSection patientId={patientId} onSaved={() => qc.invalidateQueries({ queryKey: ["facial-analyses", patientId] })} />}
+
+      {mode === "aureo" && (!photo ? (
         <Card className="border-dashed bg-surface-2/40">
           <button
             onClick={() => fileRef.current?.click()}
@@ -415,7 +432,7 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
             )}
           </div>
         </div>
-      )}
+      ))}
 
       {/* Historial guardado en la ficha */}
       {history.length > 0 && (
@@ -433,7 +450,11 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground"><Sparkles className="h-6 w-6" /></div>
                   )}
-                  <span className="absolute top-1.5 right-1.5 rounded-full bg-surface/90 px-2 py-0.5 text-xs font-serif" style={{ color: scoreColor((h.harmony ?? 0) / 100) }}>{h.harmony ?? "—"}</span>
+                  {h.kind === "ricketts" ? (
+                    <span className="absolute top-1.5 right-1.5 rounded-full bg-surface/90 px-2 py-0.5 text-[10px] font-medium text-brand">Línea E</span>
+                  ) : (
+                    <span className="absolute top-1.5 right-1.5 rounded-full bg-surface/90 px-2 py-0.5 text-xs font-serif" style={{ color: scoreColor((h.harmony ?? 0) / 100) }}>{h.harmony ?? "—"}</span>
+                  )}
                 </div>
                 <p className="text-[11px] text-muted-foreground">{format(new Date(h.created_at), "d MMM yyyy · HH:mm", { locale: es })}</p>
                 <button
@@ -450,6 +471,158 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
       )}
 
       <input ref={fileRef} type="file" accept="image/*" onChange={onUpload} className="hidden" />
+    </div>
+  )
+}
+
+/* ───────────────────────── Plano de Ricketts (línea E) ───────────────────────── */
+const RICK_STEPS = [
+  ["nariz", "punta de la nariz"],
+  ["lsup", "labio superior"],
+  ["linf", "labio inferior"],
+  ["menton", "mentón (pogonion)"],
+] as const
+
+type Mark = { x: number; y: number }
+
+function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: () => void }) {
+  const supabase = createClient()
+  const [photo, setPhoto] = useState<string | null>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [marks, setMarks] = useState<Record<string, Mark>>({})
+  const [saving, setSaving] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const areaRef = useRef<HTMLDivElement>(null)
+  const next = RICK_STEPS.find(([k]) => !marks[k])
+
+  function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setPhotoFile(f); setMarks({})
+    fileToDataURL(f, 1100, setPhoto)
+    e.target.value = ""
+  }
+  function clickArea(e: React.MouseEvent<HTMLDivElement>) {
+    if (!photo || !next || !areaRef.current) return
+    const r = areaRef.current.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height
+    setMarks((m) => ({ ...m, [next[0]]: { x, y } }))
+  }
+
+  let report: { su: number; sl: number; iu: string; il: string } | null = null
+  if (marks.nariz && marks.menton && marks.lsup && marks.linf) {
+    const a = marks.nariz, b = marks.menton
+    const len = Math.hypot(b.x - a.x, b.y - a.y) || 1
+    const side = (p: Mark) => ((p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)) / len
+    const su = (side(marks.lsup) / len) * 100, sl = (side(marks.linf) / len) * 100
+    const interp = (v: number) => (v > 4 ? "protruido (por delante)" : v < -4 ? "retruido (por detrás)" : "armónico")
+    report = { su, sl, iu: interp(su), il: interp(sl) }
+  }
+  const repColor = (v: number) => (v > 4 ? "#C0563F" : v < -4 ? "#54707F" : "#4E8A72")
+
+  async function save() {
+    if (!report) return
+    setSaving(true)
+    try {
+      let photo_url: string | null = null
+      if (photoFile) {
+        const ext = photoFile.name.split(".").pop() || "jpg"
+        const fileName = `${patientId}/ricketts_${Date.now()}.${ext}`
+        const { error: upErr } = await supabase.storage.from("clinical_photos").upload(fileName, photoFile)
+        if (upErr) throw upErr
+        photo_url = supabase.storage.from("clinical_photos").getPublicUrl(fileName).data.publicUrl
+      }
+      const r = await fetch(`/api/patients/${patientId}/facial-analyses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "ricketts", photo_url, metrics: { marks, ...report } }),
+      })
+      if (!r.ok) throw new Error()
+      toast.success("Análisis de Ricketts guardado")
+      onSaved()
+      setPhoto(null); setPhotoFile(null); setMarks({})
+    } catch {
+      toast.error("No se pudo guardar (¿imagen muy grande o sin bucket?)")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div>
+      <p className="text-sm text-muted-foreground mb-4 max-w-xl font-light">
+        Sube una foto de <b className="text-foreground font-medium">perfil</b> y marca 4 puntos: la línea estética E une la
+        punta de la nariz con el mentón; se evalúa cuánto sobresalen los labios respecto a esa línea.
+      </p>
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-5">
+        <Card className="p-3">
+          <div
+            ref={areaRef}
+            onClick={clickArea}
+            className="relative mx-auto w-full max-w-[420px] aspect-[3/4] overflow-hidden rounded-xl bg-surface-2"
+            style={{ cursor: photo && next ? "crosshair" : "default" }}
+          >
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photo} alt="Perfil" className="absolute inset-0 h-full w-full object-cover pointer-events-none" />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs px-6 text-center">Sin foto de perfil</div>
+            )}
+            {photo && (
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full pointer-events-none">
+                {marks.nariz && marks.menton && (
+                  <line x1={marks.nariz.x * 100} y1={marks.nariz.y * 100} x2={marks.menton.x * 100} y2={marks.menton.y * 100} stroke="#54707F" strokeWidth="0.6" />
+                )}
+                {RICK_STEPS.map(([k]) => marks[k] && (
+                  <circle key={k} cx={marks[k].x * 100} cy={marks[k].y * 100} r="1.3" fill={k === "lsup" || k === "linf" ? "#C0563F" : "#54707F"} />
+                ))}
+              </svg>
+            )}
+          </div>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} className="rounded-lg">
+              <Upload className="h-4 w-4 mr-2" /> {photo ? "Cambiar foto" : "Subir perfil"}
+            </Button>
+            {photo && (
+              <Button variant="outline" size="sm" onClick={() => setMarks({})} className="rounded-lg">
+                <RotateCcw className="h-4 w-4 mr-2" /> Reiniciar puntos
+              </Button>
+            )}
+          </div>
+          {photo && next && (
+            <p className="mt-2 text-center text-xs text-brand">Toca: <b>{next[1]}</b></p>
+          )}
+          <input ref={fileRef} type="file" accept="image/*" onChange={onUpload} className="hidden" />
+        </Card>
+
+        <div className="space-y-4">
+          {!report ? (
+            <Card className="p-6 text-center border-dashed">
+              <p className="text-xs text-muted-foreground">Marca los 4 puntos para trazar la línea E y evaluar la posición de los labios.</p>
+            </Card>
+          ) : (
+            <>
+              <Card className="p-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mb-3">Línea estética de Ricketts</p>
+                {([["Labio superior", report.su, report.iu], ["Labio inferior", report.sl, report.il]] as const).map(([lbl, v, it]) => (
+                  <div key={lbl} className="flex items-baseline justify-between py-2 border-b border-border last:border-0">
+                    <span className="text-[13px] text-foreground">{lbl}</span>
+                    <span className="text-[13px] font-medium tabular-nums" style={{ color: repColor(v) }}>{v >= 0 ? "+" : ""}{v.toFixed(1)} · {it}</span>
+                  </div>
+                ))}
+                <p className="text-[11px] text-muted-foreground mt-3 leading-snug">
+                  Referencia: en el adulto los labios suelen quedar ligeramente por detrás de la línea E (superior ≈ −4, inferior ≈ −2). Valores positivos = protrusión. Medida relativa al largo de la línea nariz–mentón.
+                </p>
+                <p className="text-[10px] text-muted-foreground/70 mt-2">Orientativo, no sustituye un cefalograma. El criterio clínico prevalece.</p>
+              </Card>
+              <Button onClick={save} disabled={saving} className="w-full rounded-xl">
+                {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                Guardar análisis en la ficha
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

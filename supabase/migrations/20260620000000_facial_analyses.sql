@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS public.facial_analyses (
   id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   clinic_id   UUID REFERENCES clinics(id) ON DELETE CASCADE NOT NULL,
   patient_id  UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  kind        TEXT NOT NULL DEFAULT 'aureo',   -- 'aureo' (proporción áurea) | 'ricketts' (línea E)
   photo_url   TEXT,
   harmony     INTEGER,
   metrics     JSONB,
