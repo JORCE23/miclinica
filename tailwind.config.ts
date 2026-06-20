@@ -19,27 +19,32 @@ const config = {
     },
     extend: {
       colors: {
-        navy: {
-          DEFAULT: '#1B2D45',
-          light: '#243552',
-          muted: '#3A5068',
+        /* ── Marfil Clínico ── (paleta de marca; antes azul/navy) */
+        navy: {            // "oscuro" de marca → casi negro cálido / slate profundo
+          DEFAULT: '#1A1A14',
+          light: '#2A2A22',
+          muted: '#54707F',
         },
-        steel: {
-          DEFAULT: '#7B9AB5',
-          light: '#A8C2D8',
-          muted: '#BDD0E0',
+        steel: {           // → plateado neutro
+          DEFAULT: '#8A929B',
+          light: '#AEB6BF',
+          muted: '#C4CACF',
         },
-        brand: {
-          DEFAULT: '#2E7FB0',
-          light: '#5BA3CE',
-          dark: '#246389',
-          soft: '#DCEAF4',
+        brand: {           // acento de marca → SLATE
+          DEFAULT: '#54707F',
+          light: '#6E8A98',
+          dark: '#3F5663',
+          soft: '#E7ECEE',
         },
-        'ms-bg': '#F0F3F7',
+        silver: '#8A929B',
+        success: '#4E8A72',
+        warning: '#CAA86A',
+        danger: '#C0563F',
+        'ms-bg': '#F5F2EC',
         'ms-surface': '#FFFFFF',
-        'ms-border': '#D8E2ED',
-        'ms-text': '#1B2D45',
-        'ms-muted': '#6B7E94',
+        'ms-border': '#E6E1D7',
+        'ms-text': '#1A1A14',
+        'ms-muted': '#5C5A50',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -75,9 +80,11 @@ const config = {
         },
       },
       fontFamily: {
-        serif: ['var(--font-cormorant)', 'Georgia', 'serif'],
+        // Marfil Clínico: Marcellus para títulos/display, Cormorant para itálico de énfasis, Jost para UI
+        serif: ['var(--font-marcellus)', 'Georgia', 'serif'],
+        display: ['var(--font-marcellus)', 'Georgia', 'serif'],
+        cormorant: ['var(--font-cormorant)', 'Georgia', 'serif'],
         sans: ['var(--font-jost)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

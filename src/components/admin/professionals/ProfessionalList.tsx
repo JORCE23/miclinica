@@ -89,7 +89,7 @@ export function ProfessionalList() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Link href={`/admin/professionals/${professional.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-foreground">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#8A929B] hover:text-foreground">
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>

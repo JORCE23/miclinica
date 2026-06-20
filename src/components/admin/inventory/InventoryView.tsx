@@ -171,7 +171,7 @@ export function InventoryView() {
     { label: "Stock bajo", value: lowCount, icon: TrendingDown, tint: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400" },
     { label: "Agotados", value: outCount, icon: PackageX, tint: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400" },
     { label: "Por vencer", value: batchAlerts?.expiringCount ?? 0, icon: CalendarClock, tint: "bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400" },
-    { label: "Valor inventario", value: clp(totalValue), icon: Layers, tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" },
+    { label: "Valor inventario", value: clp(totalValue), icon: Layers, tint: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400" },
   ]
 
   return (

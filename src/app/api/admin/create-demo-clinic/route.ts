@@ -25,7 +25,7 @@ const day = (offset: number, h = 10, m = 0) => {
 const pick = <T,>(arr: T[], i: number) => arr[i % arr.length]
 // Firma manuscrita simulada como dataURL (se renderiza como imagen en el consentimiento)
 const signatureSvg = (name: string) => {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="120"><rect width="100%" height="100%" fill="white"/><path d="M15 80 C 55 15, 85 110, 125 60 S 200 15, 245 70 S 290 95, 305 55" stroke="#162439" fill="none" stroke-width="3" stroke-linecap="round"/><text x="18" y="108" font-family="cursive" font-size="15" fill="#5b6472">${name}</text></svg>`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="120"><rect width="100%" height="100%" fill="white"/><path d="M15 80 C 55 15, 85 110, 125 60 S 200 15, 245 70 S 290 95, 305 55" stroke="#1A1A14" fill="none" stroke-width="3" stroke-linecap="round"/><text x="18" y="108" font-family="cursive" font-size="15" fill="#5b6472">${name}</text></svg>`
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`
 }
 const portrait = (g: string, n: number) => `https://randomuser.me/api/portraits/${g}/${n}.jpg`

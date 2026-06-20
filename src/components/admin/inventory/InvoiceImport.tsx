@@ -198,7 +198,7 @@ export function InvoiceImport({ onImported }: { onImported: () => void }) {
                     <tbody>
                       {items.map((it, i) => (
                         <tr key={i} className={`border-b border-border/50 ${!it.include ? "opacity-40" : ""}`}>
-                          <td className="py-1.5 pr-2"><input type="checkbox" checked={it.include} onChange={(e) => setItem(i, { include: e.target.checked })} className="h-4 w-4 accent-[#162439]" /></td>
+                          <td className="py-1.5 pr-2"><input type="checkbox" checked={it.include} onChange={(e) => setItem(i, { include: e.target.checked })} className="h-4 w-4 accent-[#1A1A14]" /></td>
                           <td className="py-1.5 pr-2"><Input value={it.name} onChange={(e) => setItem(i, { name: e.target.value })} className="h-8 text-sm" /></td>
                           <td className="py-1.5 pr-2"><Input type="number" value={it.quantity} onChange={(e) => setItem(i, { quantity: Number(e.target.value) })} className="h-8 text-sm" /></td>
                           <td className="py-1.5 pr-2"><Input type="number" value={it.unit_cost} onChange={(e) => setItem(i, { unit_cost: Number(e.target.value) })} className="h-8 text-sm" /></td>

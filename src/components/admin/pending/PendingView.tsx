@@ -15,7 +15,7 @@ type Task = { id: string; title: string; notes: string | null; done: boolean; pr
 const PRIORITY = {
   alta: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 border-red-200 dark:border-red-900/40",
   normal: "bg-muted text-muted-foreground border-border",
-  baja: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200 dark:border-blue-900/40",
+  baja: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400 border-slate-200 dark:border-slate-900/40",
 } as Record<string, string>
 
 const selectCls = "h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/15"

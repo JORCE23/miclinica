@@ -4,41 +4,44 @@
 
 @layer base {
   :root {
-    /* Colores MedScale */
-    --ms-navy: #162439;
-    --ms-navy-light: #1E304D;
-    --ms-steel: #7B9AB5;
-    --ms-steel-light: #A8C2D8;
-    --ms-bg: #F0F3F7;
+    /* ── Marfil Clínico ── (crema marfil + slate + plateado) */
+    --ms-navy: #1A1A14;            /* casi negro cálido */
+    --ms-navy-light: #2A2A22;
+    --ms-steel: #8A929B;           /* plateado */
+    --ms-steel-light: #AEB6BF;
+    --ms-bg: #F5F2EC;              /* lienzo crema */
     --ms-surface: #FFFFFF;
-    --ms-border: #D8E2ED;
-    --ms-text: #162439;
-    --ms-muted: #6B7E94;
+    --ms-border: #E6E1D7;
+    --ms-text: #1A1A14;
+    --ms-muted: #5C5A50;
+    --ms-accent: #54707F;          /* slate (acento de marca) */
+    --ms-silver: #8A929B;
 
-    /* Mapeo a variables de shadcn/ui */
-    --background: 214 30% 95%;         /* ms-bg */
-    --foreground: 214 45% 18%;         /* ms-navy */
-    --card: 0 0% 100%;                 /* white */
-    --card-foreground: 214 45% 18%;
-    --primary: 214 45% 18%;            /* navy */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 30% 60%;          /* steel */
-    --secondary-foreground: 214 45% 18%;
-    --muted: 210 20% 91%;
-    --muted-foreground: 212 16% 46%;
-    --border: 213 28% 90%;
-    --input: 213 28% 90%;
-    --ring: 214 45% 18%;
+    /* Mapeo a variables de shadcn/ui (en HSL) */
+    --background: 40 31% 94%;          /* crema marfil */
+    --foreground: 60 13% 9%;           /* texto casi negro cálido */
+    --card: 0 0% 100%;                 /* blanco */
+    --card-foreground: 60 13% 9%;
+    --primary: 60 13% 9%;              /* botón primario = casi negro */
+    --primary-foreground: 40 31% 94%;  /* crema */
+    --secondary: 38 33% 93%;           /* surface-2 */
+    --secondary-foreground: 60 13% 9%;
+    --muted: 38 30% 92%;
+    --muted-foreground: 50 8% 34%;     /* text-mute */
+    --border: 40 16% 86%;
+    --input: 40 16% 86%;
+    --ring: 201 22% 41%;               /* foco slate */
     --radius: 0.75rem;
 
     /* Destructive — SOLO para eliminar */
-    --destructive: 0 65% 51%;
+    --destructive: 11 51% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 214 45% 18%;
-    --accent: 214 30% 95%;
-    --accent-foreground: 214 45% 18%;
+    --popover-foreground: 60 13% 9%;
+    /* accent (shadcn) = superficie sutil de hover, NO el slate fuerte */
+    --accent: 201 24% 92%;             /* tinte slate muy claro */
+    --accent-foreground: 201 28% 28%;  /* slate profundo */
   }
 
   .dark {
@@ -113,12 +116,12 @@
     box-shadow: 0 1px 2px rgb(16 36 57 / 0.04), 0 4px 16px -4px rgb(16 36 57 / 0.08);
   }
 
-  /* Fondo de la app con gradientes sutiles (look SaaS premium) */
+  /* Fondo de la app: lienzo crema marfil con gradientes muy sutiles */
   .bg-app {
-    background-color: #F0F3F7;
+    background-color: #F5F2EC;
     background-image:
-      radial-gradient(at 100% 0%, rgb(46 127 176 / 0.06) 0px, transparent 45%),
-      radial-gradient(at 0% 0%, rgb(22 36 57 / 0.05) 0px, transparent 40%);
+      radial-gradient(at 100% 0%, rgb(84 112 127 / 0.06) 0px, transparent 45%),
+      radial-gradient(at 0% 0%, rgb(138 146 155 / 0.05) 0px, transparent 40%);
   }
   .dark .bg-app {
     background-color: hsl(222.2 84% 4.9%);
@@ -127,23 +130,23 @@
       radial-gradient(at 0% 0%, rgb(123 154 181 / 0.08) 0px, transparent 40%);
   }
 
-  /* Panel de marca con gradiente navy (login, headers destacados) */
+  /* Panel de marca: charcoal cálido con acento slate (login, headers destacados) */
   .bg-brand-panel {
-    background-color: #162439;
+    background-color: #1A1A14;
     background-image:
-      radial-gradient(at 80% 10%, rgb(91 163 206 / 0.18) 0px, transparent 50%),
-      radial-gradient(at 10% 90%, rgb(30 48 77 / 0.9) 0px, transparent 55%),
-      linear-gradient(160deg, #1E304D 0%, #162439 55%, #0F1A2A 100%);
+      radial-gradient(at 80% 10%, rgb(84 112 127 / 0.22) 0px, transparent 50%),
+      radial-gradient(at 10% 90%, rgb(26 26 20 / 0.9) 0px, transparent 55%),
+      linear-gradient(160deg, #2A2A22 0%, #1A1A14 55%, #121210 100%);
   }
 
-  /* Iconos algo más finos (estilo del prototipo) */
+  /* Iconos finos (Marfil Clínico) */
   .lucide {
-    stroke-width: 1.75;
+    stroke-width: 1.6;
   }
 
-  /* Realce de texto con el acento de marca */
+  /* Realce de texto con el acento de marca (slate) */
   .text-gradient-brand {
-    background: linear-gradient(135deg, #2E7FB0 0%, #5BA3CE 100%);
+    background: linear-gradient(135deg, #54707F 0%, #6E8A98 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

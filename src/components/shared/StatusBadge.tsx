@@ -7,7 +7,7 @@ export function StatusBadge({ status }: { status: AppointmentStatus | string }) 
       case "pendiente":
         return { label: "Pendiente", className: "bg-slate-500 hover:bg-slate-600" }
       case "confirmada":
-        return { label: "Confirmada", className: "bg-blue-500 hover:bg-blue-600" }
+        return { label: "Confirmada", className: "bg-slate-500 hover:bg-slate-600" }
       case "completada":
         return { label: "Completada", className: "bg-emerald-500 hover:bg-emerald-600" }
       case "cancelada":

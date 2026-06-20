@@ -59,14 +59,14 @@ export function DashboardStats() {
       title: "Citas Hoy",
       value: stats.todayAppointments,
       icon: Calendar,
-      tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+      tint: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400",
       description: "Agendadas para hoy",
     },
     {
       title: "Nuevos Pacientes",
       value: stats.newPatientsThisMonth,
       icon: UserPlus,
-      tint: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400",
+      tint: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400",
       description: "Añadidos este mes",
     },
     {
@@ -176,27 +176,27 @@ export function DashboardStats() {
                       <AreaChart data={revenueData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                         <defs>
                           <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#2E7FB0" stopOpacity={0.28} />
-                            <stop offset="100%" stopColor="#2E7FB0" stopOpacity={0} />
+                            <stop offset="0%" stopColor="#54707F" stopOpacity={0.28} />
+                            <stop offset="100%" stopColor="#54707F" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="hsl(var(--border))" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} dy={8} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} width={48} tickFormatter={(v) => `$${v / 1000}k`} />
                         <RechartsTooltip
-                          cursor={{ stroke: "#2E7FB0", strokeWidth: 1, strokeDasharray: "4 4" }}
+                          cursor={{ stroke: "#54707F", strokeWidth: 1, strokeDasharray: "4 4" }}
                           contentStyle={{ borderRadius: "12px", border: "1px solid #E2E8F0", boxShadow: "0 8px 24px -8px rgb(16 36 57 / 0.14)", fontSize: "13px" }}
-                          labelStyle={{ fontWeight: 600, color: "#162439" }}
+                          labelStyle={{ fontWeight: 600, color: "#1A1A14" }}
                           formatter={(value: any) => [clpFmt(Number(value)), "Ingresos"]}
                         />
                         <Area
                           type="monotone"
                           dataKey="ingresos"
-                          stroke="#2E7FB0"
+                          stroke="#54707F"
                           strokeWidth={2.5}
                           fill="url(#revFill)"
                           dot={false}
-                          activeDot={{ r: 5, fill: "#2E7FB0", stroke: "#fff", strokeWidth: 2 }}
+                          activeDot={{ r: 5, fill: "#54707F", stroke: "#fff", strokeWidth: 2 }}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -257,7 +257,7 @@ export function DashboardStats() {
                   </Link>
 
                   <Link href="/admin/loyalty" className="flex items-center gap-3 p-3.5 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all group">
-                    <div className="h-10 w-10 rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-xl bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400 flex items-center justify-center">
                       <Star className="h-4 w-4" />
                     </div>
                     <div>

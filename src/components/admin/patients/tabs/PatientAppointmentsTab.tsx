@@ -50,7 +50,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
   const getStatusIcon = (status: string) => {
     switch(status) {
       case 'completada': return <CheckCircle2 className="w-12 h-12 text-emerald-500 bg-emerald-50 rounded-full p-1 border-4 border-emerald-100" />
-      case 'confirmada': return <CheckCircle2 className="w-12 h-12 text-blue-500 bg-blue-50 rounded-full p-1 border-4 border-blue-100" />
+      case 'confirmada': return <CheckCircle2 className="w-12 h-12 text-slate-500 bg-slate-50 rounded-full p-1 border-4 border-slate-100" />
       case 'cancelada': return <XCircle className="w-12 h-12 text-red-500 bg-red-50 rounded-full p-1 border-4 border-red-100" />
       case 'no_asistio': return <XCircle className="w-12 h-12 text-amber-500 bg-amber-50 rounded-full p-1 border-4 border-amber-100" />
       default: return <Clock className="w-12 h-12 text-slate-400 bg-slate-50 rounded-full p-2 border-4 border-slate-100" />
@@ -175,7 +175,7 @@ export function PatientAppointmentsTab({ patientId }: { patientId: string }) {
         </AccordionItem>
 
         <AccordionItem value="hoy" className="border-none">
-          <AccordionTrigger className="text-cyan-600 hover:text-cyan-700 py-2 font-bold text-sm tracking-wider uppercase">
+          <AccordionTrigger className="text-slate-600 hover:text-slate-700 py-2 font-bold text-sm tracking-wider uppercase">
             {todayAppointments.length} ATENCIONES HOY
           </AccordionTrigger>
           <AccordionContent className="pt-2">

@@ -32,7 +32,7 @@ export default async function ClientAppointmentsPage() {
     <div className="space-y-8 max-w-4xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-          <CalendarIcon className="h-8 w-8 text-sky-500" /> Mis Citas
+          <CalendarIcon className="h-8 w-8 text-slate-500" /> Mis Citas
         </h1>
         <p className="text-muted-foreground mt-2">
           Revisa el historial y estado de todas tus reservas en la clínica.
@@ -48,7 +48,7 @@ export default async function ClientAppointmentsPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {upcoming.map((apt: any) => (
-              <Card key={apt.id} className="border-sky-100 dark:border-sky-900/30 bg-sky-50/30 dark:bg-sky-950/10">
+              <Card key={apt.id} className="border-slate-100 dark:border-slate-900/30 bg-slate-50/30 dark:bg-slate-950/10">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg text-slate-900 dark:text-white">

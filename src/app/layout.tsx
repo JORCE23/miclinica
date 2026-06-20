@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Jost, Cormorant_Garamond } from "next/font/google";
+import { Jost, Cormorant_Garamond, Marcellus } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { QueryProvider } from "@/components/providers/QueryProvider"
@@ -15,6 +15,14 @@ const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   variable: '--font-cormorant',
   weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+})
+
+// Marcellus — serif elegante para títulos/display y números grandes (Marfil Clínico)
+const marcellus = Marcellus({
+  subsets: ['latin'],
+  variable: '--font-marcellus',
+  weight: ['400'],
 })
 
 export const metadata: Metadata = {
@@ -35,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${jost.variable} ${cormorant.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`${jost.variable} ${cormorant.variable} ${marcellus.variable}`} suppressHydrationWarning>
       <body className="font-sans">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <QueryProvider>

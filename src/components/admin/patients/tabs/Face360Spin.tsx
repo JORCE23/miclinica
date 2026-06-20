@@ -129,7 +129,7 @@ export function Face360Spin({ points, onChange, disabled }: Props) {
               onClick={(e) => { e.stopPropagation(); setSelected(p.id) }}
               style={{ left: `${p.x}%`, top: `${p.y}%` }}
               className={`absolute h-5 w-5 -ml-2.5 -mt-2.5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md border-2 border-white transition-transform z-10 ${
-                selected === p.id ? "bg-blue-600 text-white scale-125" : "bg-[#162439] text-white hover:scale-110"
+                selected === p.id ? "bg-slate-600 text-white scale-125" : "bg-[#1A1A14] text-white hover:scale-110"
               }`}
             >
               {i + 1}
@@ -154,7 +154,7 @@ export function Face360Spin({ points, onChange, disabled }: Props) {
             {points.map((point, i) => (
               <div
                 key={point.id}
-                className={`p-3 rounded-lg border transition-colors cursor-pointer ${selected === point.id ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10" : "bg-card hover:border-slate-300"}`}
+                className={`p-3 rounded-lg border transition-colors cursor-pointer ${selected === point.id ? "border-slate-500 bg-slate-50/50 dark:bg-slate-900/10" : "bg-card hover:border-slate-300"}`}
                 onClick={() => { setSelected(point.id); goToAngle(point.t) }}
               >
                 <div className="flex items-center justify-between mb-2">
