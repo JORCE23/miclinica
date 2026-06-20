@@ -17,7 +17,8 @@ import { es } from "date-fns/locale"
 import { createClient } from "@/lib/supabase/client"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, Sparkles, Loader2, Grid3x3, Rows3, RotateCcw, Info, Save, Trash2, Clock } from "lucide-react"
+import { Upload, Sparkles, Loader2, Grid3x3, Rows3, RotateCcw, Info, Save, Trash2, Clock, Syringe } from "lucide-react"
+import { FacialDiagram } from "./FacialDiagram"
 
 /* ───────────────────────── MediaPipe FaceMesh (CDN) ───────────────────────── */
 const FACEMESH_SRC = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4/face_mesh.js"
@@ -198,7 +199,7 @@ type SavedAnalysis = { id: string; kind?: string; photo_url: string | null; harm
 export function AnalisisFacialTab({ patientId }: { patientId: string }) {
   const qc = useQueryClient()
   const supabase = createClient()
-  const [mode, setMode] = useState<"aureo" | "ricketts">("aureo")
+  const [mode, setMode] = useState<"aureo" | "ricketts" | "puncion">("aureo")
   const [photo, setPhoto] = useState<string | null>(null)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
@@ -289,7 +290,9 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
           <p className="text-sm text-muted-foreground mt-1 max-w-xl font-light">
             {mode === "aureo"
               ? "Sube una foto frontal en reposo. La IA detecta los puntos del rostro y calcula la armonía según la proporción áurea (φ). Apoyo a la evaluación; el criterio clínico es del profesional."
-              : "Análisis de perfil: traza la línea estética E de Ricketts y evalúa la posición de los labios. Apoyo a la evaluación; el criterio clínico es del profesional."}
+              : mode === "ricketts"
+                ? "Análisis de perfil: traza la línea estética E de Ricketts y evalúa la posición de los labios. Apoyo a la evaluación; el criterio clínico es del profesional."
+                : "Mapa de punción facial 2D: marca los puntos de tratamiento y dosis sobre el esquema. Quedan guardados en la ficha del paciente."}
           </p>
         </div>
         {mode === "aureo" && photo && (
@@ -301,7 +304,7 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
 
       {/* Selector de análisis */}
       <div className="inline-flex rounded-full border border-border bg-surface p-1">
-        {([["aureo", "Proporción áurea (φ)"], ["ricketts", "Plano de Ricketts"]] as const).map(([k, lbl]) => (
+        {([["aureo", "Proporción áurea (φ)"], ["ricketts", "Plano de Ricketts"], ["puncion", "Punción 2D"]] as const).map(([k, lbl]) => (
           <button
             key={k}
             onClick={() => setMode(k)}
@@ -313,6 +316,8 @@ export function AnalisisFacialTab({ patientId }: { patientId: string }) {
       </div>
 
       {mode === "ricketts" && <RickettsSection patientId={patientId} onSaved={() => qc.invalidateQueries({ queryKey: ["facial-analyses", patientId] })} />}
+
+      {mode === "puncion" && <PuncionSection patientId={patientId} onSaved={() => qc.invalidateQueries({ queryKey: ["facial-analyses", patientId] })} />}
 
       {mode === "aureo" && (!photo ? (
         <Card className="border-dashed bg-surface-2/40">
@@ -500,6 +505,9 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [marks, setMarks] = useState<Record<string, Mark>>({})
   const [saving, setSaving] = useState(false)
+  const [detecting, setDetecting] = useState(false)
+  // Calibración px→mm e imagen para medidas estimadas en mm (set al detectar IA).
+  const [scale, setScale] = useState<{ mmPerPx: number; W: number; H: number } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const areaRef = useRef<HTMLDivElement>(null)
   const next = RICK_STEPS.find(([k]) => !marks[k])
@@ -507,7 +515,7 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
   function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
-    setPhotoFile(f); setMarks({})
+    setPhotoFile(f); setMarks({}); setScale(null)
     fileToDataURL(f, 1100, setPhoto)
     e.target.value = ""
   }
@@ -518,7 +526,28 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
     setMarks((m) => ({ ...m, [next[0]]: { x, y } }))
   }
 
-  let report: { su: number; sl: number; iu: string; il: string } | null = null
+  // Detección automática de los 4 puntos con MediaPipe + calibración por iris (≈11.7mm).
+  async function autoDetect() {
+    if (!photo) return
+    setDetecting(true)
+    try {
+      const { lm, W, H } = await detectFaceMesh(photo)
+      const pt = (i: number) => ({ x: lm[i].x, y: lm[i].y })
+      setMarks({ nariz: pt(1), lsup: pt(0), linf: pt(17), menton: pt(152) })
+      // Iris (refineLandmarks): 469 y 471 son extremos horizontales del iris izquierdo.
+      if (lm[469] && lm[471]) {
+        const irisPx = Math.hypot((lm[469].x - lm[471].x) * W, (lm[469].y - lm[471].y) * H)
+        if (irisPx > 1) setScale({ mmPerPx: 11.7 / irisPx, W, H })
+      }
+      toast.success("Puntos detectados. Ajusta tocando si hace falta.")
+    } catch (e: any) {
+      toast.error(e?.message || "No se detectó el rostro. Marca los puntos manualmente.")
+    } finally {
+      setDetecting(false)
+    }
+  }
+
+  let report: { su: number; sl: number; iu: string; il: string; muMm?: number; mlMm?: number } | null = null
   if (marks.nariz && marks.menton && marks.lsup && marks.linf) {
     const a = marks.nariz, b = marks.menton
     const len = Math.hypot(b.x - a.x, b.y - a.y) || 1
@@ -526,6 +555,13 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
     const su = (side(marks.lsup) / len) * 100, sl = (side(marks.linf) / len) * 100
     const interp = (v: number) => (v > 4 ? "protruido (por delante)" : v < -4 ? "retruido (por detrás)" : "armónico")
     report = { su, sl, iu: interp(su), il: interp(sl) }
+    if (scale) {
+      // distancia perpendicular en px (con signo) × mm/px
+      const aP = { x: a.x * scale.W, y: a.y * scale.H }, bP = { x: b.x * scale.W, y: b.y * scale.H }
+      const lenPx = Math.hypot(bP.x - aP.x, bP.y - aP.y) || 1
+      const perpMm = (p: Mark) => (((p.x * scale.W - aP.x) * (bP.y - aP.y) - (p.y * scale.H - aP.y) * (bP.x - aP.x)) / lenPx) * scale.mmPerPx
+      report.muMm = perpMm(marks.lsup); report.mlMm = perpMm(marks.linf)
+    }
   }
   const repColor = (v: number) => (v > 4 ? "#C0563F" : v < -4 ? "#54707F" : "#4E8A72")
 
@@ -593,7 +629,12 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
               <Upload className="h-4 w-4 mr-2" /> {photo ? "Cambiar foto" : "Subir perfil"}
             </Button>
             {photo && (
-              <Button variant="outline" size="sm" onClick={() => setMarks({})} className="rounded-lg">
+              <Button variant="outline" size="sm" onClick={autoDetect} disabled={detecting} className="rounded-lg">
+                {detecting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />} Detectar automático
+              </Button>
+            )}
+            {photo && (
+              <Button variant="outline" size="sm" onClick={() => { setMarks({}); setScale(null) }} className="rounded-lg">
                 <RotateCcw className="h-4 w-4 mr-2" /> Reiniciar puntos
               </Button>
             )}
@@ -613,14 +654,19 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
             <>
               <Card className="p-4">
                 <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mb-3">Línea estética de Ricketts</p>
-                {([["Labio superior", report.su, report.iu], ["Labio inferior", report.sl, report.il]] as const).map(([lbl, v, it]) => (
+                {([["Labio superior", report.su, report.iu, report.muMm], ["Labio inferior", report.sl, report.il, report.mlMm]] as const).map(([lbl, v, it, mm]) => (
                   <div key={lbl} className="flex items-baseline justify-between py-2 border-b border-border last:border-0">
                     <span className="text-[13px] text-foreground">{lbl}</span>
-                    <span className="text-[13px] font-medium tabular-nums" style={{ color: repColor(v) }}>{v >= 0 ? "+" : ""}{v.toFixed(1)} · {it}</span>
+                    <span className="text-[13px] font-medium tabular-nums text-right" style={{ color: repColor(v) }}>
+                      {typeof mm === "number" ? `${mm >= 0 ? "+" : ""}${mm.toFixed(1)} mm` : `${v >= 0 ? "+" : ""}${v.toFixed(1)}`}
+                      <span className="block text-[10px] font-normal text-muted-foreground">{it}</span>
+                    </span>
                   </div>
                 ))}
                 <p className="text-[11px] text-muted-foreground mt-3 leading-snug">
-                  Referencia: en el adulto los labios suelen quedar ligeramente por detrás de la línea E (superior ≈ −4, inferior ≈ −2). Valores positivos = protrusión. Medida relativa al largo de la línea nariz–mentón.
+                  {scale
+                    ? "Medidas en mm estimadas por calibración del iris (≈11,7 mm). Referencia adulto: labio superior ≈ −4 mm, inferior ≈ −2 mm respecto a la línea E. Valores positivos = protrusión."
+                    : "Valores relativos al largo de la línea nariz–mentón. Usa “Detectar automático” para obtener medidas estimadas en mm. Referencia: labios ligeramente por detrás de la línea E."}
                 </p>
                 <p className="text-[10px] text-muted-foreground/70 mt-2">Orientativo, no sustituye un cefalograma. El criterio clínico prevalece.</p>
               </Card>
@@ -632,6 +678,43 @@ function RickettsSection({ patientId, onSaved }: { patientId: string; onSaved: (
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+/* ───────────────────────── Punción 2D (esquema facial de Medique) ───────────────────────── */
+function PuncionSection({ patientId, onSaved }: { patientId: string; onSaved: () => void }) {
+  const [points, setPoints] = useState<any[]>([])
+  const [saving, setSaving] = useState(false)
+
+  async function save() {
+    setSaving(true)
+    try {
+      const r = await fetch(`/api/patients/${patientId}/facial-analyses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "puncion", metrics: { points } }),
+      })
+      if (!r.ok) throw new Error()
+      toast.success("Mapa de punción guardado")
+      onSaved()
+      setPoints([])
+    } catch {
+      toast.error("No se pudo guardar")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <Card className="p-4">
+        <FacialDiagram points={points} onChange={setPoints} disabled={false} />
+      </Card>
+      <Button onClick={save} disabled={saving || points.length === 0} className="rounded-xl">
+        {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Syringe className="h-4 w-4 mr-2" />}
+        Guardar mapa de punción ({points.length})
+      </Button>
     </div>
   )
 }
