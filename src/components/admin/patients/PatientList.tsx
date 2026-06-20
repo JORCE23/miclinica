@@ -10,11 +10,20 @@ import { Search, ExternalLink, UserX } from "lucide-react"
 import Link from "next/link"
 import { formatRut } from "@/lib/validations/rut"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+
+type PatientSummary = { upcoming: boolean; done: number; pendingConsent: boolean }
 
 export function PatientList() {
   const { data: patients, isLoading, error } = usePatients()
+  const { data: summary = {} } = useQuery<Record<string, PatientSummary>>({
+    queryKey: ["patients-summary"],
+    queryFn: async () => {
+      const r = await fetch("/api/patients/summary")
+      return r.ok ? r.json() : {}
+    },
+  })
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [patientToDelete, setPatientToDelete] = useState<string | null>(null)
@@ -90,6 +99,7 @@ export function PatientList() {
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">RUT</th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Teléfono</th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Estado</th>
                   <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Acciones</th>
                 </tr>
               </thead>
@@ -104,6 +114,19 @@ export function PatientList() {
                     <td className="p-4 align-middle">{patient.rut ? formatRut(patient.rut) : "-"}</td>
                     <td className="p-4 align-middle">{patient.phone || "-"}</td>
                     <td className="p-4 align-middle">{patient.email}</td>
+                    <td className="p-4 align-middle">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {(() => {
+                          const s = summary[patient.id]
+                          if (!s) return <span className="text-xs text-muted-foreground">—</span>
+                          const chips = []
+                          if (s.upcoming) chips.push(<span key="up" className="inline-flex items-center rounded-full bg-accent px-2 py-0.5 text-[11px] font-medium text-brand">Agendado</span>)
+                          if (s.done > 0) chips.push(<span key="dn" className="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">{s.done} realizado{s.done === 1 ? "" : "s"}</span>)
+                          if (s.pendingConsent) chips.push(<span key="cs" className="inline-flex items-center rounded-full bg-warning/15 px-2 py-0.5 text-[11px] font-medium text-warning">Consentimiento pendiente</span>)
+                          return chips.length ? chips : <span className="text-xs text-muted-foreground">—</span>
+                        })()}
+                      </div>
+                    </td>
                     <td className="p-4 align-middle text-right">
                       <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                         <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
