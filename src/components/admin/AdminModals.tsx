@@ -35,13 +35,16 @@ export const useAdminModals = () => useContext(ModalsContext)
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   return (
-    <div className="fixed inset-0 z-[70] flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto" onClick={onClose}>
-      <div className="w-full max-w-2xl my-4 bg-card rounded-2xl shadow-elevated border border-border/70" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-card rounded-t-2xl z-10">
+    <div className="fixed inset-0 z-[70] flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto overscroll-contain" onClick={onClose}>
+      <div
+        className="w-full max-w-2xl my-auto flex flex-col max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] bg-card rounded-2xl shadow-elevated border border-border/70"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-card rounded-t-2xl shrink-0">
           <h3 className="font-display text-lg font-semibold text-foreground">{title}</h3>
           <button onClick={onClose} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted"><X className="h-5 w-5" /></button>
         </div>
-        <div className="p-5 max-h-[80vh] overflow-y-auto">{children}</div>
+        <div className="p-5 overflow-y-auto overscroll-contain">{children}</div>
       </div>
     </div>
   )
