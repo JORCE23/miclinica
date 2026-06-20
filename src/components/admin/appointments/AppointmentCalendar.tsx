@@ -5,6 +5,7 @@ import { format, parse, startOfWeek, getDay } from "date-fns"
 import { es } from "date-fns/locale"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import { useRouter } from "next/navigation"
+import { useAdminModals } from "@/components/admin/AdminModals"
 import { useAppointments } from "@/hooks/useAppointments"
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock } from "lucide-react"
 import { useState } from "react"
@@ -92,6 +93,7 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
 
 export function AppointmentCalendar() {
   const router = useRouter()
+  const { openAppointment } = useAdminModals()
   const { data: appointments, isLoading } = useAppointments()
 
   const [view, setView] = useState<View>(Views.WEEK)
@@ -99,8 +101,7 @@ export function AppointmentCalendar() {
 
   // Clic en un horario libre del calendario → crear cita con fecha/hora precargadas
   const handleSelectSlot = (slotInfo: { start: Date }) => {
-    const dt = format(slotInfo.start, "yyyy-MM-dd'T'HH:mm")
-    router.push(`/admin/appointments/new?scheduled_at=${encodeURIComponent(dt)}`)
+    openAppointment({ scheduled_at: slotInfo.start.toISOString() })
   }
 
   if (isLoading) {

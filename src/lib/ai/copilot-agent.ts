@@ -15,6 +15,8 @@ type Ctx = {
   services: any[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   professionals: any[]
+  // Acción para que la UI abra una ventana (ej. la de Nueva Cita prellenada)
+  action?: { type: string; prefill: Record<string, unknown> } | null
 }
 
 const STATUSES = ["pendiente", "confirmada", "completada", "cancelada", "no_asistio"]
@@ -28,7 +30,8 @@ function buildTools(): ToolDef[] {
     { type: "function", function: { name: "listar_citas", description: "Lista las citas de un día (por defecto hoy) con paciente y servicio.", parameters: o({ date: { type: "string", description: "YYYY-MM-DD (opcional)" } }) } },
     { type: "function", function: { name: "consultar_disponibilidad", description: "Horarios libres para una fecha (respeta el horario de atención).", parameters: o({ date: { type: "string", description: "YYYY-MM-DD" }, duration_minutes: { type: "number" } }, ["date"]) } },
     { type: "function", function: { name: "crear_paciente", description: "Crea un paciente nuevo.", parameters: o({ full_name: { type: "string" }, rut: { type: "string" }, phone: { type: "string" }, email: { type: "string" } }, ["full_name"]) } },
-    { type: "function", function: { name: "crear_cita", description: "Agenda una cita. Necesitas paciente (existente), servicio, fecha y hora. Si falta el profesional, pregúntalo.", parameters: o({ patient_query: { type: "string" }, service_name: { type: "string" }, datetime_iso: { type: "string" }, duration_minutes: { type: "number" }, professional_name: { type: "string" } }, ["patient_query", "service_name", "datetime_iso"]) } },
+    { type: "function", function: { name: "preparar_cita", description: "ABRE la ventana de Nueva Cita ya prellenada con lo que tengas (paciente, servicio, fecha/hora, profesional) para que el usuario revise y confirme. Úsala SIEMPRE para agendar, aunque falten datos.", parameters: o({ patient_query: { type: "string", description: "Nombre o RUT del paciente" }, service_name: { type: "string" }, datetime_iso: { type: "string", description: "Fecha y hora ISO si la sabes" }, professional_name: { type: "string" } }) } },
+    { type: "function", function: { name: "crear_cita", description: "Crea la cita DIRECTO sin abrir ventana. Úsala SOLO si el usuario pide explícitamente crearla sin confirmar.", parameters: o({ patient_query: { type: "string" }, service_name: { type: "string" }, datetime_iso: { type: "string" }, duration_minutes: { type: "number" }, professional_name: { type: "string" } }, ["patient_query", "service_name", "datetime_iso"]) } },
     { type: "function", function: { name: "cancelar_cita", description: "Cancela una cita futura de un paciente. Si tiene varias, indica la fecha (date).", parameters: o({ patient_query: { type: "string" }, date: { type: "string", description: "YYYY-MM-DD de la cita a cancelar (opcional)" } }, ["patient_query"]) } },
     { type: "function", function: { name: "reagendar_cita", description: "Cambia la fecha/hora de la próxima cita de un paciente.", parameters: o({ patient_query: { type: "string" }, new_datetime_iso: { type: "string" }, date: { type: "string", description: "YYYY-MM-DD de la cita a mover (si tiene varias)" } }, ["patient_query", "new_datetime_iso"]) } },
     { type: "function", function: { name: "marcar_estado_cita", description: "Cambia el estado de una cita (confirmada, completada, no_asistio, cancelada).", parameters: o({ patient_query: { type: "string" }, estado: { type: "string" }, date: { type: "string", description: "YYYY-MM-DD (opcional)" } }, ["patient_query", "estado"]) } },
@@ -163,6 +166,37 @@ async function executeTool(name: string, args: any, ctx: Ctx): Promise<string> {
     return J({ ok: true, paciente: { id: au.user.id, full_name: fullName } })
   }
 
+  if (name === "preparar_cita") {
+    const prefill: Record<string, unknown> = {}
+    const faltan: string[] = []
+    // Paciente
+    if (args?.patient_query) {
+      const f = await findPatient(ctx, args.patient_query)
+      if (f.length === 1) prefill.patient_id = f[0].id
+      else if (f.length > 1) faltan.push("elegir el paciente (hay varios con ese nombre)")
+      else faltan.push("seleccionar o crear el paciente")
+    } else faltan.push("el paciente")
+    // Servicio
+    const svc = args?.service_name ? ctx.services.find((s) => s.name.toLowerCase().includes(String(args.service_name).toLowerCase())) : null
+    if (svc) { prefill.service_id = svc.id; prefill.duration_minutes = svc.duration_minutes; prefill.price = svc.price }
+    else if (args?.service_name) faltan.push("el servicio (no lo encontré)")
+    else faltan.push("el servicio")
+    // Profesional
+    if (args?.professional_name) {
+      const p = ctx.professionals.find((x) => x.full_name.toLowerCase().includes(String(args.professional_name).toLowerCase()))
+      if (p) prefill.professional_id = p.id
+    }
+    // Fecha/hora
+    if (args?.datetime_iso) {
+      const w = new Date(args.datetime_iso)
+      if (!isNaN(w.getTime())) prefill.scheduled_at = w.toISOString()
+      else faltan.push("la fecha/hora")
+    } else faltan.push("la fecha y hora")
+
+    ctx.action = { type: "open_appointment", prefill }
+    return J({ ok: true, ventana_abierta: true, faltan, mensaje: "Abrí la ventana de Nueva Cita prellenada. Dile brevemente al usuario qué falta completar y que confirme." })
+  }
+
   if (name === "crear_cita") {
     const f = await findPatient(ctx, args?.patient_query)
     if (!f.length) return J({ ok: false, error: "No encontré ese paciente. Usa crear_paciente o pide más datos." })
@@ -272,10 +306,10 @@ Profesionales:
 ${profes || "(sin profesionales)"}
 
 Reglas:
-- Si falta un dato para una acción (paciente, servicio, fecha/hora, profesional, monto…), PREGÚNTALO; no inventes.
-- Antes de agendar, si no mencionan el profesional, pregúntalo.
+- Para AGENDAR usa SIEMPRE "preparar_cita": abre la ventana de Nueva Cita ya rellenada para que el usuario revise y confirme (aunque falten datos). NO uses crear_cita salvo que el usuario diga explícitamente "créala/agéndala directo sin confirmar".
+- Tras preparar_cita, dile en una frase qué falta completar (ej. "Te abrí la reserva; falta elegir el profesional y confirmar").
 - Para cancelar/reagendar/marcar, si el paciente tiene varias citas, pregunta cuál (por fecha).
-- Confirma siempre con un resumen de lo que hiciste.
+- Confirma con un resumen breve de lo que hiciste.
 - No inventes datos clínicos, precios ni disponibilidad: usa las herramientas.`
 }
 
@@ -286,14 +320,14 @@ export async function runCopilotReply(opts: {
   history: ChatMessage[]
   userText: string
   model?: string
-}): Promise<string> {
+}): Promise<{ reply: string; action?: Ctx["action"] }> {
   const admin = createAdminClient()
   const [{ data: services }, { data: professionals }] = await Promise.all([
     admin.from("services").select("id, name, duration_minutes, price").eq("clinic_id", opts.clinicId).eq("is_active", true).order("name"),
     admin.from("professionals").select("id, full_name, specialty").eq("clinic_id", opts.clinicId).eq("is_active", true).order("full_name"),
   ])
 
-  const ctx: Ctx = { admin, clinicId: opts.clinicId, clinicName: opts.clinicName, userId: opts.userId, services: services || [], professionals: professionals || [] }
+  const ctx: Ctx = { admin, clinicId: opts.clinicId, clinicName: opts.clinicName, userId: opts.userId, services: services || [], professionals: professionals || [], action: null }
   const tools = buildTools()
   const messages: ChatMessage[] = [
     { role: "system", content: buildSystemPrompt(ctx) },
@@ -313,7 +347,7 @@ export async function runCopilotReply(opts: {
       }
       continue
     }
-    return resp.content || "¿Me lo repites, por favor?"
+    return { reply: resp.content || "¿Me lo repites, por favor?", action: ctx.action }
   }
-  return "Hice varias acciones; ¿me confirmas el último dato para terminar?"
+  return { reply: "Hice varias acciones; ¿me confirmas el último dato para terminar?", action: ctx.action }
 }

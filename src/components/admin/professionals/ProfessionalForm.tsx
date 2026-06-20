@@ -16,9 +16,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 interface ProfessionalFormProps {
   initialData?: Professional
+  onSuccess?: () => void
+  onCancel?: () => void
 }
 
-export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
+export function ProfessionalForm({ initialData, onSuccess, onCancel }: ProfessionalFormProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const isEditing = !!initialData
@@ -67,7 +69,8 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['professionals'] })
       toast.success(isEditing ? "Profesional actualizado" : "Profesional creado")
-      router.push('/admin/professionals')
+      if (onSuccess) onSuccess()
+      else router.push('/admin/professionals')
     },
     onError: () => {
       toast.error("Ocurrió un error al guardar")
@@ -183,7 +186,7 @@ export function ProfessionalForm({ initialData }: ProfessionalFormProps) {
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-border">
-          <Button type="button" variant="outline" onClick={() => router.push('/admin/professionals')}>
+          <Button type="button" variant="outline" onClick={() => (onCancel ? onCancel() : router.push('/admin/professionals'))}>
             Cancelar
           </Button>
           <Button type="submit" className="bg-brand text-white hover:bg-brand-dark shadow-glow rounded-xl" disabled={mutation.isPending}>

@@ -10,6 +10,7 @@ import { filterAdminRoutes, isRouteActive } from "@/components/admin/adminNav"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter, usePathname } from "next/navigation"
+import { useAdminModals } from "@/components/admin/AdminModals"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
@@ -26,6 +27,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
   const supabase = createClient()
   const router = useRouter()
   const pathname = usePathname()
+  const { openAppointment } = useAdminModals()
   const routes = filterAdminRoutes(profile, null)
 
   const [searchQuery, setSearchQuery] = useState("")
@@ -66,11 +68,9 @@ export function AdminHeader({ profile }: { profile?: any }) {
       </form>
 
       <div className="flex items-center gap-2 ml-auto">
-        <Link href="/admin/appointments/new" className="hidden sm:flex">
-          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow transition-all font-medium">
-            <Plus className="w-4 h-4 mr-1.5" /> Nueva Cita
-          </Button>
-        </Link>
+        <Button onClick={() => openAppointment()} className="hidden sm:flex bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow transition-all font-medium">
+          <Plus className="w-4 h-4 mr-1.5" /> Nueva Cita
+        </Button>
 
         <ThemeToggle />
 

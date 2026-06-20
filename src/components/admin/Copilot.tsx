@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Sparkles, X, Send, Bot, Mic, Square, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAdminModals } from "@/components/admin/AdminModals"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
@@ -18,6 +19,7 @@ const SUGGESTIONS = [
 ]
 
 export function Copilot() {
+  const { openAppointment } = useAdminModals()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Msg[]>([WELCOME])
   const [input, setInput] = useState("")
@@ -52,6 +54,9 @@ export function Copilot() {
       })
       const data = await res.json()
       setMessages((m) => [...m, { role: "assistant", content: data.reply || "…" }])
+      if (data.action?.type === "open_appointment") {
+        openAppointment(data.action.prefill || {})
+      }
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "No pude conectar. Intenta de nuevo." }])
     } finally {

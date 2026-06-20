@@ -30,6 +30,10 @@ interface AppointmentFormProps {
   defaultPatientId?: string
   /** Fecha/hora precargada (formato "yyyy-MM-dd'T'HH:mm"), p. ej. al hacer clic en un horario del calendario */
   defaultScheduledAt?: string
+  defaultServiceId?: string
+  defaultProfessionalId?: string
+  defaultDuration?: number
+  defaultPrice?: number
 }
 
 import { format } from "date-fns"
@@ -52,7 +56,7 @@ const TIME_OPTIONS: string[] = (() => {
   return out
 })()
 
-export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId, defaultScheduledAt }: AppointmentFormProps) {
+export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPatientId, defaultScheduledAt, defaultServiceId, defaultProfessionalId, defaultDuration, defaultPrice }: AppointmentFormProps) {
   const { data: patients } = usePatients()
   const { data: services } = useServices(true) // Solo servicios activos
   
@@ -76,12 +80,12 @@ export function AppointmentForm({ initialData, onSubmit, isSubmitting, defaultPa
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
       patient_id: initialData?.patient_id || defaultPatientId || "",
-      service_id: initialData?.service_id || "",
-      professional_id: initialData?.professional_id || "",
+      service_id: initialData?.service_id || defaultServiceId || "",
+      professional_id: initialData?.professional_id || defaultProfessionalId || "",
       campaign_id: initialData?.campaign_id || "",
       scheduled_at: initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), "yyyy-MM-dd'T'HH:mm") : (defaultScheduledAt || ""),
-      duration_minutes: initialData?.duration_minutes || 60,
-      price: initialData?.price || 0,
+      duration_minutes: initialData?.duration_minutes || defaultDuration || 60,
+      price: initialData?.price || defaultPrice || 0,
       notes: initialData?.notes || "",
       status: initialData?.status || "pendiente",
     },

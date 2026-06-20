@@ -42,14 +42,14 @@ export async function POST(req: Request) {
     }
     if (!userText) return NextResponse.json({ reply: "¿En qué te ayudo?" })
 
-    const reply = await runCopilotReply({
+    const { reply, action } = await runCopilotReply({
       clinicId: context.clinicId,
       clinicName: clinic?.name || "la clínica",
       userId: context.userId,
       history,
       userText,
     })
-    return NextResponse.json({ reply })
+    return NextResponse.json({ reply, action: action || null })
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     console.error("copilot error:", msg)
