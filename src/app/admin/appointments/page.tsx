@@ -6,10 +6,11 @@ import { WeekAgendaGrid } from "@/components/admin/appointments/WeekAgendaGrid"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Plus, Calendar as CalendarIcon, List as ListIcon } from "lucide-react"
-import Link from "next/link"
+import { DarCitaModal } from "@/components/admin/appointments/DarCitaModal"
 
 export default function AppointmentsPage() {
   const [view, setView] = useState<"list" | "calendar">("calendar")
+  const [darCita, setDarCita] = useState(false)
 
   return (
     <div className="space-y-6">
@@ -40,12 +41,10 @@ export default function AppointmentsPage() {
           </button>
         </div>
 
-        <Link href="/admin/appointments/new">
-          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
-            <Plus className="mr-2 h-4 w-4" />
-            Nueva Cita
-          </Button>
-        </Link>
+        <Button onClick={() => setDarCita(true)} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+          <Plus className="mr-2 h-4 w-4" />
+          Nueva Cita
+        </Button>
       </PageHeader>
 
       {view === "list" ? (
@@ -53,6 +52,8 @@ export default function AppointmentsPage() {
       ) : (
         <WeekAgendaGrid />
       )}
+
+      <DarCitaModal open={darCita} onClose={() => setDarCita(false)} />
     </div>
   )
 }
