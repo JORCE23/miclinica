@@ -163,9 +163,9 @@ export function CajaWidget() {
 export function AccesosWidget() {
   const links = [
     { label: "Nuevo paciente", href: "/admin/patients/new", icon: UserPlus, tint: "bg-brand/10 text-brand" },
-    { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" },
-    { label: "Inventario", href: "/admin/inventory", icon: Package, tint: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400" },
-    { label: "Caja", href: "/admin/cash", icon: Wallet, tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" },
+    { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, tint: "bg-brand/10 text-brand" },
+    { label: "Inventario", href: "/admin/inventory", icon: Package, tint: "bg-brand/10 text-brand" },
+    { label: "Caja", href: "/admin/cash", icon: Wallet, tint: "bg-brand/10 text-brand" },
   ]
   return (
     <div className="grid grid-cols-2 gap-3">
