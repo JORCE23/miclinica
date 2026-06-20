@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client"
 import { FacialDiagram } from "./FacialDiagram"
 import { Face3DDiagram } from "./Face3DDiagram"
 import { Face360Spin } from "./Face360Spin"
+import { FaceRicketts } from "./FaceRicketts"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const is3D = (data: any) => Array.isArray(data) && data[0] && typeof data[0] === "object" && "position" in data[0]
@@ -47,7 +48,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
   const [afterFile, setAfterFile] = useState<File | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [diagramPoints, setDiagramPoints] = useState<any[]>([])
-  const [diagramMode, setDiagramMode] = useState<"2d" | "3d" | "360">("2d")
+  const [diagramMode, setDiagramMode] = useState<"2d" | "3d" | "360" | "ricketts">("2d")
   const [showDiagram, setShowDiagram] = useState(false)
 
   const { data: procedures, isLoading } = useQuery({
@@ -182,7 +183,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
             {showDiagram && (
               <div className="space-y-3">
                 <div className="inline-flex flex-wrap rounded-lg border border-border p-0.5 bg-muted/40 gap-0.5">
-                  {([["2d", "Músculos (2D)"], ["3d", "Cabeza 3D"], ["360", "Video 360°"]] as const).map(([mode, label]) => (
+                  {([["2d", "Músculos (2D)"], ["3d", "Cabeza 3D"], ["360", "Video 360°"], ["ricketts", "Ricketts / Áurea"]] as const).map(([mode, label]) => (
                     <button
                       key={mode}
                       type="button"
@@ -196,6 +197,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                 {diagramMode === "2d" && <FacialDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
                 {diagramMode === "3d" && <Face3DDiagram points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
                 {diagramMode === "360" && <Face360Spin points={diagramPoints} onChange={setDiagramPoints} disabled={isUploading} />}
+                {diagramMode === "ricketts" && <FaceRicketts />}
               </div>
             )}
           </div>
