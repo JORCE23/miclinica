@@ -10,9 +10,14 @@
  */
 
 import { useRef, useState } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
+import { createClient } from "@/lib/supabase/client"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, Sparkles, Loader2, Grid3x3, Rows3, RotateCcw, Info } from "lucide-react"
+import { Upload, Sparkles, Loader2, Grid3x3, Rows3, RotateCcw, Info, Save, Trash2, Clock } from "lucide-react"
 
 /* ───────────────────────── MediaPipe FaceMesh (CDN) ───────────────────────── */
 const FACEMESH_SRC = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4/face_mesh.js"
@@ -182,11 +187,17 @@ function fileToDataURL(file: File, maxDim: number, cb: (url: string) => void) {
   rd.readAsDataURL(file)
 }
 
+type SavedAnalysis = { id: string; photo_url: string | null; harmony: number | null; metrics: Metric[] | null; recs: string[] | null; notes: string | null; created_at: string }
+
 /* ───────────────────────── Componente ───────────────────────── */
-export function AnalisisFacialTab() {
+export function AnalisisFacialTab({ patientId }: { patientId: string }) {
+  const qc = useQueryClient()
+  const supabase = createClient()
   const [photo, setPhoto] = useState<string | null>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [mask, setMask] = useState(false)
   const [thirds, setThirds] = useState(true)
@@ -194,10 +205,19 @@ export function AnalisisFacialTab() {
   const [mY, setMY] = useState(0)
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const { data: history = [] } = useQuery<SavedAnalysis[]>({
+    queryKey: ["facial-analyses", patientId],
+    queryFn: async () => {
+      const r = await fetch(`/api/patients/${patientId}/facial-analyses`)
+      if (!r.ok) throw new Error()
+      return r.json()
+    },
+  })
+
   function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
-    setError(null); setAnalysis(null)
+    setError(null); setAnalysis(null); setPhotoFile(f)
     fileToDataURL(f, 1100, (url) => { setPhoto(url); runAnalysis(url) })
     e.target.value = ""
   }
@@ -214,8 +234,43 @@ export function AnalisisFacialTab() {
     }
   }
 
+  async function save() {
+    if (!analysis) return
+    setSaving(true)
+    try {
+      let photo_url: string | null = null
+      if (photoFile) {
+        const ext = photoFile.name.split(".").pop() || "jpg"
+        const fileName = `${patientId}/facial_${Date.now()}.${ext}`
+        const { error: upErr } = await supabase.storage.from("clinical_photos").upload(fileName, photoFile)
+        if (upErr) throw upErr
+        photo_url = supabase.storage.from("clinical_photos").getPublicUrl(fileName).data.publicUrl
+      }
+      const r = await fetch(`/api/patients/${patientId}/facial-analyses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photo_url, harmony: analysis.harmony, metrics: analysis.metrics, recs: analysis.recs }),
+      })
+      if (!r.ok) throw new Error()
+      toast.success("Análisis guardado en la ficha")
+      qc.invalidateQueries({ queryKey: ["facial-analyses", patientId] })
+      reset()
+    } catch {
+      toast.error("No se pudo guardar (¿imagen muy grande o sin bucket?)")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function removeSaved(id: string) {
+    if (!confirm("¿Eliminar este análisis guardado?")) return
+    const r = await fetch(`/api/patients/${patientId}/facial-analyses?analysisId=${id}`, { method: "DELETE" })
+    if (!r.ok) { toast.error("No se pudo eliminar"); return }
+    qc.invalidateQueries({ queryKey: ["facial-analyses", patientId] })
+  }
+
   function reset() {
-    setPhoto(null); setAnalysis(null); setError(null); setMask(false); setThirds(true)
+    setPhoto(null); setPhotoFile(null); setAnalysis(null); setError(null); setMask(false); setThirds(true)
   }
 
   return (
@@ -351,8 +406,45 @@ export function AnalisisFacialTab() {
                     ))}
                   </ul>
                 </Card>
+
+                <Button onClick={save} disabled={saving} className="w-full rounded-xl">
+                  {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                  Guardar análisis en la ficha
+                </Button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Historial guardado en la ficha */}
+      {history.length > 0 && (
+        <div className="pt-2">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mb-3 flex items-center gap-2">
+            <Clock className="h-3.5 w-3.5" /> Análisis guardados
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {history.map((h) => (
+              <Card key={h.id} className="p-3 group relative">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface-2 mb-2">
+                  {h.photo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={h.photo_url} alt="Análisis facial" className="absolute inset-0 h-full w-full object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground"><Sparkles className="h-6 w-6" /></div>
+                  )}
+                  <span className="absolute top-1.5 right-1.5 rounded-full bg-surface/90 px-2 py-0.5 text-xs font-serif" style={{ color: scoreColor((h.harmony ?? 0) / 100) }}>{h.harmony ?? "—"}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">{format(new Date(h.created_at), "d MMM yyyy · HH:mm", { locale: es })}</p>
+                <button
+                  onClick={() => removeSaved(h.id)}
+                  className="absolute top-2 left-2 h-7 w-7 rounded-full bg-surface/90 border border-border flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-danger"
+                  title="Eliminar"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </Card>
+            ))}
           </div>
         </div>
       )}

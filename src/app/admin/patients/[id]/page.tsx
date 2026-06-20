@@ -277,7 +277,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           </TabsContent>
 
           <TabsContent value="facial-ia" className="mt-0 outline-none">
-            <AnalisisFacialTab />
+            <AnalisisFacialTab patientId={patient.id} />
           </TabsContent>
 
           <TabsContent value="appointments" className="mt-0 outline-none">
