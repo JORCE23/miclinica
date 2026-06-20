@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Check, ArrowRight, Megaphone, GraduationCap, Globe, Share2 } from "lucide-react"
+import { Reveal, Stagger, StaggerItem } from "@/components/marketing/motion"
 
 export const metadata = {
   title: "Planes y precios",
@@ -65,25 +66,27 @@ export default function PlanesPage() {
   return (
     <>
       {/* Encabezado */}
-      <section className="relative overflow-hidden bg-brand-panel text-white">
-        <div className="absolute inset-0 bg-grid opacity-60" />
-        <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-brand/25 blur-3xl animate-float" />
-        <div className="relative mx-auto max-w-6xl px-5 py-16 md:py-20 text-center">
-          <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">Planes simples, todo incluido</h1>
-          <p className="mt-4 text-white/75 text-lg max-w-2xl mx-auto">
-            Sin costos ocultos. La página de reservas, la fidelización y los recordatorios vienen en todos los planes.
-          </p>
-          <p className="mt-3 inline-flex items-center gap-2 rounded-full glass-panel px-4 py-1.5 text-sm font-medium text-brand-light">
-            Paga anual y llévate 2 meses gratis
-          </p>
+      <section className="relative overflow-hidden bg-brand-panel text-white pt-28 md:pt-32 pb-16 md:pb-20">
+        <div className="aurora-bg opacity-60" />
+        <div className="absolute inset-0 bg-grid opacity-50" />
+        <div className="relative mx-auto max-w-6xl px-5 text-center">
+          <Reveal>
+            <h1 className="font-display text-4xl md:text-6xl font-semibold tracking-tight">Planes simples, <span className="text-shine">todo incluido</span></h1>
+            <p className="mt-5 text-white/75 text-lg max-w-2xl mx-auto">
+              Sin costos ocultos. La página de reservas, la fidelización y los recordatorios vienen en todos los planes.
+            </p>
+            <p className="mt-5 inline-flex items-center gap-2 rounded-full glass-panel px-4 py-1.5 text-sm font-medium text-brand-light">
+              Paga anual y llévate 2 meses gratis
+            </p>
+          </Reveal>
         </div>
       </section>
 
       {/* Planes */}
       <section className="mx-auto max-w-6xl px-5 -mt-10 md:-mt-12 pb-8">
-        <div className="grid md:grid-cols-3 gap-6">
+        <Stagger className="grid md:grid-cols-3 gap-6">
           {plans.map((p) => (
-            <div
+            <StaggerItem
               key={p.name}
               className={`relative rounded-2xl bg-card p-7 flex flex-col ${
                 p.featured ? "border-2 border-brand shadow-elevated md:-translate-y-2" : "border border-border shadow-soft"
@@ -117,9 +120,9 @@ export default function PlanesPage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
         <p className="text-center text-sm text-muted-foreground mt-8">
           ¿Clínica con varias sucursales o necesitas algo a medida? <Link href="/crear-cuenta" className="text-brand font-medium hover:underline">Hablemos</Link>.
         </p>
@@ -132,9 +135,9 @@ export default function PlanesPage() {
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground tracking-tight">Potencia tu clínica con marketing</h2>
             <p className="mt-4 text-muted-foreground text-lg">Servicios gestionados por nuestro equipo. Se suman a cualquier plan cuando quieras llenar tu agenda.</p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-5">
+          <Stagger className="grid sm:grid-cols-2 gap-5">
             {addons.map((a) => (
-              <div key={a.name} className="rounded-2xl border border-border bg-background p-6 flex gap-4 hover-lift">
+              <StaggerItem key={a.name} className="rounded-2xl border border-border bg-background p-6 flex gap-4 hover-lift">
                 <div className="h-11 w-11 rounded-xl bg-brand/10 text-brand flex items-center justify-center shrink-0">
                   <a.icon className="h-[22px] w-[22px]" />
                 </div>
@@ -145,9 +148,9 @@ export default function PlanesPage() {
                   </div>
                   <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 

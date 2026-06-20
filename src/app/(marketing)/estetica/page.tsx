@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Sparkles, Camera, FileSignature, Gift, CalendarCheck, ScanFace, Check, ArrowRight } from "lucide-react"
+import { Reveal, Stagger, StaggerItem } from "@/components/marketing/motion"
 
 export const metadata = {
   title: "Software para clínicas de estética",
@@ -18,15 +19,15 @@ const features = [
 export default function EsteticaPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-brand-panel text-white">
-        <div className="absolute inset-0 bg-grid opacity-60" />
-        <div className="absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-brand/25 blur-3xl animate-float" />
-        <div className="relative mx-auto max-w-6xl px-5 py-20 md:py-28 text-center">
+      <section className="relative overflow-hidden bg-brand-panel text-white pt-28 md:pt-32 pb-20 md:pb-28">
+        <div className="aurora-bg opacity-70" />
+        <div className="absolute inset-0 bg-grid opacity-50" />
+        <Reveal className="relative mx-auto max-w-6xl px-5 text-center">
           <span className="inline-flex items-center gap-2 rounded-full glass-panel px-4 py-1.5 text-xs font-medium text-brand-light mb-6">
             <Sparkles className="h-3.5 w-3.5" /> Para clínicas de estética
           </span>
           <h1 className="font-display text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] max-w-3xl mx-auto">
-            El software que entiende tu clínica estética
+            El software que entiende tu <span className="text-shine">clínica estética</span>
           </h1>
           <p className="mt-6 text-lg md:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
             Fichas con fotos antes/después, análisis facial, consentimientos digitales y fidelización.
@@ -40,24 +41,24 @@ export default function EsteticaPage() {
               Ver planes
             </Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <section className="mx-auto max-w-6xl px-5 py-20 md:py-24">
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <Reveal className="text-center max-w-2xl mx-auto mb-14">
           <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground tracking-tight">Hecho para la consulta estética</h2>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        </Reveal>
+        <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
-            <div key={f.title} className="rounded-2xl border border-border bg-card p-6 shadow-soft hover-lift">
+            <StaggerItem key={f.title} className="rounded-2xl border border-border bg-card p-6 shadow-soft hover-lift">
               <div className="h-11 w-11 rounded-xl bg-brand/10 text-brand flex items-center justify-center mb-4">
                 <f.icon className="h-[22px] w-[22px]" />
               </div>
               <h3 className="font-semibold text-foreground mb-1.5">{f.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       <section className="bg-card border-y border-border/70">
