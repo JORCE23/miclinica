@@ -28,8 +28,8 @@ export function ResumenWidget() {
   if (!s) return <Empty text="Sin datos" />
   const items = [
     { label: "Pacientes", value: s.activePatients ?? 0, icon: Users, c: "text-brand" },
-    { label: "Citas hoy", value: s.todayAppointments ?? 0, icon: Calendar, c: "text-blue-500" },
-    { label: "Nuevos (mes)", value: s.newPatientsThisMonth ?? 0, icon: UserPlus, c: "text-purple-500" },
+    { label: "Citas hoy", value: s.todayAppointments ?? 0, icon: Calendar, c: "text-slate-500" },
+    { label: "Nuevos (mes)", value: s.newPatientsThisMonth ?? 0, icon: UserPlus, c: "text-slate-500" },
     { label: "Ingresos hoy", value: clp(s.revenueToday || 0), icon: DollarSign, c: "text-emerald-600" },
   ]
   return (
@@ -84,7 +84,7 @@ export function PacientesWidget() {
     <div className="space-y-2">
       {list.slice(0, 6).map((p) => (
         <Link key={p.id} href={`/admin/patients/${p.id}`} className="flex items-center gap-3 rounded-xl border border-border/70 bg-background p-2.5 hover:border-brand/40 transition-colors">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#2E7FB0] to-[#5BA3CE] text-white flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#54707F] to-[#6E8A98] text-white flex items-center justify-center text-xs font-bold shrink-0">
             {(p.full_name || "?").charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
@@ -163,8 +163,8 @@ export function CajaWidget() {
 export function AccesosWidget() {
   const links = [
     { label: "Nuevo paciente", href: "/admin/patients/new", icon: UserPlus, tint: "bg-brand/10 text-brand" },
-    { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" },
-    { label: "Inventario", href: "/admin/inventory", icon: Package, tint: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400" },
+    { label: "Nueva cita", href: "/admin/appointments/new", icon: Calendar, tint: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400" },
+    { label: "Inventario", href: "/admin/inventory", icon: Package, tint: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400" },
     { label: "Caja", href: "/admin/cash", icon: Wallet, tint: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400" },
   ]
   return (

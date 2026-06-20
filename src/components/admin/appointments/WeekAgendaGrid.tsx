@@ -13,7 +13,7 @@ const HOURS = Array.from({ length: 13 }, (_, i) => `${String(i + 8).padStart(2, 
 
 const STATUS_DOT: Record<string, string> = {
   confirmada: "bg-emerald-500",
-  completada: "bg-blue-500",
+  completada: "bg-slate-500",
   pendiente: "bg-amber-500",
   cancelada: "bg-red-500",
   no_asistio: "bg-orange-500",

@@ -33,8 +33,8 @@ export function LoyaltyTab({ patientId }: { patientId: string }) {
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case "ganados": return <ArrowUpRight className="h-4 w-4 text-emerald-500" />
-      case "canjeados": return <ArrowDownRight className="h-4 w-4 text-[#7B9AB5]" />
-      case "ajuste": return <RefreshCcw className="h-4 w-4 text-blue-500" />
+      case "canjeados": return <ArrowDownRight className="h-4 w-4 text-[#8A929B]" />
+      case "ajuste": return <RefreshCcw className="h-4 w-4 text-slate-500" />
       case "expirados": return <ArrowDownRight className="h-4 w-4 text-orange-500" />
       default: return null
     }
@@ -105,7 +105,7 @@ export function LoyaltyTab({ patientId }: { patientId: string }) {
                         {getTransactionBadge(tx.type)}
                       </div>
                     </TableCell>
-                    <TableCell className={`font-bold ${tx.points > 0 ? 'text-emerald-500' : 'text-[#7B9AB5]'}`}>
+                    <TableCell className={`font-bold ${tx.points > 0 ? 'text-emerald-500' : 'text-[#8A929B]'}`}>
                       {tx.points > 0 ? `+${tx.points}` : tx.points}
                     </TableCell>
                     <TableCell className="text-muted-foreground max-w-[300px] truncate">

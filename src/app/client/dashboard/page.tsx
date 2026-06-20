@@ -54,7 +54,7 @@ export default async function ClientDashboardPage() {
             <Award className="w-48 h-48" />
           </div>
           <CardHeader>
-            <CardTitle className="text-[#162439] dark:text-rose-400 flex items-center gap-2">
+            <CardTitle className="text-[#1A1A14] dark:text-rose-400 flex items-center gap-2">
               <Award className="h-5 w-5" /> Tus Puntos Disponibles
             </CardTitle>
           </CardHeader>
@@ -67,7 +67,7 @@ export default async function ClientDashboardPage() {
             </div>
             
             <div className="mt-6">
-              <Link href="/client/loyalty" className="text-sm font-medium text-[#162439] hover:text-rose-700 flex items-center gap-1 transition-colors">
+              <Link href="/client/loyalty" className="text-sm font-medium text-[#1A1A14] hover:text-rose-700 flex items-center gap-1 transition-colors">
                 Ver historial de puntos <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
@@ -78,7 +78,7 @@ export default async function ClientDashboardPage() {
         <Card className="border-slate-200 dark:border-slate-800">
           <CardHeader>
             <CardTitle className="text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <CalendarClock className="h-5 w-5 text-sky-500" /> Tu Próxima Cita
+              <CalendarClock className="h-5 w-5 text-slate-500" /> Tu Próxima Cita
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -86,7 +86,7 @@ export default async function ClientDashboardPage() {
               <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
                   <div className="flex flex-col gap-1 mb-3">
-                    <span className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                       {format(new Date(nextApt.scheduled_at), "EEEE, d 'de' MMMM", { locale: es })}
                     </span>
                     <span className="text-2xl font-bold">
@@ -103,7 +103,7 @@ export default async function ClientDashboardPage() {
                   </div>
                 </div>
                 <div>
-                  <Link href="/client/appointments" className="text-sm font-medium text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors">
+                  <Link href="/client/appointments" className="text-sm font-medium text-slate-600 hover:text-slate-700 flex items-center gap-1 transition-colors">
                     Ver todas mis citas <ChevronRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -111,7 +111,7 @@ export default async function ClientDashboardPage() {
             ) : (
               <div className="h-full flex flex-col justify-center py-4">
                 <p className="text-muted-foreground mb-4">No tienes citas programadas próximamente.</p>
-                <Link href="/client/appointments" className="text-sm font-medium text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors">
+                <Link href="/client/appointments" className="text-sm font-medium text-slate-600 hover:text-slate-700 flex items-center gap-1 transition-colors">
                   Ir a Mis Citas <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>

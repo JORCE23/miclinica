@@ -73,7 +73,7 @@ export function FacialDiagram({ points, onChange, disabled }: FacialDiagramProps
             variant={view === "front" ? "default" : "outline"} 
             size="sm" 
             onClick={() => setView("front")}
-            className={view === "front" ? "bg-[#162439] hover:bg-[#1E304D] text-white" : ""}
+            className={view === "front" ? "bg-[#1A1A14] hover:bg-[#2A2A22] text-white" : ""}
           >
             Vista Frontal
           </Button>
@@ -81,7 +81,7 @@ export function FacialDiagram({ points, onChange, disabled }: FacialDiagramProps
             variant={view === "profile" ? "default" : "outline"} 
             size="sm" 
             onClick={() => setView("profile")}
-            className={view === "profile" ? "bg-[#162439] hover:bg-[#1E304D] text-white" : ""}
+            className={view === "profile" ? "bg-[#1A1A14] hover:bg-[#2A2A22] text-white" : ""}
           >
             Vista de Perfil
           </Button>
@@ -107,7 +107,7 @@ export function FacialDiagram({ points, onChange, disabled }: FacialDiagramProps
                 <div
                   key={point.id}
                   className={`absolute w-4 h-4 -ml-2 -mt-2 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md cursor-pointer transition-transform pointer-events-auto ${
-                    selectedPointId === point.id ? 'bg-blue-600 text-white scale-125 z-10' : 'bg-[#162439] text-white hover:scale-110'
+                    selectedPointId === point.id ? 'bg-slate-600 text-white scale-125 z-10' : 'bg-[#1A1A14] text-white hover:scale-110'
                   }`}
                   style={{ left: `${point.x}%`, top: `${point.y}%` }}
                   onClick={(e) => handlePointClick(e, point.id)}
@@ -139,7 +139,7 @@ export function FacialDiagram({ points, onChange, disabled }: FacialDiagramProps
               return (
                 <div 
                   key={point.id} 
-                  className={`p-3 rounded-lg border transition-colors ${selectedPointId === point.id ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10' : 'bg-card hover:border-slate-300'}`}
+                  className={`p-3 rounded-lg border transition-colors ${selectedPointId === point.id ? 'border-slate-500 bg-slate-50/50 dark:bg-slate-900/10' : 'bg-card hover:border-slate-300'}`}
                   onClick={() => setSelectedPointId(point.id)}
                 >
                   <div className="flex items-center justify-between mb-2">

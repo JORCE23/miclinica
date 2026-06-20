@@ -98,20 +98,20 @@ export function ReportsView() {
               <AreaChart data={monthlyRevenue} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                 <defs>
                   <linearGradient id="repRevFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2E7FB0" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="#2E7FB0" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#54707F" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="#54707F" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF2F6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} dy={8} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} width={48} tickFormatter={(value) => `$${value/1000}k`} />
                 <RechartsTooltip
-                  cursor={{stroke: '#2E7FB0', strokeWidth: 1, strokeDasharray: '4 4'}}
+                  cursor={{stroke: '#54707F', strokeWidth: 1, strokeDasharray: '4 4'}}
                   contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)', fontSize: '13px'}}
-                  labelStyle={{fontWeight: 600, color: '#162439'}}
+                  labelStyle={{fontWeight: 600, color: '#1A1A14'}}
                   formatter={(value: any) => [clpFmt(Number(value)), 'Ingresos']}
                 />
-                <Area type="monotone" dataKey="ingresos" stroke="#2E7FB0" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#2E7FB0', stroke: '#fff', strokeWidth: 2}} />
+                <Area type="monotone" dataKey="ingresos" stroke="#54707F" strokeWidth={2.5} fill="url(#repRevFill)" dot={false} activeDot={{r: 5, fill: '#54707F', stroke: '#fff', strokeWidth: 2}} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -124,13 +124,13 @@ export function ReportsView() {
               <BarChart data={servicesData} layout="vertical" margin={{ left: 20 }}>
                 <defs>
                   <linearGradient id="repBar" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#2E7FB0" />
-                    <stop offset="100%" stopColor="#5BA3CE" />
+                    <stop offset="0%" stopColor="#54707F" />
+                    <stop offset="100%" stopColor="#6E8A98" />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" horizontal={false} stroke="#EEF2F6" />
                 <XAxis type="number" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#162439', fontSize: 12, fontWeight: 500}} width={110} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#1A1A14', fontSize: 12, fontWeight: 500}} width={110} />
                 <RechartsTooltip
                   cursor={{fill: 'rgb(13 148 136 / 0.06)'}}
                   contentStyle={{borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 8px 24px -8px rgb(16 36 57 / 0.14)', fontSize: '13px'}}

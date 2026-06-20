@@ -56,7 +56,7 @@ export function CampaignList() {
       case 'pausada':
       case 'paused': return <Badge className="bg-amber-50 text-amber-700 border-amber-200">Pausada</Badge>
       case 'finalizada':
-      case 'completed': return <Badge className="bg-blue-50 text-blue-700 border-blue-200">Finalizada</Badge>
+      case 'completed': return <Badge className="bg-slate-50 text-slate-700 border-slate-200">Finalizada</Badge>
       case 'draft': return <Badge variant="outline" className="bg-slate-50 text-slate-600">Borrador</Badge>
       default: return <Badge variant="outline" className="bg-muted text-muted-foreground capitalize">{status}</Badge>
     }
@@ -111,7 +111,7 @@ export function CampaignList() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Link href={`/admin/marketing/${campaign.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-foreground">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#8A929B] hover:text-foreground">
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>

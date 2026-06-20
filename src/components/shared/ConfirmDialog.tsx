@@ -59,7 +59,7 @@ export function ConfirmDialog({
           <Button 
             variant={isDanger ? "destructive" : "default"} 
             onClick={handleConfirm}
-            className={!isDanger ? "bg-[#162439] hover:bg-[#1E304D] text-white" : ""}
+            className={!isDanger ? "bg-[#1A1A14] hover:bg-[#2A2A22] text-white" : ""}
           >
             {confirmText}
           </Button>

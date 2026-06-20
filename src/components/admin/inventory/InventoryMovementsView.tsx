@@ -14,7 +14,7 @@ type Movement = { id: string; type: string; quantity: number; reason: string | n
 const TYPE_META: Record<string, { label: string; icon: typeof ArrowDownCircle; cls: string }> = {
   entrada: { label: "Entrada", icon: ArrowDownCircle, cls: "bg-emerald-100 text-emerald-700" },
   salida: { label: "Salida", icon: ArrowUpCircle, cls: "bg-red-100 text-red-700" },
-  ajuste: { label: "Ajuste", icon: SlidersHorizontal, cls: "bg-blue-100 text-blue-700" },
+  ajuste: { label: "Ajuste", icon: SlidersHorizontal, cls: "bg-slate-100 text-slate-700" },
 }
 
 export function InventoryMovementsView() {

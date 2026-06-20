@@ -14,7 +14,7 @@ type Collab = { id: string; name: string; email: string | null; phone: string | 
 
 const STATUS = ["nuevo", "revisado", "contactado", "descartado"]
 const STATUS_CLS: Record<string, string> = {
-  nuevo: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+  nuevo: "bg-slate-50 text-slate-600 dark:bg-slate-950/40 dark:text-slate-400",
   revisado: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400",
   contactado: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400",
   descartado: "bg-muted text-muted-foreground",

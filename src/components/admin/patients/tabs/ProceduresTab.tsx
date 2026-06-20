@@ -245,7 +245,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                       {proc.before_image_url ? (
                         <Dialog>
                           <DialogTrigger render={
-                            <button className="text-xs flex items-center text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
+                            <button className="text-xs flex items-center text-slate-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
                               <ImageIcon className="h-3 w-3 mr-1" /> Antes
                             </button>
                           } />
@@ -259,7 +259,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                       {proc.after_image_url && (
                         <Dialog>
                           <DialogTrigger render={
-                            <button className="text-xs flex items-center text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
+                            <button className="text-xs flex items-center text-slate-600 hover:underline cursor-pointer bg-transparent border-0 p-0">
                               <ImageIcon className="h-3 w-3 mr-1" /> Después
                             </button>
                           } />
@@ -272,7 +272,7 @@ export function ProceduresTab({ patientId }: { patientId: string }) {
                       )}
                       {proc.facial_diagram_data && (
                         <Dialog>
-                          <DialogTrigger render={<Button variant="link" className="h-auto p-0 text-xs text-indigo-600 h-4" />}>
+                          <DialogTrigger render={<Button variant="link" className="h-auto p-0 text-xs text-slate-600 h-4" />}>
                               <Activity className="h-3 w-3 mr-1" /> Mapa Facial
                           </DialogTrigger>
                           <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[90vw] md:max-w-4xl max-h-[90vh] overflow-y-auto">

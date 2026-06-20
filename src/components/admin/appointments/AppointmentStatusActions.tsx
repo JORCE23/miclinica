@@ -59,7 +59,7 @@ export function AppointmentStatusActions({ appointmentId, currentStatus, loyalty
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {currentStatus !== "confirmada" && (
-            <DropdownMenuItem onClick={() => handleStatusChange("confirmada")} className="text-blue-600">
+            <DropdownMenuItem onClick={() => handleStatusChange("confirmada")} className="text-slate-600">
               <CheckCircle className="mr-2 h-4 w-4" /> Confirmar
             </DropdownMenuItem>
           )}

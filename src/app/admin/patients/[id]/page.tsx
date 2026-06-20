@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
   ChevronLeft, Pencil, Calendar, Bell, ShieldAlert, ShieldCheck, HeartPulse,
-  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2, Sparkles,
+  CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2, Sparkles, ScanFace,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -20,6 +20,7 @@ import { ConsentsTab } from "@/components/admin/patients/tabs/ConsentsTab"
 import { ClinicalRecordTab } from "@/components/admin/patients/tabs/ClinicalRecordTab"
 import { SimulationTab } from "@/components/admin/patients/tabs/SimulationTab"
 import { AiSummaryTab } from "@/components/admin/patients/tabs/AiSummaryTab"
+import { AnalisisFacialTab } from "@/components/admin/patients/tabs/AnalisisFacialTab"
 import { WhatsappButton } from "@/components/admin/WhatsappButton"
 import { MailButton } from "@/components/admin/MailButton"
 
@@ -27,6 +28,7 @@ const TABS = [
   { value: "ficha", label: "Ficha Clínica", icon: ClipboardList },
   { value: "ai-summary", label: "Resumen IA", icon: Sparkles },
   { value: "clinical", label: "Procedimientos", icon: Activity },
+  { value: "facial-ia", label: "Análisis facial IA", icon: ScanFace },
   { value: "medical", label: "Antecedentes", icon: HeartPulse },
   { value: "appointments", label: "Atenciones", icon: Calendar },
   { value: "consents", label: "Consentimientos", icon: FileSignature },
@@ -272,6 +274,10 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
 
           <TabsContent value="clinical" className="mt-0 outline-none">
             <ProceduresTab patientId={patient.id} />
+          </TabsContent>
+
+          <TabsContent value="facial-ia" className="mt-0 outline-none">
+            <AnalisisFacialTab patientId={patient.id} />
           </TabsContent>
 
           <TabsContent value="appointments" className="mt-0 outline-none">

@@ -26,7 +26,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle>(function SignaturePad
     ctx.lineWidth = 2.2
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
-    ctx.strokeStyle = "#162439"
+    ctx.strokeStyle = "#1A1A14"
   }, [])
 
   const point = (e: React.PointerEvent<HTMLCanvasElement>) => {

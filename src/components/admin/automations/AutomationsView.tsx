@@ -142,7 +142,7 @@ export function AutomationsView() {
                   </span>
                   <button 
                     onClick={() => handleEditClick(automation)}
-                    className="text-xs font-medium text-[#7B9AB5] hover:text-foreground underline"
+                    className="text-xs font-medium text-[#8A929B] hover:text-foreground underline"
                   >
                     Editar mensaje
                   </button>
