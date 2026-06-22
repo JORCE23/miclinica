@@ -9,6 +9,7 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { useAdminModals } from "@/components/admin/AdminModals"
+import { Avatar } from "@/components/shared/Avatar"
 
 export function ProfessionalList() {
   const queryClient = useQueryClient()
@@ -75,7 +76,12 @@ export function ProfessionalList() {
             )}
             {professionals?.map((professional) => (
               <TableRow key={professional.id}>
-                <TableCell className="font-medium text-foreground">{professional.full_name}</TableCell>
+                <TableCell className="font-medium text-foreground">
+                  <div className="flex items-center gap-3">
+                    <Avatar src={professional.avatar_url} name={professional.full_name} size={36} />
+                    <span>{professional.full_name}</span>
+                  </div>
+                </TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.specialty || '-'}</TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.email || '-'}</TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.phone || '-'}</TableCell>

@@ -10,6 +10,7 @@ import { Search, ExternalLink, UserX } from "lucide-react"
 import Link from "next/link"
 import { formatRut } from "@/lib/validations/rut"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
+import { Avatar } from "@/components/shared/Avatar"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -100,7 +101,12 @@ export function PatientList() {
                     onClick={() => router.push(`/admin/patients/${patient.id}`)}
                     className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
                   >
-                    <td className="p-4 align-middle font-medium">{patient.full_name}</td>
+                    <td className="p-4 align-middle font-medium">
+                      <div className="flex items-center gap-3">
+                        <Avatar src={patient.avatar_url} name={patient.full_name} size={36} />
+                        <span>{patient.full_name}</span>
+                      </div>
+                    </td>
                     <td className="p-4 align-middle">{patient.rut ? formatRut(patient.rut) : "-"}</td>
                     <td className="p-4 align-middle">{patient.phone || "-"}</td>
                     <td className="p-4 align-middle">{patient.email}</td>

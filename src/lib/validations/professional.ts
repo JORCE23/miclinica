@@ -5,6 +5,7 @@ export const professionalSchema = z.object({
   specialty: z.string().optional(),
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
+  avatar_url: z.string().optional(),
   is_active: z.boolean().default(true),
 })
 

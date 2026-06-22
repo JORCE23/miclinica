@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, Bell, Plus, LogOut, Package, CalendarClock, Calendar, Cake, AlertTriangle, ChevronDown, User } from "lucide-react"
+import { Search, Bell, Plus, LogOut, Package, CalendarClock, Calendar, Cake, AlertTriangle, ChevronDown, User, Camera } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -11,8 +11,9 @@ import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter, usePathname } from "next/navigation"
 import { useAdminModals } from "@/components/admin/AdminModals"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 type Notif = { id: string; type: string; severity: "info" | "warning" | "danger"; title: string; description: string; href: string }
 
@@ -45,6 +46,33 @@ export function AdminHeader({ profile }: { profile?: any }) {
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.refresh()
+  }
+
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const changeAvatar = async (file?: File | null) => {
+    if (!file) return
+    if (!file.type.startsWith("image/")) { toast.error("Selecciona una imagen"); return }
+    if (file.size > 5 * 1024 * 1024) { toast.error("La imagen no puede superar 5 MB"); return }
+    setUploadingAvatar(true)
+    try {
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase()
+      const path = `avatars/users/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`
+      const { error } = await supabase.storage.from("clinical_photos").upload(path, file, { upsert: true })
+      if (error) throw error
+      const { data: { publicUrl } } = supabase.storage.from("clinical_photos").getPublicUrl(path)
+      const res = await fetch("/api/account/avatar", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatar_url: publicUrl }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success("Foto de perfil actualizada")
+      router.refresh()
+    } catch {
+      toast.error("No se pudo actualizar la foto")
+    } finally {
+      setUploadingAvatar(false)
+    }
   }
 
   const handleSearch = (e: React.FormEvent) => {
@@ -146,6 +174,9 @@ export function AdminHeader({ profile }: { profile?: any }) {
               </div>
             </div>
             <div className="p-1">
+              <DropdownMenuItem className="cursor-pointer rounded-lg" onClick={() => avatarInputRef.current?.click()}>
+                <Camera className="h-4 w-4 mr-2 text-muted-foreground" /> {uploadingAvatar ? "Subiendo…" : "Cambiar foto"}
+              </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer rounded-lg" render={<Link href="/admin/settings" className="w-full" />}>
                 <User className="h-4 w-4 mr-2 text-muted-foreground" /> Configuración
               </DropdownMenuItem>
@@ -156,6 +187,7 @@ export function AdminHeader({ profile }: { profile?: any }) {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => changeAvatar(e.target.files?.[0])} />
       </div>
       </div>
 

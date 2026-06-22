@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     const rawBody = await request.json()
     const body = sanitizeInput(rawBody)
 
-    const { email, password, full_name, rut, birth_date, phone, notes, source } = body
+    const { email, password, full_name, rut, birth_date, phone, notes, source, avatar_url } = body
 
     if (!email || !full_name) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 })
@@ -154,6 +154,7 @@ export async function POST(request: Request) {
       email,
       notes: notes || null,
       source: normalizedSource,
+      avatar_url: avatar_url || null,
     })
 
     if (profileError) {

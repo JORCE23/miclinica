@@ -66,6 +66,9 @@ export const patientSchema = z.object({
     .optional(),
 
   notes: z.string().optional(),
+
+  // Foto de perfil (URL pública en storage). Opcional.
+  avatar_url: z.string().optional(),
 })
 
 export type PatientFormValues = z.infer<typeof patientSchema>

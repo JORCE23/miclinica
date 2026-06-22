@@ -44,11 +44,22 @@ export async function POST(req: Request) {
 
   const body = await req.json()
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("professionals")
     .insert([{ ...body, clinic_id: profile.clinic_id }])
     .select()
     .single()
+
+  // Tolerancia: si la columna avatar_url aún no existe en la BD, reintentar sin ella.
+  if (error && /avatar_url/.test(error.message)) {
+    const rest = { ...body }
+    delete rest.avatar_url
+    ;({ data, error } = await supabase
+      .from("professionals")
+      .insert([{ ...rest, clinic_id: profile.clinic_id }])
+      .select()
+      .single())
+  }
 
   if (error) return new NextResponse(error.message, { status: 500 })
 
