@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, Bot, Package, Wallet, DoorOpen, LayoutGrid, ClipboardCheck, Shield, Handshake } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, LogOut, Menu, UserCheck, Megaphone, Zap, BarChart2, Bot, Package, Wallet, DoorOpen, LayoutGrid, ClipboardCheck, Shield, Handshake, Upload } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ThemeToggle"
@@ -27,6 +27,7 @@ const routes = [
   { label: "Agente IA",        icon: Bot,             href: "/admin/ai-agent"      },
   { label: "Reportes",         icon: BarChart2,       href: "/admin/reports"       },
   { label: "Colaboraciones",   icon: Handshake,       href: "/admin/collaborations" },
+  { label: "Importar",         icon: Upload,          href: "/admin/import"        },
   { label: "Administración",   icon: Shield,          href: "/admin/administration" },
   { label: "Configuración",    icon: Settings,        href: "/admin/settings"      },
 ]
@@ -54,7 +55,7 @@ export function AdminSidebar({ profile, permissions }: { profile?: any, permissi
     if (route.label === "Reportes" && !permissions?.can_view_reports) return false
 
     // Rutas exclusivas para admin
-    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración", "Agente IA", "Inventario", "Caja", "Mi Panel", "Pendientes", "Colaboraciones", "Administración"].includes(route.label)) {
+    if (["Equipo", "Automatizaciones", "Fidelidad", "Marketing", "Configuración", "Agente IA", "Inventario", "Caja", "Mi Panel", "Pendientes", "Colaboraciones", "Administración", "Importar"].includes(route.label)) {
       if (profile?.role !== 'clinic_admin') return false
     }
 

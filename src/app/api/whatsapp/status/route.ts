@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { requireAuth } from "@/lib/security/auth-guard"
 import { isGroqConfigured } from "@/lib/ai/groq"
-import { isUltramsgConfigured } from "@/lib/whatsapp/ultramsg"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { getClinicWhatsappConfig, metaCredsFrom } from "@/lib/whatsapp/config"
 
@@ -16,12 +15,14 @@ export async function GET() {
   const cfg = await getClinicWhatsappConfig(admin, context.clinicId)
   const metaConnected = !!metaCredsFrom(cfg)
 
-  const whatsapp = metaConnected || isUltramsgConfigured()
+  // Multi-cliente: el estado refleja SOLO la conexión propia de la clínica (Meta).
+  // Ultramsg global queda como respaldo de envío, no como señal de "conectado".
+  const whatsapp = metaConnected
   const ai = isGroqConfigured()
   return NextResponse.json({
     connected: whatsapp && ai,
     whatsapp,
     ai,
-    provider: metaConnected ? "meta" : isUltramsgConfigured() ? "ultramsg" : null,
+    provider: metaConnected ? "meta" : null,
   })
 }

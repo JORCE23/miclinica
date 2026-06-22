@@ -17,7 +17,7 @@ type SheetState = SheetData & {
 }
 
 const ENTITIES: Record<Exclude<EntityKey, "desconocido">, { label: string; icon: typeof Users; chunk: number; fields: Record<string, string> }> = {
-  pacientes: { label: "Pacientes", icon: Users, chunk: 12, fields: { full_name: "Nombre completo", rut: "RUT", email: "Correo", phone: "Teléfono", birth_date: "Nacimiento", notes: "Notas" } },
+  pacientes: { label: "Pacientes", icon: Users, chunk: 8, fields: { full_name: "Nombre completo", rut: "RUT", email: "Correo", phone: "Teléfono", birth_date: "Nacimiento", notes: "Notas" } },
   inventario: { label: "Inventario", icon: Package, chunk: 200, fields: { name: "Producto", category: "Categoría", sku: "SKU / Código", unit: "Unidad", stock: "Stock", min_stock: "Stock mínimo", supplier: "Proveedor", notes: "Notas" } },
   servicios: { label: "Servicios", icon: Sparkles, chunk: 200, fields: { name: "Servicio", description: "Descripción", category: "Categoría", duration_minutes: "Duración (min)", price: "Precio" } },
   reservas: { label: "Reservas", icon: Calendar, chunk: 50, fields: { patient_name: "Paciente", service_name: "Servicio", professional_name: "Profesional", scheduled_at: "Fecha y hora", price: "Precio", notes: "Notas" } },
@@ -114,14 +114,14 @@ export default function ImportPage() {
   return (
     <div className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Importar datos</h1>
+        <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight text-foreground">Importar datos</h1>
         <p className="text-muted-foreground mt-1">Sube tu Excel o CSV y la IA detecta y ordena tus pacientes, inventario, servicios y reservas.</p>
       </div>
 
       {/* Zona de carga */}
       <div
         onClick={() => fileRef.current?.click()}
-        className="rounded-2xl border-2 border-dashed border-border hover:border-brand/50 bg-card p-10 text-center cursor-pointer transition-colors"
+        className="rounded-2xl border-2 border-dashed border-border hover:border-brand/50 bg-card p-6 md:p-10 text-center cursor-pointer transition-colors"
       >
         {loading ? (
           <div className="flex flex-col items-center gap-3 text-muted-foreground">
@@ -193,8 +193,8 @@ export default function ImportPage() {
                   <p className="text-sm font-medium text-foreground mb-2">Asignación de columnas (la IA ya las propuso, ajústalas si hace falta):</p>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {meta && Object.entries(meta.fields).map(([field, label]) => (
-                      <div key={field} className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground w-32 shrink-0">{label}</span>
+                      <div key={field} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <span className="text-sm text-muted-foreground w-full sm:w-32 shrink-0">{label}</span>
                         <select
                           value={sheet.mapping[field] || ""}
                           onChange={(e) => setMap(i, field, e.target.value)}

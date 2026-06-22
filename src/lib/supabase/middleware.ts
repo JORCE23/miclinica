@@ -27,9 +27,27 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Obtener el usuario de forma tolerante: un fallo TRANSITORIO (red/Supabase)
+  // no debe cerrar la sesión. Solo tratamos como "no logueado" cuando Supabase
+  // responde sin usuario y sin error de conexión.
+  let user = null
+  let authNetworkError = false
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    user = data.user
+    // Errores de red/transitorios (sin status o 5xx) → no forzar logout.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const status = (error as any)?.status
+    if (error && (!status || status >= 500)) authNetworkError = true
+  } catch {
+    authNetworkError = true
+  }
+
+  // Ante un error transitorio, dejamos pasar el request tal cual (preserva la sesión/cookies)
+  // en vez de redirigir a /login.
+  if (authNetworkError) {
+    return supabaseResponse
+  }
 
   let redirectUrl = null
 
