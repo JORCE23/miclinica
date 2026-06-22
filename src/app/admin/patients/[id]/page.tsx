@@ -170,7 +170,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
             </div>
 
             {/* Navegación por secciones */}
-            <TabsList className="bg-transparent h-auto p-0 gap-1 flex w-full max-w-full justify-start border-none overflow-x-auto mt-5 border-t border-border/60 [&>button]:shrink-0">
+            <TabsList className="no-scrollbar bg-transparent h-auto p-0 gap-1 flex w-full max-w-full justify-start border-none overflow-x-auto overflow-y-hidden mt-5 border-t border-border/60 [&>button]:shrink-0">
               {TABS.map((t) => (
                 <TabsTrigger
                   key={t.value}
