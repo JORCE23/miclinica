@@ -6,6 +6,7 @@ import { Professional } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Plus, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { useAdminModals } from "@/components/admin/AdminModals"
@@ -14,6 +15,7 @@ import { Avatar } from "@/components/shared/Avatar"
 export function ProfessionalList() {
   const queryClient = useQueryClient()
   const { openProfessional } = useAdminModals()
+  const router = useRouter()
 
   const { data: professionals, isLoading } = useQuery<Professional[]>({
     queryKey: ['professionals'],
@@ -75,11 +77,15 @@ export function ProfessionalList() {
               </TableRow>
             )}
             {professionals?.map((professional) => (
-              <TableRow key={professional.id}>
+              <TableRow
+                key={professional.id}
+                onClick={() => router.push(`/admin/professionals/${professional.id}`)}
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+              >
                 <TableCell className="font-medium text-foreground">
                   <div className="flex items-center gap-3">
                     <Avatar src={professional.avatar_url} name={professional.full_name} size={36} />
-                    <span>{professional.full_name}</span>
+                    <span className="hover:text-brand transition-colors">{professional.full_name}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-[#6B7E94]">{professional.specialty || '-'}</TableCell>
@@ -93,17 +99,18 @@ export function ProfessionalList() {
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                     <Link href={`/admin/professionals/${professional.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-foreground">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#7B9AB5] hover:text-foreground" title="Editar">
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => handleDelete(professional.id)}
                       className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"
+                      title="Eliminar"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
