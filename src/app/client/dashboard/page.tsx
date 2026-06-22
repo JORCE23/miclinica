@@ -40,7 +40,7 @@ export default async function ClientDashboardPage() {
     <div className="space-y-8 max-w-4xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          ¡Hola, {profile?.full_name.split(' ')[0]}! 👋
+          ¡Hola, {profile?.full_name?.split(' ')[0] || "Bienvenido"}! 👋
         </h1>
         <p className="text-muted-foreground mt-2">
           Bienvenido a tu portal de paciente. Aquí puedes ver tu historial, puntos y próximas citas.

@@ -96,9 +96,10 @@ export async function POST(req: Request) {
     if (permError) console.error("Error creando permisos:", permError.message)
 
     // 6. Crear el registro en 'professionals' (directorio de la clínica)
+    // Columnas base que SIEMPRE existen; profile_id y avatar_url son opcionales (pueden
+    // no estar aún si falta su migración) → si fallan, reintentamos sin ellas.
     const baseProf = {
       clinic_id: profile.clinic_id,
-      profile_id: newUserId,
       full_name,
       email,
       phone,
@@ -107,12 +108,12 @@ export async function POST(req: Request) {
     }
     let { data: professionalData, error: profError } = await adminAuthClient
       .from("professionals")
-      .insert({ ...baseProf, avatar_url: avatar_url || null })
+      .insert({ ...baseProf, profile_id: newUserId, avatar_url: avatar_url || null })
       .select()
       .single()
 
-    // Tolerancia: si la columna avatar_url aún no existe, reintentar sin ella.
-    if (profError && /avatar_url/.test(profError.message)) {
+    // Tolerancia: si alguna columna opcional (avatar_url / profile_id) aún no existe, reintentar sin ellas.
+    if (profError && /(avatar_url|profile_id)/.test(profError.message)) {
       ;({ data: professionalData, error: profError } = await adminAuthClient
         .from("professionals")
         .insert(baseProf)

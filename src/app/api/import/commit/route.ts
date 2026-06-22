@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/security/auth-guard"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export const dynamic = "force-dynamic"
+export const maxDuration = 60
 
 type Mapping = Record<string, string | null>
 type Row = Record<string, unknown>

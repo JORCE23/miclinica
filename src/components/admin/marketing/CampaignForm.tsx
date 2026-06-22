@@ -17,6 +17,13 @@ interface CampaignFormProps {
   initialData?: Campaign
 }
 
+// Convierte una fecha (string/null) al formato yyyy-MM-dd para <input type=date>, sin romper si es inválida.
+function toDateInput(v?: string | null): string {
+  if (!v) return ""
+  const d = new Date(v)
+  return isNaN(d.getTime()) ? "" : d.toISOString().split("T")[0]
+}
+
 export function CampaignForm({ initialData }: CampaignFormProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -26,8 +33,8 @@ export function CampaignForm({ initialData }: CampaignFormProps) {
     resolver: zodResolver(campaignSchema),
     defaultValues: initialData ? {
       ...initialData,
-      start_date: initialData.start_date ? new Date(initialData.start_date).toISOString().split('T')[0] : "",
-      end_date: initialData.end_date ? new Date(initialData.end_date).toISOString().split('T')[0] : "",
+      start_date: toDateInput(initialData.start_date),
+      end_date: toDateInput(initialData.end_date),
       budget: initialData.budget || undefined,
       spent: initialData.spent || undefined,
       reach: initialData.reach || undefined,

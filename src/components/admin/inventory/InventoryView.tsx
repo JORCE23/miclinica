@@ -80,7 +80,7 @@ export function InventoryView() {
 
   const lowCount = products.filter(lowOf).length
   const outCount = products.filter(outOf).length
-  const totalValue = products.reduce((acc, p) => acc + p.stock * (p.cost || 0), 0)
+  const totalValue = products.reduce((acc, p) => acc + (p.stock || 0) * (p.cost || 0), 0)
 
   const presentCategories = Array.from(new Set(products.map((p) => p.category || "Sin categoría"))).sort()
 

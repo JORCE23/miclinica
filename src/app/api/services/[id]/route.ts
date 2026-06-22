@@ -7,10 +7,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
+    const { data: prof } = await supabase.from("profiles").select("clinic_id").eq("id", user.id).single()
+    if (!prof?.clinic_id) return NextResponse.json({ error: "Perfil no encontrado" }, { status: 404 })
+
     const { data: service, error } = await supabase
       .from("services")
       .select("*")
       .eq("id", params.id)
+      .eq("clinic_id", prof.clinic_id)
       .single()
 
     if (error || !service) {
@@ -30,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
     // Validar admin rol
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    const { data: profile } = await supabase.from("profiles").select("role, clinic_id").eq("id", user.id).single()
     if (!profile || profile.role !== "clinic_admin") {
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
@@ -57,6 +61,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       .from("services")
       .update(updateData)
       .eq("id", params.id)
+      .eq("clinic_id", profile.clinic_id)
       .select()
       .single()
 
@@ -76,7 +81,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    const { data: profile } = await supabase.from("profiles").select("role, clinic_id").eq("id", user.id).single()
     if (!profile || profile.role !== "clinic_admin") {
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
@@ -86,6 +91,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       .from("services")
       .delete()
       .eq("id", params.id)
+      .eq("clinic_id", profile.clinic_id)
 
     if (error) {
       if (error.code === '23503') { // Foreign key violation

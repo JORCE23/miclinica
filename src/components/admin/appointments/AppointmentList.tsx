@@ -96,7 +96,7 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
             {!patientId && (
               <div className="flex items-center gap-2 mt-2 bg-muted/50 p-3 rounded-2xl">
                 <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold shrink-0">
-                  {apt.patient?.full_name.charAt(0)}
+                  {apt.patient?.full_name?.charAt(0) || "?"}
                 </div>
                 <div className="flex flex-col overflow-hidden">
                   <span className="font-semibold text-sm truncate">{apt.patient?.full_name}</span>
@@ -170,7 +170,7 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center font-bold text-primary border border-primary/10">
-                        {apt.patient?.full_name.charAt(0)}
+                        {apt.patient?.full_name?.charAt(0) || "?"}
                       </div>
                       <div>
                         <div className="font-semibold text-foreground">{apt.patient?.full_name}</div>

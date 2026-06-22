@@ -7,10 +7,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
+    const { data: prof } = await supabase.from("profiles").select("clinic_id").eq("id", user.id).single()
+    if (!prof?.clinic_id) return NextResponse.json({ error: "Perfil no encontrado" }, { status: 404 })
+
     const { data, error } = await supabase
       .from("appointments")
       .select("*, patient:profiles!patient_id(*), service:services!service_id(*)")
       .eq("id", params.id)
+      .eq("clinic_id", prof.clinic_id)
       .single()
 
     if (error || !data) return NextResponse.json({ error: "Cita no encontrada" }, { status: 404 })
@@ -27,7 +31,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    const { data: profile } = await supabase.from("profiles").select("role, clinic_id").eq("id", user.id).single()
     if (!profile || profile.role !== "clinic_admin") {
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
@@ -48,6 +52,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         updated_at: new Date().toISOString()
       })
       .eq("id", params.id)
+      .eq("clinic_id", profile.clinic_id)
       .select()
       .single()
 
@@ -65,7 +70,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    const { data: profile } = await supabase.from("profiles").select("role, clinic_id").eq("id", user.id).single()
     if (!profile || profile.role !== "clinic_admin") {
       return NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 })
     }
@@ -80,6 +85,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       .from("appointments")
       .delete()
       .eq("id", params.id)
+      .eq("clinic_id", profile.clinic_id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
