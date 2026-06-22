@@ -138,13 +138,13 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
               <div className="flex flex-wrap gap-2 shrink-0">
                 <WhatsappButton
                   phone={patient.phone}
-                  message={`Hola ${patient.full_name.split(" ")[0]}, te saludamos de la clínica 👋`}
+                  message={`Hola ${patient.full_name?.split(" ")?.[0] || ""}, te saludamos de la clínica 👋`}
                   size="default"
                 />
                 <MailButton
                   email={patient.email}
                   subject={`Clínica · ${patient.full_name}`}
-                  body={`Hola ${patient.full_name.split(" ")[0]},\n\n`}
+                  body={`Hola ${patient.full_name?.split(" ")?.[0] || ""},\n\n`}
                   size="default"
                 />
                 <Button variant="outline" onClick={() => goToTab("administrative")} className="rounded-xl">

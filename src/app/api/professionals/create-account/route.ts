@@ -2,20 +2,17 @@ import { NextResponse } from "next/server"
 import { createClient as createServerClient } from "@/lib/supabase/server"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 
-// Cliente Admin que puede crear usuarios sin iniciar su sesión (Service Role)
-const adminAuthClient = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-)
+export const dynamic = "force-dynamic"
 
 export async function POST(req: Request) {
   try {
+    // Cliente Admin (Service Role) — se crea dentro del handler para no leer env en build.
+    const adminAuthClient = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+
     const supabase = createServerClient()
     
     // 1. Verificar sesión del administrador actual

@@ -86,8 +86,8 @@ export function CollaborationsView() {
               </div>
               {c.message && <p className="text-sm text-muted-foreground mt-2 leading-relaxed whitespace-pre-wrap">{c.message}</p>}
               <div className="flex flex-wrap items-center gap-2 mt-3">
-                <WhatsappButton phone={c.phone} message={`Hola ${c.name.split(" ")[0]}, gracias por tu interés en colaborar con la clínica 👋`} size="sm" />
-                <MailButton email={c.email} subject="Colaboración" body={`Hola ${c.name.split(" ")[0]},\n\n`} size="sm" />
+                <WhatsappButton phone={c.phone} message={`Hola ${c.name?.split(" ")?.[0] || ""}, gracias por tu interés en colaborar con la clínica 👋`} size="sm" />
+                <MailButton email={c.email} subject="Colaboración" body={`Hola ${c.name?.split(" ")?.[0] || ""},\n\n`} size="sm" />
                 <select value={c.status} onChange={(e) => setStatus(c.id, e.target.value)} className="h-8 rounded-lg border border-input bg-background px-2 text-xs ml-auto">
                   {STATUS.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>

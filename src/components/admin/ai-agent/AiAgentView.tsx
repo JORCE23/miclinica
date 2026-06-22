@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import Link from "next/link"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -264,7 +265,7 @@ export function AiAgentView() {
           {connected ? "Conectado" : "Prototipo"}
         </Badge>
         {!connected && (
-          <Button className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
+          <Button render={<Link href="/admin/settings" />} className="bg-brand text-white hover:bg-brand-dark rounded-xl shadow-glow">
             <Plug className="h-4 w-4 mr-2" /> Conectar WhatsApp
           </Button>
         )}
@@ -284,20 +285,9 @@ export function AiAgentView() {
           <Sparkles className="h-5 w-5 shrink-0 mt-0.5 text-amber-500" />
           <div className="text-sm space-y-2">
             <p>
-              <span className="font-semibold">Modo prototipo.</span> Las conversaciones son de ejemplo y el bot responde con respuestas simuladas
-              basadas en el contexto del negocio. Para activarlo de verdad: pon <code className="text-xs bg-amber-100 px-1 rounded">GROQ_API_KEY</code> + <code className="text-xs bg-amber-100 px-1 rounded">ULTRAMSG_INSTANCE_ID</code>/<code className="text-xs bg-amber-100 px-1 rounded">ULTRAMSG_TOKEN</code> en Vercel y registra esta URL de webhook en UltraMsg:
+              <span className="font-semibold">Modo demostración.</span> Las conversaciones que ves abajo son de ejemplo. Para activar tu WhatsApp real
+              (recibir y responder con IA), conéctalo desde <Link href="/admin/settings" className="font-semibold underline">Configuración → Conectar WhatsApp</Link>.
             </p>
-            <div className="flex items-center gap-2 flex-wrap">
-              <code className="text-xs font-mono bg-white border border-amber-200 rounded-lg px-2 py-1 break-all">
-                {(typeof window !== "undefined" ? window.location.origin : "https://TU-DOMINIO")}/api/whatsapp/webhook
-              </code>
-              <button
-                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/api/whatsapp/webhook`); }}
-                className="text-xs font-medium text-amber-700 hover:text-amber-900 underline"
-              >
-                Copiar
-              </button>
-            </div>
           </div>
         </div>
       )}

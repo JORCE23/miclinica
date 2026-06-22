@@ -7,7 +7,7 @@ export const appointmentSchema = z.object({
   
   service_id: z.string({
     required_error: "El servicio es requerido",
-  }).uuid("ID de servicio inválido").optional().nullable(),
+  }).min(1, "El servicio es requerido").uuid("ID de servicio inválido"),
 
   professional_id: z.string().uuid().optional().nullable().or(z.literal("")),
   

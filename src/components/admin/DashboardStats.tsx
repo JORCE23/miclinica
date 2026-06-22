@@ -7,6 +7,7 @@ import { format, isToday, isTomorrow } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Avatar } from "@/components/shared/Avatar"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
 
 // Removed mockRevenueData to use real data from the API
@@ -218,11 +219,9 @@ export function DashboardStats() {
                     upcomingAppointments.map((apt: any) => (
                       <div key={apt.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all">
                         <div className="flex items-center gap-4">
-                          <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center font-bold text-slate-600 ring-1 ring-inset ring-slate-200/60">
-                            {apt.patient.full_name.charAt(0).toUpperCase()}
-                          </div>
+                          <Avatar src={apt.patient?.avatar_url} name={apt.patient?.full_name} size={44} rounded="xl" />
                           <div>
-                            <p className="font-semibold text-foreground text-sm">{apt.patient.full_name}</p>
+                            <p className="font-semibold text-foreground text-sm">{apt.patient?.full_name || "Sin paciente"}</p>
                             <p className="text-xs text-muted-foreground">{apt.service?.name}</p>
                           </div>
                         </div>
@@ -297,11 +296,9 @@ export function DashboardStats() {
                 upcomingAppointments.map((apt: any) => (
                   <div key={apt.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border/70 rounded-2xl bg-card hover:border-brand/40 hover:shadow-soft transition-all">
                     <div className="flex items-center gap-4">
-                      <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center font-bold text-slate-600 ring-1 ring-inset ring-slate-200/60">
-                        {apt.patient.full_name.charAt(0).toUpperCase()}
-                      </div>
+                      <Avatar src={apt.patient?.avatar_url} name={apt.patient?.full_name} size={44} rounded="xl" />
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{apt.patient.full_name}</p>
+                        <p className="font-semibold text-foreground text-sm">{apt.patient?.full_name || "Sin paciente"}</p>
                         <p className="text-xs text-muted-foreground">{apt.service?.name} • {apt.duration_minutes} minutos</p>
                       </div>
                     </div>
