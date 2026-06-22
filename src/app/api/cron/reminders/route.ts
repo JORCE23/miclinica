@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { addDays, startOfDay, endOfDay, format } from "date-fns"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { isUltramsgConfigured, sendWhatsappMessage } from "@/lib/whatsapp/ultramsg"
+import { sendMetaText } from "@/lib/whatsapp/meta"
+import { getClinicWhatsappConfig, metaCredsFrom } from "@/lib/whatsapp/config"
 
 export const dynamic = "force-dynamic"
 
@@ -17,11 +19,20 @@ export async function GET(request: Request) {
     }
   }
 
-  if (!isUltramsgConfigured()) {
-    return NextResponse.json({ ok: true, sent: 0, note: "WhatsApp no configurado" })
-  }
-
   const admin = createAdminClient()
+
+  // Cache de remitente por clínica: Meta (creds) o Ultramsg global o ninguno.
+  const senderCache = new Map<string, ((to: string, body: string) => Promise<boolean>) | null>()
+  async function senderFor(clinicId: string) {
+    if (senderCache.has(clinicId)) return senderCache.get(clinicId)!
+    const cfg = await getClinicWhatsappConfig(admin, clinicId)
+    const creds = metaCredsFrom(cfg)
+    let fn: ((to: string, body: string) => Promise<boolean>) | null = null
+    if (creds) fn = async (to, body) => (await sendMetaText(creds, to, body)).ok
+    else if (isUltramsgConfigured()) fn = async (to, body) => await sendWhatsappMessage(to, body)
+    senderCache.set(clinicId, fn)
+    return fn
+  }
   // Corre una vez al día (plan Hobby): recuerda todas las citas de MAÑANA.
   const tomorrow = addDays(new Date(), 1)
   const from = startOfDay(tomorrow).toISOString()
@@ -52,7 +63,9 @@ export async function GET(request: Request) {
     const serviceName = a.service?.name || "tu cita"
     const body = `Hola ${name} 👋, te recordamos tu cita de ${serviceName} para mañana ${format(when, "dd/MM 'a las' HH:mm")} hrs. ¿Confirmas tu asistencia? Responde *SÍ* para confirmar o *NO* para reagendar. 💙`
 
-    const ok = await sendWhatsappMessage(phone, body)
+    const send = await senderFor(a.clinic_id)
+    if (!send) continue
+    const ok = await send(phone, body)
     if (!ok) continue
 
     await admin.from("appointments").update({ reminder_sent_at: new Date().toISOString() }).eq("id", a.id)
