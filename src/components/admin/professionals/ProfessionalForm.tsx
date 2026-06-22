@@ -28,12 +28,13 @@ export function ProfessionalForm({ initialData, onSuccess, onCancel }: Professio
 
   const { register, handleSubmit, formState: { errors }, watch, control } = useForm<ProfessionalFormValues>({
     resolver: zodResolver(professionalSchema),
-    defaultValues: initialData || {
-      is_active: true,
-      full_name: "",
-      specialty: "",
-      email: "",
-      phone: ""
+    // Coercionar null -> "" (al editar, la BD puede traer campos en null y zod espera texto)
+    defaultValues: {
+      full_name: initialData?.full_name || "",
+      specialty: initialData?.specialty || "",
+      email: initialData?.email || "",
+      phone: initialData?.phone || "",
+      is_active: initialData?.is_active ?? true,
     }
   })
 
