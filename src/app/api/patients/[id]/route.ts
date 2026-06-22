@@ -22,6 +22,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       .select("*")
       .eq("id", params.id)
       .eq("role", "client")
+      .eq("clinic_id", profile.clinic_id)
       .single()
 
     if (error || !patient) {
@@ -62,6 +63,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         updated_at: new Date().toISOString()
       })
       .eq("id", params.id)
+      .eq("clinic_id", profile.clinic_id)
       .select()
       .single()
 

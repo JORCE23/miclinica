@@ -39,8 +39,8 @@ export function CashRegisterView() {
   const appts = data?.appointments || []
 
   const apptIncome = appts.reduce((acc, a) => acc + (a.price || 0), 0)
-  const manualIn = movements.filter((m) => m.type === "ingreso").reduce((a, m) => a + Number(m.amount), 0)
-  const egresos = movements.filter((m) => m.type === "egreso").reduce((a, m) => a + Number(m.amount), 0)
+  const manualIn = movements.filter((m) => m.type === "ingreso").reduce((a, m) => a + (Number(m.amount) || 0), 0)
+  const egresos = movements.filter((m) => m.type === "egreso").reduce((a, m) => a + (Number(m.amount) || 0), 0)
   const ingresos = apptIncome + manualIn
   const balance = ingresos - egresos
   // El monto de las citas es BRUTO; restamos el costo de insumos para el neto (ganancia)

@@ -47,6 +47,7 @@ export async function groqChat(opts: {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: payload,
+      signal: AbortSignal.timeout(25000),
     })
     if (res.ok) break
     const txt = await res.text().catch(() => "")
@@ -83,6 +84,7 @@ export async function transcribeAudio(file: Blob, filename = "audio.webm"): Prom
       method: "POST",
       headers: { Authorization: `Bearer ${key}` },
       body: form,
+      signal: AbortSignal.timeout(25000),
     })
     if (!res.ok) return null
     return (await res.text()).trim() || null
@@ -95,7 +97,7 @@ export async function transcribeAudio(file: Blob, filename = "audio.webm"): Prom
 export async function transcribeAudioFromUrl(mediaUrl: string): Promise<string | null> {
   if (!mediaUrl) return null
   try {
-    const audioRes = await fetch(mediaUrl)
+    const audioRes = await fetch(mediaUrl, { signal: AbortSignal.timeout(20000) })
     if (!audioRes.ok) return null
     return transcribeAudio(await audioRes.blob(), "audio.ogg")
   } catch {
