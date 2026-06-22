@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/admin/PageHeader"
 import { BookingShareCard } from "@/components/admin/BookingShareCard"
 import { ScheduleEditor } from "@/components/admin/settings/ScheduleEditor"
+import { WhatsappConnect } from "@/components/admin/settings/WhatsappConnect"
 import { Settings, Building2, MapPin, Phone, Mail } from "lucide-react"
 import { toast } from "sonner"
 
@@ -75,6 +76,8 @@ export default function SettingsPage() {
       />
 
       <BookingShareCard slug={clinic?.slug} />
+
+      <WhatsappConnect />
 
       <ScheduleEditor />
 
