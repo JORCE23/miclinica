@@ -119,6 +119,7 @@ export interface Professional {
   specialty?: string;
   email?: string;
   phone?: string;
+  avatar_url?: string;
   is_active: boolean;
   created_at: string;
 }

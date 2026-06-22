@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import { Professional } from "@/types"
 import { useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
+import { AvatarUpload } from "@/components/shared/AvatarUpload"
 
 interface ProfessionalFormProps {
   initialData?: Professional
@@ -36,6 +37,7 @@ export function ProfessionalForm({ initialData, onSuccess, onCancel }: Professio
     }
   })
 
+  const [avatarUrl, setAvatarUrl] = useState<string>(initialData?.avatar_url || "")
   const [createAccount, setCreateAccount] = useState(false)
   const [password, setPassword] = useState("")
   const [permissions, setPermissions] = useState({
@@ -78,13 +80,14 @@ export function ProfessionalForm({ initialData, onSuccess, onCancel }: Professio
   })
 
   const onSubmit = (data: ProfessionalFormValues) => {
+    const payload = { ...data, avatar_url: avatarUrl || null }
     if (!isEditing && createAccount) {
       if (!data.email) return toast.error("Se requiere un Email para crear la cuenta")
       if (!password) return toast.error("Se requiere una Contraseña")
-      
-      mutation.mutate({ ...data, createAccount: true, password, permissions })
+
+      mutation.mutate({ ...payload, createAccount: true, password, permissions })
     } else {
-      mutation.mutate(data)
+      mutation.mutate(payload)
     }
   }
 
@@ -93,6 +96,11 @@ export function ProfessionalForm({ initialData, onSuccess, onCancel }: Professio
   return (
     <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 md:p-7 max-w-2xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="rounded-xl border border-border bg-muted/30 p-4">
+          <Label className="mb-3 block">Foto del profesional</Label>
+          <AvatarUpload value={avatarUrl} onChange={setAvatarUrl} name={watch("full_name")} folder="team" />
+        </div>
+
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Nombre Completo *</Label>

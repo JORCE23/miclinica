@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
+import { Avatar } from "@/components/shared/Avatar"
 import {
   ChevronLeft, Pencil, Calendar, Bell, ShieldAlert, ShieldCheck, HeartPulse,
   CalendarDays, Phone, Activity, Mail, IdCard, FileSignature, ClipboardList, Wand2, Sparkles,
@@ -122,9 +123,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-full h-9 w-9 shrink-0">
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
-                <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl md:text-3xl font-bold shrink-0">
-                  {patient.full_name.charAt(0).toUpperCase()}
-                </div>
+                <Avatar src={patient.avatar_url} name={patient.full_name} size={76} rounded="xl" className="shrink-0" />
                 <div className="min-w-0">
                   <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight truncate text-foreground">{patient.full_name}</h1>
                   <div className="flex flex-wrap items-center gap-2 mt-1.5 text-sm text-muted-foreground">

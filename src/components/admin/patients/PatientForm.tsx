@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { RutInput } from "@/components/shared/RutInput"
+import { AvatarUpload } from "@/components/shared/AvatarUpload"
 import {
   Select,
   SelectContent,
@@ -41,11 +42,13 @@ interface PatientFormProps {
 export function PatientForm({ onSuccess, onCancel, defaults }: PatientFormProps = {}) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string>(defaults?.avatar_url || "")
 
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<PatientFormValues>({
     resolver: zodResolver(patientSchema),
@@ -67,7 +70,7 @@ export function PatientForm({ onSuccess, onCancel, defaults }: PatientFormProps 
       const response = await fetch("/api/patients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, avatar_url: avatarUrl || null }),
       })
 
       const result = await response.json()
@@ -88,6 +91,11 @@ export function PatientForm({ onSuccess, onCancel, defaults }: PatientFormProps 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="rounded-xl border border-border bg-muted/30 p-4">
+        <Label className="mb-3 block">Foto de perfil</Label>
+        <AvatarUpload value={avatarUrl} onChange={setAvatarUrl} name={watch("full_name")} folder="patients" />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="full_name">Nombre Completo *</Label>

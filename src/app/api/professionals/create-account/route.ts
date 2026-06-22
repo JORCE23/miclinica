@@ -38,10 +38,11 @@ export async function POST(req: Request) {
       full_name, 
       email, 
       phone, 
-      specialty, 
-      is_active, 
-      password, 
-      permissions 
+      specialty,
+      is_active,
+      password,
+      permissions,
+      avatar_url,
     } = body
 
     if (!email || !password || !full_name) {
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
         full_name,
         email,
         phone,
+        avatar_url: avatar_url || null,
         is_active: is_active ?? true
       })
 
@@ -97,19 +99,29 @@ export async function POST(req: Request) {
     if (permError) console.error("Error creando permisos:", permError.message)
 
     // 6. Crear el registro en 'professionals' (directorio de la clínica)
-    const { data: professionalData, error: profError } = await adminAuthClient
+    const baseProf = {
+      clinic_id: profile.clinic_id,
+      profile_id: newUserId,
+      full_name,
+      email,
+      phone,
+      specialty,
+      is_active: is_active ?? true,
+    }
+    let { data: professionalData, error: profError } = await adminAuthClient
       .from("professionals")
-      .insert({
-        clinic_id: profile.clinic_id,
-        profile_id: newUserId,
-        full_name,
-        email,
-        phone,
-        specialty,
-        is_active: is_active ?? true
-      })
+      .insert({ ...baseProf, avatar_url: avatar_url || null })
       .select()
       .single()
+
+    // Tolerancia: si la columna avatar_url aún no existe, reintentar sin ella.
+    if (profError && /avatar_url/.test(profError.message)) {
+      ;({ data: professionalData, error: profError } = await adminAuthClient
+        .from("professionals")
+        .insert(baseProf)
+        .select()
+        .single())
+    }
 
     if (profError) {
       console.error("Error creando registro en professionals:", profError.message)
