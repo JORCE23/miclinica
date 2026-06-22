@@ -74,10 +74,16 @@ export function ProfessionalForm({ initialData, onSuccess, onCancel }: Professio
       if (onSuccess) onSuccess()
       else router.push('/admin/professionals')
     },
-    onError: () => {
-      toast.error("Ocurrió un error al guardar")
+    onError: (e: any) => {
+      toast.error(e?.message || "Ocurrió un error al guardar")
     }
   })
+
+  // Si la validación falla, avisar (antes el clic no daba ninguna señal).
+  const onInvalid = (errs: Record<string, { message?: string }>) => {
+    const first = Object.values(errs)[0]
+    toast.error(first?.message || "Revisa los campos obligatorios (el nombre es requerido).")
+  }
 
   const onSubmit = (data: ProfessionalFormValues) => {
     const payload = { ...data, avatar_url: avatarUrl || null }
@@ -95,7 +101,7 @@ export function ProfessionalForm({ initialData, onSuccess, onCancel }: Professio
 
   return (
     <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 md:p-7 max-w-2xl">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
         <div className="rounded-xl border border-border bg-muted/30 p-4">
           <Label className="mb-3 block">Foto del profesional</Label>
           <AvatarUpload value={avatarUrl} onChange={setAvatarUrl} name={watch("full_name")} folder="team" />
