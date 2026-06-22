@@ -203,6 +203,17 @@
   display: none;                /* Chrome/Safari/Brave */
 }
 
+/* Oculta las barras de scroll pero deja seguir desplazando (pestañas, carruseles) */
+.no-scrollbar {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge antiguo */
+}
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;                /* Chrome/Safari/Brave */
+}
+
 /* React Big Calendar Modern Overrides */
 .calendar-container .rbc-calendar {
   @apply font-sans;
