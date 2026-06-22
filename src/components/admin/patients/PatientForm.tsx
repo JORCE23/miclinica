@@ -64,6 +64,11 @@ export function PatientForm({ onSuccess, onCancel, defaults }: PatientFormProps 
     },
   })
 
+  function onInvalid(errs: Record<string, { message?: string }>) {
+    const first = Object.values(errs)[0]
+    toast.error(first?.message || "Revisa los campos: el nombre y el correo son obligatorios.")
+  }
+
   async function onSubmit(data: PatientFormValues) {
     setIsLoading(true)
     try {
@@ -90,7 +95,7 @@ export function PatientForm({ onSuccess, onCancel, defaults }: PatientFormProps 
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
       <div className="rounded-xl border border-border bg-muted/30 p-4">
         <Label className="mb-3 block">Foto de perfil</Label>
         <AvatarUpload value={avatarUrl} onChange={setAvatarUrl} name={watch("full_name")} folder="patients" />
