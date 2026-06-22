@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, Calendar, Sparkles, Gift, Settings, UserCheck, Megaphone,
-  Zap, BarChart2, Bot, Package, Wallet, DoorOpen, LayoutGrid, ClipboardCheck, Shield, Handshake,
+  Zap, BarChart2, Bot, Package, Wallet, DoorOpen, LayoutGrid, ClipboardCheck, Shield, Handshake, Upload,
 } from "lucide-react"
 
 export type AdminRoute = { label: string; icon: typeof LayoutDashboard; href: string }
@@ -23,6 +23,7 @@ export const ADMIN_ROUTES: AdminRoute[] = [
   { label: "Agente IA",        icon: Bot,             href: "/admin/ai-agent"      },
   { label: "Reportes",         icon: BarChart2,       href: "/admin/reports"       },
   { label: "Colaboraciones",   icon: Handshake,       href: "/admin/collaborations" },
+  { label: "Importar",         icon: Upload,          href: "/admin/import"        },
   { label: "Administración",   icon: Shield,          href: "/admin/administration" },
   { label: "Configuración",    icon: Settings,        href: "/admin/settings"      },
 ]
