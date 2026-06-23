@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Clock, DollarSign, Star, Package } from "lucide-react"
+import { Edit, Trash2, Clock, DollarSign, Star, Package, Search } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ServiceForm } from "./ServiceForm"
 import { ServiceInsumosDialog } from "./ServiceInsumosDialog"
@@ -30,6 +30,7 @@ export function ServiceList() {
 
   const [deletingService, setDeletingService] = useState<Service | null>(null)
   const [insumosService, setInsumosService] = useState<Service | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
 
   if (isLoading) {
     return <div className="p-8 text-center text-muted-foreground">Cargando servicios...</div>
@@ -88,10 +89,16 @@ export function ServiceList() {
     }
   }
 
+  // Buscador por nombre / categoría
+  const term = searchTerm.trim().toLowerCase()
+  const visible = term
+    ? services.filter((s) => s.name.toLowerCase().includes(term) || (s.category || "").toLowerCase().includes(term))
+    : services
+
   // Agrupar por área (Facial / Corporal) → categoría
   const SECTION_ORDER = ["Facial", "Corporal", "Sin área"]
   const bySection: Record<string, Service[]> = {}
-  for (const s of services) {
+  for (const s of visible) {
     const sec = s.section || "Sin área"
     ;(bySection[sec] = bySection[sec] || []).push(s)
   }
@@ -156,6 +163,18 @@ export function ServiceList() {
   return (
     <>
       <div className="space-y-6">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar servicio por nombre o categoría..."
+            className="w-full h-10 rounded-xl border border-input bg-card pl-9 pr-3 text-sm outline-none focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/15"
+          />
+        </div>
+        {sectionNames.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground">No se encontraron servicios para “{searchTerm}”.</div>
+        )}
         {sectionNames.map((sec) => {
           const items = [...bySection[sec]].sort((a, b) => catOf(a).localeCompare(catOf(b)) || a.name.localeCompare(b.name))
           return (
