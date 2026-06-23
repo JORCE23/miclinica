@@ -18,6 +18,7 @@ export function PatientList() {
   const { data: patients, isLoading, error } = usePatients()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
+  const [tagFilter, setTagFilter] = useState<string>("todos")
   const [patientToDelete, setPatientToDelete] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
@@ -51,13 +52,18 @@ export function PatientList() {
     )
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const allTags = Array.from(new Set((patients || []).flatMap((p: any) => p.tags || []))).sort() as string[]
+
   const filteredPatients = patients?.filter((patient) => {
     const term = searchTerm.toLowerCase()
-    return (
+    const matchSearch =
       patient.full_name?.toLowerCase().includes(term) ||
       patient.rut?.toLowerCase().includes(term) ||
       patient.email?.toLowerCase().includes(term)
-    )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const matchTag = tagFilter === "todos" || ((patient as any).tags || []).includes(tagFilter)
+    return matchSearch && matchTag
   })
 
   return (
@@ -75,6 +81,22 @@ export function PatientList() {
         </div>
       </div>
 
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {(["todos", ...allTags] as string[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTagFilter(t)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                tagFilter === t ? "bg-brand text-white border-brand" : "text-muted-foreground border-border hover:text-foreground hover:border-brand/40"
+              }`}
+            >
+              {t === "todos" ? "Todos" : t}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="rounded-2xl border border-border/70 bg-card shadow-soft overflow-hidden">
         {isLoading ? (
           <div className="p-4 space-y-4">
@@ -91,6 +113,7 @@ export function PatientList() {
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">RUT</th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Teléfono</th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Etiquetas</th>
                   <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Acciones</th>
                 </tr>
               </thead>
@@ -110,6 +133,16 @@ export function PatientList() {
                     <td className="p-4 align-middle">{patient.rut ? formatRut(patient.rut) : "-"}</td>
                     <td className="p-4 align-middle">{patient.phone || "-"}</td>
                     <td className="p-4 align-middle">{patient.email}</td>
+                    <td className="p-4 align-middle">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      <div className="flex flex-wrap gap-1">
+                        {(((patient as any).tags || []) as string[]).slice(0, 3).map((t) => (
+                          <span key={t} className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-brand/30 bg-brand/5 text-brand uppercase tracking-wide">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
                     <td className="p-4 align-middle text-right">
                       <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                         <Button variant="ghost" size="sm" render={<Link href={`/admin/patients/${patient.id}`} />}>
