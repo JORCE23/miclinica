@@ -7,17 +7,17 @@ import { Button } from "@/components/ui/button"
 import { HeartPulse, ShieldAlert, Activity, FileText, Save, Printer } from "lucide-react"
 import { printArea } from "@/lib/print"
 
-type Field = { k: string; label: string; big?: boolean }
+type Field = { k: string; label: string; big?: boolean; chips?: string[] }
 
 const SECTIONS: { title: string; icon: typeof HeartPulse; fields: Field[] }[] = [
   {
     title: "Antecedentes médicos",
     icon: HeartPulse,
     fields: [
-      { k: "antecedentes_morbidos", label: "Antecedentes mórbidos" },
+      { k: "antecedentes_morbidos", label: "Antecedentes mórbidos", chips: ["Hipertensión", "Hipotiroidismo", "Diabetes", "Asma", "Rosácea"] },
       { k: "alergias", label: "Alergias" },
       { k: "antecedentes_quirurgicos", label: "Antecedentes quirúrgicos" },
-      { k: "procedimientos_previos", label: "Procedimientos estéticos previos" },
+      { k: "procedimientos_previos", label: "Procedimientos estéticos previos", chips: ["Botox", "Rinomodelación", "Sculptra", "Radiesse", "Mesoterapia", "Quemadores de grasa"] },
       { k: "hospitalizaciones", label: "Hospitalizaciones" },
       { k: "medicamentos_diarios", label: "Medicamentos de uso diario" },
     ],
@@ -45,7 +45,7 @@ const SECTIONS: { title: string; icon: typeof HeartPulse; fields: Field[] }[] = 
       { k: "consumo_agua", label: "Consumo de agua diario" },
       { k: "actividad_fisica", label: "Actividad física" },
       { k: "embarazo_lactancia", label: "Embarazo / Lactancia" },
-      { k: "skincare_casa", label: "Cuidados de la piel en casa (skincare)" },
+      { k: "skincare_casa", label: "Cuidados de la piel en casa (skincare)", chips: ["Bloqueador", "Sérum", "Crema", "Contorno de ojos", "Vitamina C"] },
     ],
   },
   {
@@ -86,6 +86,15 @@ export function ClinicalRecordTab({ patientId, patientName }: { patientId: strin
   }, [data])
 
   const set = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }))
+
+  // Chips de selección rápida: agregan/quitan el texto en el campo (lista separada por comas).
+  const hasChip = (k: string, chip: string) => (form[k] || "").toLowerCase().includes(chip.toLowerCase())
+  const toggleChip = (k: string, chip: string) => {
+    const cur = (form[k] || "").split(",").map((s) => s.trim()).filter(Boolean)
+    const exists = cur.some((t) => t.toLowerCase() === chip.toLowerCase())
+    const next = exists ? cur.filter((t) => t.toLowerCase() !== chip.toLowerCase()) : [...cur, chip]
+    set(k, next.join(", "))
+  }
 
   const save = async () => {
     setSaving(true)
@@ -148,6 +157,23 @@ export function ClinicalRecordTab({ patientId, patientName }: { patientId: strin
                   className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none transition-all resize-y focus-visible:border-brand focus-visible:ring-3 focus-visible:ring-brand/15"
                   placeholder="—"
                 />
+                {f.chips && (
+                  <div className="flex flex-wrap gap-1.5 pt-1 print:hidden">
+                    {f.chips.map((chip) => {
+                      const active = hasChip(f.k, chip)
+                      return (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => toggleChip(f.k, chip)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${active ? "bg-brand text-white border-brand" : "text-muted-foreground border-border hover:border-brand/40 hover:text-foreground"}`}
+                        >
+                          {chip}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             ))}
           </div>
