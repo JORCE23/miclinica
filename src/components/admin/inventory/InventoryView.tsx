@@ -167,9 +167,9 @@ export function InventoryView() {
   }
 
   const metricCards = [
-    { label: "Productos", value: products.length, icon: Boxes, tint: "bg-brand/10 text-brand" },
-    { label: "Stock bajo", value: lowCount, icon: TrendingDown, tint: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400" },
-    { label: "Agotados", value: outCount, icon: PackageX, tint: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400" },
+    { label: "Productos", value: products.length, icon: Boxes, tint: "bg-brand/10 text-brand", flt: "todos" as const },
+    { label: "Stock bajo", value: lowCount, icon: TrendingDown, tint: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400", flt: "bajo" as const },
+    { label: "Agotados", value: outCount, icon: PackageX, tint: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400", flt: "agotado" as const },
     { label: "Por vencer", value: batchAlerts?.expiringCount ?? 0, icon: CalendarClock, tint: "bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400" },
     { label: "Valor inventario", value: clp(totalValue), icon: Layers, tint: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" },
   ]
@@ -216,19 +216,36 @@ export function InventoryView() {
         </div>
       )}
 
-      {/* Métricas */}
+      {/* Métricas (las que tienen filtro son clickeables) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {metricCards.map((c, i) => (
-          <div key={i} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 flex items-center gap-3">
-            <div className={`h-11 w-11 rounded-xl ${c.tint} flex items-center justify-center shrink-0`}>
-              <c.icon className="h-5 w-5" />
+        {metricCards.map((c, i) => {
+          const flt = "flt" in c ? c.flt : undefined
+          const active = !!flt && filter === flt
+          const inner = (
+            <>
+              <div className={`h-11 w-11 rounded-xl ${c.tint} flex items-center justify-center shrink-0`}>
+                <c.icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 text-left">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold truncate">{c.label}</p>
+                <p className="text-xl font-bold text-foreground truncate">{c.value}</p>
+              </div>
+            </>
+          )
+          return flt ? (
+            <button
+              key={i}
+              onClick={() => setFilter(flt)}
+              className={`rounded-2xl border bg-card shadow-soft p-4 flex items-center gap-3 transition-all hover:border-brand/50 hover:shadow-card ${active ? "border-brand ring-2 ring-brand/30" : "border-border/70"}`}
+            >
+              {inner}
+            </button>
+          ) : (
+            <div key={i} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4 flex items-center gap-3">
+              {inner}
             </div>
-            <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold truncate">{c.label}</p>
-              <p className="text-xl font-bold text-foreground truncate">{c.value}</p>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Controles */}
