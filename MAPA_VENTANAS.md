@@ -53,6 +53,7 @@ Lo que **falta o está distinto** son piezas puntuales (la mayoría son *ventana
 | Procedimientos (historial, dosis, lote, fotos) | ✅ Ya está | `ProceduresTab` |
 | Mapa facial / antropometría | 🟡 Parcial | Existe dentro de Procedimientos (2D/3D/360/Ricketts); el prototipo lo tiene como pestaña aparte |
 | Consentimientos + firma remota | ✅ Ya está (mejor) | `ConsentsTab` con `sign_token`, link WhatsApp/email |
+| **Consentimiento descargable + auto-generado al firmar** | 🟡 Parcial | Hay imprimir; falta descarga a PDF y que la firma genere/cierre el documento automáticamente |
 | Resumen IA | ✅ Ya está | `AiSummaryTab` |
 | **Receta / Indicaciones post tratamiento** | ❌ **Falta** | Pestaña con plantillas de indicaciones, imprimir A4, enviar por WhatsApp |
 | **Auditoría IA** (chequea ficha incompleta) | ❌ **Falta** | Detecta: falta consentimiento, antecedentes incompletos, sin captación, pago pendiente, mapa facial vacío |
@@ -136,6 +137,7 @@ Lo que **falta o está distinto** son piezas puntuales (la mayoría son *ventana
 |---|---|---|
 | Datos clínica + link reserva + QR | ✅ Ya está | |
 | Editor de horarios por día | ✅ Ya está | `ScheduleEditor` |
+| **Bloqueo de rangos de horario** (ej. desactivar 12:00–14:00) que se ocultan al reservar | ✅ Ya está | Agregado 2026-06-24 — recurrente semanal o fecha puntual; se ve bloqueado en la agenda y NO aparece en la reserva pública |
 | Conectar WhatsApp | ✅ Ya está | Meta + UltraMsg |
 
 ### 16. Integraciones
@@ -148,7 +150,7 @@ Lo que **falta o está distinto** son piezas puntuales (la mayoría son *ventana
 |---|---|---|
 | Puntos de punción sobre foto + diagrama | ✅ Ya está | `FacialDiagram` / `Face3DDiagram` / `Face360Spin` |
 | Plano de Ricketts (línea E) | ✅ Ya está | `FaceRicketts` |
-| **Proporción Áurea con IA (MediaPipe, score 0–100)** | ❌ **Falta** | Análisis automático de tercios/quintos/simetría con puntaje |
+| **Proporción Áurea con IA (MediaPipe, score 0–100)** | ❌ **Falta** | Análisis automático de tercios/quintos/simetría con puntaje. **El socio marcó esto como una actualización notable del mapa facial** |
 
 ### 18. Copilot IA
 | Ventana del prototipo | Estado | Detalle |
@@ -165,12 +167,17 @@ Lo que **falta o está distinto** son piezas puntuales (la mayoría son *ventana
 
 ## 🎯 Gaps reales priorizados (lo que conviene construir)
 
+### ✅ Hecho 2026-06-24
+- ✅ **Bloqueo de rangos de horario** (desactivar 12:00–14:00 etc.): editor en Configuración (recurrente o por fecha), se oculta en la reserva pública y se ve bloqueado en la agenda. *Requiere aplicar la migración `schedule_blocks`.*
+
 ### Prioridad ALTA (más valor para vender / operar)
 1. ❌ **Modal "Dar cita" con grilla visual de horarios** (clic en bloque de 30 min) — es la diferencia más visible del prototipo.
 2. ❌ **Receta / Indicaciones post tratamiento** (pestaña en ficha: plantillas + imprimir A4 + WhatsApp).
 3. ❌ **Auditoría IA de la ficha** (chequea consentimiento/antecedentes/captación/pago/mapa facial).
 4. ❌ **Cierre de caja diario** (modal con resumen + descarga).
 5. 🟡 **Banner de re-citas por WhatsApp** en Pacientes (pacientes a contactar hoy).
+6. 🟡 **Consentimiento descargable a PDF + auto-generado al firmar** (la firma cierra/genera el documento).
+7. ❌ **Mapa facial — Proporción Áurea con IA** (puntaje automático; el socio lo marcó como actualización notable).
 
 ### Prioridad MEDIA
 6. ❌ **Pestaña Imágenes** en la ficha (galería por procedimiento/fecha).

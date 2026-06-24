@@ -2,12 +2,15 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 import { useAdminModals } from "@/components/admin/AdminModals"
 import { useAppointments } from "@/hooks/useAppointments"
 import { format, addDays, startOfDay, isSameDay } from "date-fns"
 import { es } from "date-fns/locale"
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, ChevronLeft, ChevronRight, Ban } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+type Block = { id: string; day_of_week: number | null; block_date: string | null; start_time: string; end_time: string; reason: string | null }
 
 // Horas visibles (sin scroll): 08:00 a 20:00, por hora.
 const HOURS = Array.from({ length: 13 }, (_, i) => `${String(i + 8).padStart(2, "0")}:00`)
@@ -24,9 +27,26 @@ export function WeekAgendaGrid() {
   const router = useRouter()
   const { openAppointment } = useAdminModals()
   const { data: appointments, isLoading } = useAppointments()
+  const { data: blocks = [] } = useQuery<Block[]>({
+    queryKey: ["schedule_blocks"],
+    queryFn: async () => { const r = await fetch("/api/settings/schedule-blocks"); return r.ok ? r.json() : [] },
+  })
   const [weekStart, setWeekStart] = useState<Date>(() => startOfDay(new Date()))
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+
+  // ¿La celda (día, hora) cae dentro de un bloqueo? (recurrente del día de la semana o puntual de la fecha)
+  const toMin = (t: string) => { const [h, m] = t.split(":").map(Number); return h * 60 + (m || 0) }
+  const blockedAt = (day: Date, hour: string): Block | undefined => {
+    const h = parseInt(hour, 10)
+    const cellStart = h * 60, cellEnd = (h + 1) * 60
+    const ymd = format(day, "yyyy-MM-dd")
+    return blocks.find((b) => {
+      const matchesDay = b.block_date ? b.block_date === ymd : b.day_of_week === day.getDay()
+      if (!matchesDay) return false
+      return toMin(b.start_time) < cellEnd && toMin(b.end_time) > cellStart
+    })
+  }
 
   // Altura de cada fila de hora (px) — el bloque de la cita crece con la duración.
   const ROW_H = 54
@@ -115,6 +135,7 @@ export function WeekAgendaGrid() {
                 {days.map((day, di) => {
                   const a = apptStartingAt(day, hour)
                   const covered = !a && coveredAt(day, hour)
+                  const block = !a && !covered ? blockedAt(day, hour) : undefined
                   const today = isSameDay(day, new Date())
                   const dur = a?.duration_minutes || 60
                   return (
@@ -133,7 +154,15 @@ export function WeekAgendaGrid() {
                           <div className="text-[10px] text-muted-foreground truncate">{format(new Date(a.scheduled_at), "HH:mm")} · {a.service?.name || "Servicio"}</div>
                           <div className="text-[9.5px] font-semibold text-brand mt-0.5">{dur} min</div>
                         </button>
-                      ) : covered ? null : (
+                      ) : covered ? null : block ? (
+                        <div
+                          title={`Bloqueado · ${block.start_time}–${block.end_time}${block.reason ? ` · ${block.reason}` : ""}`}
+                          className="w-full h-full rounded-lg flex items-center justify-center bg-muted/60 text-muted-foreground cursor-not-allowed"
+                          style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.04) 5px, rgba(0,0,0,0.04) 10px)" }}
+                        >
+                          <Ban className="h-3.5 w-3.5 opacity-50" />
+                        </div>
+                      ) : (
                         <button
                           onClick={() => goCreate(day, hour)}
                           title="Agendar"

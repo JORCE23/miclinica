@@ -58,6 +58,26 @@ export async function POST(request: Request, { params }: { params: { slug: strin
     const [openH, openM] = (sched?.open_time || "09:00").split(":").map(Number)
     const [closeH, closeM] = (sched?.close_time || "18:00").split(":").map(Number)
 
+    // Bloqueos de horario (rangos que el profesional desactivó): recurrentes de ese
+    // día de la semana + puntuales de esa fecha exacta. Esas horas NO se ofrecen.
+    const dateStr = date.slice(0, 10)
+    const { data: blocks } = await supabase
+      .from("schedule_blocks")
+      .select("start_time, end_time")
+      .eq("clinic_id", clinic.id)
+      .or(`day_of_week.eq.${dow},block_date.eq.${dateStr}`)
+
+    const toMin = (t: string) => {
+      const [h, m] = t.split(":").map(Number)
+      return h * 60 + (m || 0)
+    }
+    const blockRanges = (blocks || []).map((b) => ({ s: toMin(b.start_time), e: toMin(b.end_time) }))
+    const inBlockedRange = (slotStart: Date, slotEnd: Date) => {
+      const s = slotStart.getHours() * 60 + slotStart.getMinutes()
+      const e = slotEnd.getHours() * 60 + slotEnd.getMinutes()
+      return blockRanges.some((b) => s < b.e && e > b.s)
+    }
+
     const targetDate = new Date(date)
 
     // No retornar slots para fechas pasadas
@@ -103,7 +123,7 @@ export async function POST(request: Request, { params }: { params: { slug: strin
           return isBefore(slotStart, aptEnd) && isAfter(slotEnd, aptStart)
         })
 
-        if (!isOverlapping) {
+        if (!isOverlapping && !inBlockedRange(slotStart, slotEnd)) {
           slots.push(slotStart.toISOString())
         }
       }
