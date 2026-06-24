@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm, Controller } from "react-hook-form"
+import { useForm, Controller, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
@@ -67,6 +67,20 @@ export function PersonalTab({ patient }: { patient: any }) {
     },
   })
 
+  // Edad calculada en vivo desde la fecha de nacimiento
+  const watchedBirth = useWatch({ control, name: "birth_date" })
+  const computeAge = (d?: string) => {
+    if (!d) return null
+    const b = new Date(d)
+    if (isNaN(b.getTime())) return null
+    const now = new Date()
+    let age = now.getFullYear() - b.getFullYear()
+    const m = now.getMonth() - b.getMonth()
+    if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--
+    return age >= 0 && age < 130 ? age : null
+  }
+  const age = computeAge(watchedBirth)
+
   async function onSubmit(data: PatientFormValues) {
     setIsLoading(true)
     try {
@@ -124,7 +138,12 @@ export function PersonalTab({ patient }: { patient: any }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Fecha de Nacimiento</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="birth_date">Fecha de Nacimiento</Label>
+                {age !== null && (
+                  <span className="text-xs font-medium text-brand bg-brand-soft/60 px-2 py-0.5 rounded-full">{age} años</span>
+                )}
+              </div>
               <Input id="birth_date" type="date" {...register("birth_date")} />
               {errors.birth_date && <p className="text-sm text-red-500">{errors.birth_date.message}</p>}
             </div>

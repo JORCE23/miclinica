@@ -13,8 +13,16 @@ import { es } from "date-fns/locale"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { AppointmentStatusActions } from "./AppointmentStatusActions"
 import { WhatsappButton } from "@/components/admin/WhatsappButton"
+import { CalendarButton } from "@/components/admin/CalendarButton"
 import { motion } from "framer-motion"
 import { Calendar as CalendarIcon, Clock, Sparkles, Receipt } from "lucide-react"
+
+// Título/detalle prellenado del evento de calendario
+function calendarTitle(apt: { patient?: { full_name?: string }; service?: { name?: string } }) {
+  const who = apt.patient?.full_name || "Paciente"
+  const svc = apt.service?.name ? ` · ${apt.service.name}` : ""
+  return `Cita: ${who}${svc}`
+}
 
 // Mensaje de recordatorio prellenado para WhatsApp
 function reminderMessage(apt: { scheduled_at: string; patient?: { full_name?: string }; service?: { name?: string } }) {
@@ -119,6 +127,7 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
                 )}
               </div>
               <div className="flex items-center gap-1.5">
+                <CalendarButton start={apt.scheduled_at} durationMinutes={apt.duration_minutes} title={calendarTitle(apt)} details={apt.service?.name || ""} iconOnly />
                 <WhatsappButton phone={apt.patient?.phone} message={reminderMessage(apt)} iconOnly />
                 <AppointmentStatusActions
                   appointmentId={apt.id}
@@ -198,6 +207,7 @@ export function AppointmentList({ patientId }: { patientId?: string }) {
 
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1.5">
+                    <CalendarButton start={apt.scheduled_at} durationMinutes={apt.duration_minutes} title={calendarTitle(apt)} details={apt.service?.name || ""} iconOnly />
                     <WhatsappButton phone={apt.patient?.phone} message={reminderMessage(apt)} iconOnly />
                     <AppointmentStatusActions
                       appointmentId={apt.id}
