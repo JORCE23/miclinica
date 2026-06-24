@@ -19,10 +19,19 @@ const STATUS_CLS: Record<string, string> = {
   contactado: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400",
   descartado: "bg-muted text-muted-foreground",
 }
+// Tarjetas-resumen clickeables (filtran la lista). "descartado" = Rechazadas.
+const STATUS_LABEL: Record<string, string> = {
+  todos: "Todas",
+  nuevo: "Nuevas",
+  revisado: "Revisadas",
+  contactado: "Contactadas",
+  descartado: "Rechazadas",
+}
 
 export function CollaborationsView() {
   const qc = useQueryClient()
   const [origin, setOrigin] = useState("")
+  const [filter, setFilter] = useState<string>("todos")
   useEffect(() => { if (typeof window !== "undefined") setOrigin(window.location.origin) }, [])
 
   const { data: items = [], isLoading } = useQuery<Collab[]>({
@@ -47,6 +56,12 @@ export function CollaborationsView() {
 
   const formUrl = clinic?.slug ? `${origin}/colaborar/${clinic.slug}` : ""
 
+  // Conteo por estado para las tarjetas-resumen
+  const counts: Record<string, number> = { todos: items.length }
+  for (const s of STATUS) counts[s] = items.filter((c) => c.status === s).length
+  const visible = filter === "todos" ? items : items.filter((c) => c.status === filter)
+  const cardOrder = ["todos", ...STATUS]
+
   return (
     <div className="space-y-5">
       <PageHeader title="Colaboraciones" description="Postulaciones de gente que quiere colaborar con la clínica, recibidas desde el formulario público." icon={Handshake} />
@@ -65,6 +80,25 @@ export function CollaborationsView() {
         </div>
       )}
 
+      {/* Tarjetas-resumen clickeables por estado */}
+      {items.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {cardOrder.map((s) => {
+            const active = filter === s
+            return (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`rounded-2xl border bg-card shadow-soft p-3 text-left transition-all ${active ? "border-brand ring-2 ring-brand/30" : "border-border/70 hover:border-brand/40"}`}
+              >
+                <p className="text-2xl font-bold text-foreground">{counts[s] || 0}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{STATUS_LABEL[s] || s}</p>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {isLoading ? (
         <div className="p-10 text-center text-muted-foreground">Cargando…</div>
       ) : items.length === 0 ? (
@@ -72,9 +106,13 @@ export function CollaborationsView() {
           <Handshake className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">Aún no hay postulaciones. Comparte el link del formulario.</p>
         </div>
+      ) : visible.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-12 text-center">
+          <p className="text-sm text-muted-foreground">No hay postulaciones en “{STATUS_LABEL[filter] || filter}”.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {items.map((c) => (
+          {visible.map((c) => (
             <div key={c.id} className="rounded-2xl border border-border/70 bg-card shadow-soft p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
